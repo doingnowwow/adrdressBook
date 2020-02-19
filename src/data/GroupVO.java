@@ -1,9 +1,12 @@
 package data;
 
+import java.util.List;
+
 public class GroupVO {
 
 	private int group_no;
 	private String group_name;
+	private List<ListVO> memberList;
 	
 	
 
@@ -21,6 +24,14 @@ public class GroupVO {
 
 	public void setGroup_name(String group_name) {
 		this.group_name = group_name;
+	}
+
+	public List<ListVO> getMemberList() {
+		return memberList;
+	}
+
+	public void setMemberList(List<ListVO> memberList) {
+		this.memberList = memberList;
 	}
 	
 	

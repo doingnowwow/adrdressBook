@@ -32,7 +32,7 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 
-public class AdressBookMainUI extends JFrame {
+public class AdressBookMainUI extends JFrame implements IAddUser {
 
 	private JPanel contentPane;
 	private JSplitPane mainSplitPane;
@@ -56,6 +56,7 @@ public class AdressBookMainUI extends JFrame {
 	private InsertAddressDialog insertAddressdiag;
 	private InsertGroupDialog insertGroupdiag;
 	private DefaultMutableTreeNode root;
+	
 	
 	
 	
@@ -264,13 +265,19 @@ public class AdressBookMainUI extends JFrame {
 		
 		//주소록 추가 버튼 클릭 이벤트
 		btnInsertAddress.addActionListener(e->{
-		insertAddressdiag.setVisible(true);
+			insertAddressdiag.setVisible(true);
 
 			
 			
 		});
 }
 	 
+	
+	public void addUser() {
+		System.out.println("넘어온다");
+	}
+	
+	
 	//tree부분
 	//오늘쪽 마우스 이벤트 메뉴(tree)
 		protected void showMenu(int x, int y) {

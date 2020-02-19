@@ -45,22 +45,37 @@ public class InsertAddressDialog extends JDialog {
 	private JTextArea txtMemo;
 	private JTextField txtGroup;
 
-	JTextField text = new JTextField(10);
-	JButton btnReset = new JButton("초기화");
-	JButton btnInsert = new JButton("등록");
-	JButton btnClose = new JButton("닫기");
+	private JTextField text = new JTextField(10);
+	private JButton btnReset = new JButton("초기화");
+	private JButton btnInsert = new JButton("등록");
+	private JButton btnClose = new JButton("닫기");
 
-	JPanel mainPanel = new JPanel();
+	private JPanel mainPanel = new JPanel();
 
-	public InsertAddressDialog(JFrame frame, String title) {
-		super(frame, title);
-		setModal(true);
-		setResizable(false);
-		this.start();
-
+	private IAddUser listner = null;
+	private AdressBookMainUI adressBookMainUI = null;
+	
+	// case 1 : 인터페이스를 넘겨 받음
+	public InsertAddressDialog(IAddUser listner, String title) {
+		this.listner =  listner;
+		this.setTitle(title);
+		this.setModal(true);
+		this.setResizable(false);
+		this.initUI();
 	}
+	
+	// case 2 부모 클래스 객체를 넘겨 받음
+	public InsertAddressDialog(AdressBookMainUI adressBookMainUI, String title) {
+		this.adressBookMainUI =  adressBookMainUI;
+		this.setTitle(title);
+		this.setModal(true);
+		this.setResizable(false);
+		this.initUI();
+	}
+	
+	
 
-	public void start() {
+	public void initUI() {
 
 		// 메인페널
 		mainContentPane = new JPanel();
@@ -214,6 +229,14 @@ public class InsertAddressDialog extends JDialog {
 			txtDepartment.setText("");
 			txtPosition.setText("");
 			txtMemo.setText("");
+			
+		});
+		
+		//등록
+		btnInsert.addActionListener(e->{
+//			this.listner.addUser();
+			this.adressBookMainUI.addUser();
+			
 			
 		});
 		
