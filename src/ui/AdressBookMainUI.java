@@ -10,6 +10,7 @@ import java.util.Enumeration;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.DropMode;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -27,12 +28,19 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import data.UserVO;
+
 
 public class AdressBookMainUI extends JFrame implements IAddUser {
+	
+	
+	private UserVO useradd = new UserVO();
+	private DefaultTableModel model ;
 
 	private JPanel contentPane;
 	private JSplitPane mainSplitPane;
@@ -111,6 +119,8 @@ public class AdressBookMainUI extends JFrame implements IAddUser {
 		
 		//트리 값 넣기
 		  DefaultMutableTreeNode root = new DefaultMutableTreeNode("전체"); 
+		  
+		  
 		  DefaultMutableTreeNode gFamily = new DefaultMutableTreeNode("가족");
 		  DefaultMutableTreeNode gFriend = new DefaultMutableTreeNode("친구");
 		  DefaultMutableTreeNode gCompany = new DefaultMutableTreeNode("회사");
@@ -130,14 +140,23 @@ public class AdressBookMainUI extends JFrame implements IAddUser {
 //		  child2.add(child2_child2);
 
 		
+		  DefaultTreeModel treemodel = new DefaultTreeModel(root);
+		  treemodel.setRoot(root);
+		  
 		  
 		  //트리부분
-		tree = new JTree(root);
+		tree = new JTree(treemodel);
+		
+		//트리 아이콘 설정하기
+		 DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
+		 renderer.setLeafIcon(renderer.getDefaultClosedIcon());
+	       
+		tree.setCellRenderer(renderer);
+		tree.setEditable(true);
 		tree.setSelectionRow(0);
 		tree.setDragEnabled(true);
 		tree.setDropMode(DropMode.ON_OR_INSERT);
 		treeSclPane.setViewportView(tree);
-		
 	     tree.getSelectionModel().setSelectionMode(TreeSelectionModel.CONTIGUOUS_TREE_SELECTION);   
 	     expandTree(tree);   
 		 tree.addMouseListener(new MouseAdapter() {
@@ -158,6 +177,9 @@ public class AdressBookMainUI extends JFrame implements IAddUser {
 					}
 			    }
 		    });
+		 
+		 
+		 
 		
 		
 	
@@ -197,12 +219,29 @@ public class AdressBookMainUI extends JFrame implements IAddUser {
 		
 		btnDeleteGroup.addActionListener(e->{
 			
-			 TreePath selectionPath=tree.getSelectionPath();
-			 DefaultMutableTreeNode selectedNode= (DefaultMutableTreeNode)selectionPath.getLastPathComponent();
+//			 TreePath selectionPath=tree.getSelectionPath();
+//			 DefaultMutableTreeNode selectedNode= (DefaultMutableTreeNode)selectionPath.getLastPathComponent();
+//			
+//			((DefaultTreeModel)tree.getModel()).removeNodeFromParent(selectedNode);
+//			
+//			  JOptionPane.showMessageDialog(null, "그룹삭제가 완료되었습니다.", "성공", 1);
 			
-			((DefaultTreeModel)tree.getModel()).removeNodeFromParent(selectedNode);
+			 DefaultMutableTreeNode node = getSelectedNode();
+			 
+			    if(node.getChildCount() > 0) {
+					JOptionPane.showMessageDialog(null, "그룹 안에 정보목록이 있으므로 삭제할 수 없습니다.", "주의", JOptionPane.WARNING_MESSAGE); 
+				}else {
+					int res = JOptionPane.showConfirmDialog(null, "삭제하면 다시 복원 불가능합니다.삭제하시겠습니까?", "삭제확인", JOptionPane.YES_NO_OPTION);
+					if(res == JOptionPane.OK_OPTION) {
+				        DefaultTreeModel model = (DefaultTreeModel) (tree.getModel());
+				        TreePath[] paths = tree.getSelectionPaths();
+				        for (int i = 0; i < paths.length; i++) {
+				          node = (DefaultMutableTreeNode) (paths[i].getLastPathComponent());
+				          model.removeNodeFromParent(node);
+				        }
+					}
+				}
 			
-			  JOptionPane.showMessageDialog(null, "그룹삭제가 완료되었습니다.", "성공", 1);
 		});
 		
 		
@@ -245,11 +284,12 @@ public class AdressBookMainUI extends JFrame implements IAddUser {
 		
 		//테이블 에 들어갈 부분
 		String colNames[] = { "체크박스","이름", "핸드폰번호", "이메일", "회사", "부서", "직책", "메모", "그룹" };
-		DefaultTableModel model = new DefaultTableModel(colNames, 0);
+		model = new DefaultTableModel(colNames, 0);
 		model.addRow(new Object[] {false, "김한선", "123-123-456", "dd@naver.com", "ㅇㅇ", "ㅇㅇ", "ㅇㅇ", "ㅇㅇ", "%%" });
-		model.addRow(new Object[] {false, "홍길동", "123-123-456", "dd@naver.com", "ㅇㅇ", "ㅇㅇ", "ㅇㅇ", "ㅇㅇ", "" });
-		table = new JTable(model);
+		model.addRow(new Object[] {false ,"홍길동", "123-123-456", "dd@naver.com", "ㅇㅇ", "ㅇㅇ", "ㅇㅇ", "ㅇㅇ", "" });
 		
+		
+		table = new JTable(model);
 		table.getColumn("체크박스"	).setCellRenderer(dcr);
 		JCheckBox box = new JCheckBox();
 		   box.setHorizontalAlignment(JLabel.CENTER);
@@ -266,15 +306,43 @@ public class AdressBookMainUI extends JFrame implements IAddUser {
 		//주소록 추가 버튼 클릭 이벤트
 		btnInsertAddress.addActionListener(e->{
 			insertAddressdiag.setVisible(true);
-
-			
 			
 		});
 }
 	 
+	// 사용자 테이블 추가
+	public void addUser(UserVO user) {
+		
+		
+		System.out.println("메인==================================>넘어온다");
+		
+		System.out.println("이름 : "+user.getAd_name());
+		System.out.println("핸드폰 : " +user.getAd_hp());
+		System.out.println("이메일 : "+ user.getAd_mail());
+		System.out.println("회사 : "+ user.getAd_com());
+		System.out.println("부서 : "+ user.getAd_department());
+		System.out.println("직책: "+ user.getAd_postion());
+		System.out.println("메모 : "+ user.getAd_memo());
+		System.out.println("그룹이름 : "+ user.getGroup_name());
+		System.out.println("==================끝===================");
+		
+//		if(user!=null) {
+//			
+//			useradd.setAd_name(user.getAd_name());
+//			useradd.setAd_hp(user.getAd_hp());
+//			useradd.setAd_mail(user.getAd_mail());
+//			useradd.setAd_com(user.getAd_com());
+//			useradd.setAd_department(user.getAd_department());
+//			useradd.setAd_postion(user.getAd_postion());
+//			useradd.setAd_memo(user.getAd_memo());
+//			useradd.setGroup_name(user.getGroup_name());
+//			
+//		}
+		
+		// 추가
+		model.addRow(new Object[] {false,user.getAd_name(),user.getAd_hp(),user.getAd_mail(),user.getAd_com(),user.getAd_department(),user.getAd_postion(),user.getAd_memo(),user.getGroup_name()});
 	
-	public void addUser() {
-		System.out.println("넘어온다");
+		
 	}
 	
 	
@@ -285,7 +353,6 @@ public class AdressBookMainUI extends JFrame implements IAddUser {
 			JPopupMenu popup = new JPopupMenu();
 		    JMenuItem mi = new JMenuItem("수정");
 		    popup.add(mi);
-		    
 		    TreePath path = tree.getSelectionPath();
 		    Object node = path.getLastPathComponent();
 		    
@@ -297,19 +364,23 @@ public class AdressBookMainUI extends JFrame implements IAddUser {
 		    }
 		    popup.add(mi);
 		    
-		    mi.addActionListener(e->{
-		    	 modifySelectedNode();
-		    });
+		   
+		  //오른쪽 마우스 수정버튼 이벤트
+			    mi.addActionListener(e->{
+			    	 modifySelectedNode();
+			    });
 		    
-		  
-		    mi = new JMenuItem("삭제");
-		    if (node == tree.getModel().getRoot()) {
-		      mi.setEnabled(false);
-		    }
-		    popup.add(mi);
-		    mi.addActionListener(e->{
-		    	 deleteSelectedItems();
-		    });
+		  //오른쪽 마우스 삭제 이벤트
+			    mi = new JMenuItem("삭제");
+			    if (node == tree.getModel().getRoot()) {
+			      mi.setEnabled(false);
+			    }
+			    popup.add(mi);
+			    
+			    
+			    mi.addActionListener(e->{
+			    	 deleteSelectedItems();
+			    });
 		  
 		    popup.show(tree, x, y);
 		}
@@ -318,7 +389,7 @@ public class AdressBookMainUI extends JFrame implements IAddUser {
 		protected void deleteSelectedItems() {
 		    DefaultMutableTreeNode node = getSelectedNode();
 		    if(node.getChildCount() > 0) {
-				JOptionPane.showMessageDialog(null, "그룹 안에 정보목록이 잇으므로 삭제할 수 없습니다.", "주의", JOptionPane.WARNING_MESSAGE); 
+				JOptionPane.showMessageDialog(null, "그룹 안에 정보목록이 있으므로 삭제할 수 없습니다.", "주의", JOptionPane.WARNING_MESSAGE); 
 			}
 			else {
 				int res = JOptionPane.showConfirmDialog(null, "삭제하면 다시 복원 불가능합니다.삭제하시겠습니까?", "삭제확인", JOptionPane.YES_NO_OPTION);
@@ -353,6 +424,7 @@ public class AdressBookMainUI extends JFrame implements IAddUser {
 		    return (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
 		}
 		
+		//뭐하는메서드?
 		private void expandTree(JTree tree){   
 	        DefaultMutableTreeNode root = (DefaultMutableTreeNode)tree.getModel().getRoot();   
 	        Enumeration e = root.breadthFirstEnumeration();   

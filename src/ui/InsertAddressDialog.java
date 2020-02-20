@@ -8,14 +8,18 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 import data.GroupVO;
+import data.UserVO;
 
 public class InsertAddressDialog extends JDialog {
+	
+	private UserVO user;
 
 	private JPanel mainContentPane;
 	private JPanel southPane;
@@ -137,7 +141,7 @@ public class InsertAddressDialog extends JDialog {
 		JComboBox mailCombo = new JComboBox(mailList);
 		
 		//그룹리스트
-		String groupList[] = {"가족","회사","친구"};
+		String groupList[] = {"그룹선택","가족","회사","친구"};
 		JComboBox groupCombo = new JComboBox(groupList);
 		
 //		GroupVO groupList = new GroupVO();
@@ -159,16 +163,16 @@ public class InsertAddressDialog extends JDialog {
 		txtDepartment.setBounds(100, 200, 200, 25);
 		txtPosition.setBounds(100, 250, 200, 25);
 		txtMemo.setBounds(100, 300, 310, 80);  
-		groupCombo.setBounds(100, 400, 200, 25);
-//		txtGroup        
+		txtGroup.setBounds(100, 400, 200, 25);        
+		groupCombo.setBounds(310, 400, 100, 25);
 		
-		//이메일부분 콤보박스 사용위해 막기
+		//콤보박스 사용위해 임의 입력 막기 (이메일 ,그룹)
 //		txtEmail2.disable();
 		txtEmail2.setEnabled(false);
+		txtGroup.setEditable(false);
 		
 		
-		
-		//메일콤보박스 텍스트필드에 넣기
+		//이메일 선택 콤보박스 선택 이벤트
 		mailCombo.addActionListener(e->{
 			txtEmail2.setText(mailCombo.getItemAt(mailCombo.getSelectedIndex()).toString());
 			String userEmail = mailCombo.getItemAt(mailCombo.getSelectedIndex()).toString();
@@ -179,6 +183,12 @@ public class InsertAddressDialog extends JDialog {
 				txtEmail2.setEnabled(true);
 				txtEmail2.setText("");
 			}
+			
+		});
+		
+		//그룹 콤보박스 선택시 이벤트
+		groupCombo.addActionListener(e->{
+			txtGroup.setText(groupCombo.getItemAt(groupCombo.getSelectedIndex()).toString());
 			
 		});
 		
@@ -195,6 +205,7 @@ public class InsertAddressDialog extends JDialog {
 		centerPane.add(txtDepartment);
 		centerPane.add(txtPosition);
 		centerPane.add(txtMemo);
+		centerPane.add(txtGroup);
 		centerPane.add(groupCombo);
 		
 		
@@ -232,10 +243,49 @@ public class InsertAddressDialog extends JDialog {
 			
 		});
 		
-		//등록
+	// 주소록  등버튼 이벤트
 		btnInsert.addActionListener(e->{
-//			this.listner.addUser();
-			this.adressBookMainUI.addUser();
+			
+			
+			user = new UserVO();
+			
+			// 이름 필수 입력 발리데이션
+			if(txtName.getText().length()<=0) {
+				JOptionPane.showMessageDialog(mainContentPane, "이릅입력은 필수입니다. \n이름을입력해주세요\n", "경고", JOptionPane.ERROR_MESSAGE); 
+				return;
+			}
+			
+			// 핸드폰번호 or 이메일 입력 발리데이션
+			if(txtPhone.getText().length()<=0&&txtEmail.getText().length()<=0) {
+				JOptionPane.showMessageDialog(mainContentPane, "핸드폰번호 또는 이메일  둘중 하나는 \n필수로 입력사항입니다.\n 입력해주세요.", "경고", JOptionPane.ERROR_MESSAGE); 
+				return;
+			}
+			
+			
+			// 값 보내기
+			user.setAd_name(txtName.getText());
+			user.setAd_hp(txtPhone.getText());
+			user.setAd_mail(txtEmail.getText()+"@"+txtEmail2.getText());
+			user.setAd_com(txtCom.getText());
+			user.setAd_department(txtDepartment.getText());
+			user.setAd_postion(txtPosition.getText());
+			user.setAd_memo(txtMemo.getText());
+			user.setGroup_name(groupCombo.getSelectedItem().toString());
+			
+			this.adressBookMainUI.addUser(user);
+			
+			//등록하면서 값 비우기
+			txtName.setText("");
+			txtPhone.setText("");
+			txtEmail.setText("");
+			txtEmail2.setText("");
+			txtCom.setText("");
+			txtDepartment.setText("");
+			txtPosition.setText("");
+			txtMemo.setText("");
+			
+			//화면꺼
+			setVisible(false);
 			
 			
 		});

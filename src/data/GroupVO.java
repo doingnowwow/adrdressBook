@@ -6,7 +6,7 @@ public class GroupVO {
 
 	private int group_no;
 	private String group_name;
-	private List<ListVO> memberList;
+	private List<UserVO> memberList;
 	
 	
 
@@ -26,11 +26,11 @@ public class GroupVO {
 		this.group_name = group_name;
 	}
 
-	public List<ListVO> getMemberList() {
+	public List<UserVO> getMemberList() {
 		return memberList;
 	}
 
-	public void setMemberList(List<ListVO> memberList) {
+	public void setMemberList(List<UserVO> memberList) {
 		this.memberList = memberList;
 	}
 	

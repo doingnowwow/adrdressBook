@@ -1,6 +1,6 @@
 package data;
 
-public class ListVO {
+public class UserVO {
 	
 	private int ad_no;
 	private String ad_name;
