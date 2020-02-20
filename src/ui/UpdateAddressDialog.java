@@ -13,8 +13,12 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
+import data.UserVO;
+
 public class UpdateAddressDialog extends JDialog {
 
+	
+	private UserVO user;
 	private JPanel mainContentPane;
 	private JPanel southPane;
 	private JPanel northPane;
@@ -43,22 +47,37 @@ public class UpdateAddressDialog extends JDialog {
 	private JTextArea txtMemo;
 	private JTextField txtGroup;
 
-	JTextField text = new JTextField(10);
-	JButton btnReset = new JButton("원래대로");
-	JButton btnUpdate = new JButton("수정완료");
-	JButton btnClose = new JButton("닫기");
-
-	JPanel mainPanel = new JPanel();
-
-	public UpdateAddressDialog(Frame frame, String title) {
-		super(frame, title);
-		setModal(true);
-		setResizable(false);
-		this.start();
-
+	private JTextField text = new JTextField(10);
+	private JButton btnReset = new JButton("원래대로");
+	private JButton btnUpdate = new JButton("수정완료");
+	private JButton btnClose = new JButton("닫기");
+	private JPanel mainPanel = new JPanel();
+	
+	private IAddUser listner = null;
+	private AdressBookMainUI adressBookMainUI = null;
+	
+	public void updateUservalue(UserVO user) {
+		System.out.println("유저정보넘어옴");
 	}
 
-	public void start() {
+	public UpdateAddressDialog(IAddUser listner, String title) {
+		this.listner =  listner;
+		this.setTitle(title);
+		this.setModal(true);
+		this.setResizable(false);
+		this.initUI();
+
+	}
+	
+	public UpdateAddressDialog(AdressBookMainUI adressBookMainUI, String title) {
+		this.adressBookMainUI =  adressBookMainUI;
+		this.setTitle(title);
+		this.setModal(true);
+		this.setResizable(false);
+		this.initUI();
+	}
+
+	public void initUI() {
 
 		// 메인페널
 		mainContentPane = new JPanel();
@@ -120,43 +139,50 @@ public class UpdateAddressDialog extends JDialog {
 		JComboBox mailCombo = new JComboBox(mailList);
 
 		// 그룹리스트
-		String groupList[] = { "가족", "회사", "친구" };
+		String groupList[] = {"그룹선택","가족","회사","친구"};
 		JComboBox groupCombo = new JComboBox(groupList);
 
-//		GroupVO groupList = new GroupVO();
-//		groupList.setGroup_no(1);
-//		groupList.setGroup_name("가족");
 
 		// 텍스트필드위치
-		txtName.setBounds(100, 10, 200, 25);
-		txtPhone.setBounds(100, 50, 200, 25);
+		txtName.setBounds(100, 10, 200, 25);     
+		txtPhone.setBounds(100,50,200,25);    
 		txtEmail.setBounds(100, 100, 80, 25);
 		txtEmail2.setBounds(200, 100, 100, 25);
 		mailCombo.setBounds(310, 100, 100, 25);
-		txtCom.setBounds(100, 150, 200, 25);
+		txtCom.setBounds(100, 150, 200, 25);  
 		txtDepartment.setBounds(100, 200, 200, 25);
 		txtPosition.setBounds(100, 250, 200, 25);
-		txtMemo.setBounds(100, 300, 310, 80);
-		groupCombo.setBounds(100, 400, 200, 25);
-//		txtGroup        
-
-		// 이메일부분 콤보박스 사용위해 막기
+		txtMemo.setBounds(100, 300, 310, 80);  
+		txtGroup.setBounds(100, 400, 200, 25);        
+		groupCombo.setBounds(310, 400, 100, 25);
+		
+		//콤보박스 사용위해 임의 입력 막기 (이메일 ,그룹)
 //		txtEmail2.disable();
 		txtEmail2.setEnabled(false);
+		txtGroup.setEditable(false);
 
-		// 메일콤보박스 텍스트필드에 넣기
-		mailCombo.addActionListener(e -> {
+		
+
+		//이메일 선택 콤보박스 선택 이벤트
+		mailCombo.addActionListener(e->{
 			txtEmail2.setText(mailCombo.getItemAt(mailCombo.getSelectedIndex()).toString());
 			String userEmail = mailCombo.getItemAt(mailCombo.getSelectedIndex()).toString();
 			txtEmail2.setEnabled(false);
-
-			if (userEmail.equals("직접입력하기")) {
+			
+			if(userEmail.equals("직접입력하기")) {
 //				txtEmail2.enable();
 				txtEmail2.setEnabled(true);
 				txtEmail2.setText("");
 			}
-
+			
 		});
+		
+		//그룹 콤보박스 선택시 이벤트
+		groupCombo.addActionListener(e->{
+			txtGroup.setText(groupCombo.getItemAt(groupCombo.getSelectedIndex()).toString());
+			
+		});
+		
 
 		// 텍스트필드 셋팅
 		centerPane.add(txtName);
@@ -168,10 +194,11 @@ public class UpdateAddressDialog extends JDialog {
 		centerPane.add(txtDepartment);
 		centerPane.add(txtPosition);
 		centerPane.add(txtMemo);
+		centerPane.add(txtGroup);
 		centerPane.add(groupCombo);
 
 		// 상단부분
-		lblTop = new JLabel("추가");
+		lblTop = new JLabel("수정");
 		northPane = new JPanel(new FlowLayout());
 		mainContentPane.add(northPane, BorderLayout.NORTH);
 		northPane.add(lblTop);
@@ -191,20 +218,22 @@ public class UpdateAddressDialog extends JDialog {
 			setVisible(false);
 		});
 
-		// 초기화 버튼 이벤트
+		// 원래대로하는이벤트
 		btnReset.addActionListener(e -> {
-			txtName.setText("");
-			txtPhone.setText("");
-			txtEmail.setText("");
-			txtEmail2.setText("");
-			txtCom.setText("");
-			txtDepartment.setText("");
-			txtPosition.setText("");
-			txtMemo.setText("");
+			
 
+		});
+		
+		//수정완료버튼
+		
+		btnUpdate.addActionListener(e->{
+			
 		});
 
 		setSize(450, 600);
 	}
+	
+	
+	
 
 }

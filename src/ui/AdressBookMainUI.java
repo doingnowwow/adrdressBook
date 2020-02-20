@@ -10,7 +10,6 @@ import java.util.Enumeration;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.DropMode;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -40,8 +39,6 @@ public class AdressBookMainUI extends JFrame implements IAddUser {
 	
 	
 	private UserVO useradd = new UserVO();
-	private DefaultTableModel model ;
-
 	private JPanel contentPane;
 	private JSplitPane mainSplitPane;
 	private JPanel leftSplitPane;
@@ -62,8 +59,36 @@ public class AdressBookMainUI extends JFrame implements IAddUser {
 	private JButton btnSearch;
 	private JTable table;
 	private InsertAddressDialog insertAddressdiag;
-	private InsertGroupDialog insertGroupdiag;
+	private UpdateAddressDialog updateAddressdiag;
 	private DefaultMutableTreeNode root;
+	
+	
+//	private DefaultTableModel model ;
+	
+	// 테이블 초기 셋팅
+	String colNames[] = { " ","이름", "핸드폰번호", "이메일", "회사", "부서", "직책", "메모", "그룹" };
+	DefaultTableModel	model = new DefaultTableModel(colNames, 0){
+		
+		//내용편집안되게 하기
+		//추상클래스 사용한거
+		public boolean isCellEditable(int i , int c) {
+			
+			// c 가 열
+			// c 가 0 인것만 true 로 바꿔주기
+			if(c==0) {
+				return true;
+			}
+			
+			return false;
+		}
+		
+	};
+	
+	// 테이블 선택시 이벤트 발생을 위해
+	int selectedRow ; //테이블 row
+	int selectedCol ; //테이블 column
+
+	private Object tObj = null; // 비어있는 오브젝트 생성
 	
 	
 	
@@ -109,7 +134,6 @@ public class AdressBookMainUI extends JFrame implements IAddUser {
 		btnDeleteGroup = new JButton("그룹삭제");
 		leftSouthPane.add(btnDeleteGroup);
 		
-		insertGroupdiag = new InsertGroupDialog(this, "그룹추가");
 
 		
 		//트리 스크롤 스판
@@ -126,18 +150,11 @@ public class AdressBookMainUI extends JFrame implements IAddUser {
 		  DefaultMutableTreeNode gCompany = new DefaultMutableTreeNode("회사");
 		  DefaultMutableTreeNode noGroup = new DefaultMutableTreeNode("그룹없음");
 		  DefaultMutableTreeNode child1_child1 = new DefaultMutableTreeNode("1번째자식의 1번째자식");
-//		  DefaultMutableTreeNode child1_child2 = new DefaultMutableTreeNode("1번째자식의 2번째자식");
-//		  DefaultMutableTreeNode child2_child1 = new DefaultMutableTreeNode("2번째자식의 1번째자식");
-//		  DefaultMutableTreeNode child2_child2 = new DefaultMutableTreeNode("2번째자식의 2번째자식");
 		  root.add(gFamily);
 		  root.add(gFriend);
 		  root.add(gCompany);
 		  root.add(noGroup);
 		  gFamily.add(child1_child1);
-//		  child1.add(child1_child1); 
-//		  child1.add(child1_child2);
-//		  child2.add(child2_child1); 
-//		  child2.add(child2_child2);
 
 		
 		  DefaultTreeModel treemodel = new DefaultTreeModel(root);
@@ -157,8 +174,9 @@ public class AdressBookMainUI extends JFrame implements IAddUser {
 		tree.setDragEnabled(true);
 		tree.setDropMode(DropMode.ON_OR_INSERT);
 		treeSclPane.setViewportView(tree);
-	     tree.getSelectionModel().setSelectionMode(TreeSelectionModel.CONTIGUOUS_TREE_SELECTION);   
-	     expandTree(tree);   
+	    tree.getSelectionModel().setSelectionMode(TreeSelectionModel.CONTIGUOUS_TREE_SELECTION);   
+	    expandTree(tree);   
+	     
 		 tree.addMouseListener(new MouseAdapter() {
 		    	
 			    public void mousePressed(MouseEvent event) {
@@ -187,11 +205,11 @@ public class AdressBookMainUI extends JFrame implements IAddUser {
 		//그룹추가버튼 이벤트
 		btnInsertGroup.addActionListener(e->{
 //			insertGroupdiag.setVisible(true);
-			String addGroupName = JOptionPane.showInputDialog(contentPane, "추가할 그룹명을 작성하세요", "그룹 추가하기", JOptionPane.CLOSED_OPTION);
+			String addGroupName = JOptionPane.showInputDialog(leftSplitPane, "추가할 그룹명을 작성하세요", "그룹 추가하기", JOptionPane.CLOSED_OPTION);
 			
 
 			if (addGroupName == null){
-				JOptionPane.showMessageDialog(null, "그룹추가가 취소되었습니다..", "취소", JOptionPane.OK_OPTION);
+				JOptionPane.showMessageDialog(leftSplitPane, "그룹추가가 취소되었습니다..", "취소", JOptionPane.OK_OPTION);
 				
 			} else {
 				
@@ -203,7 +221,7 @@ public class AdressBookMainUI extends JFrame implements IAddUser {
 					
 					((DefaultTreeModel)tree.getModel()).insertNodeInto(newGroup,selectedNode,selectedNode.getChildCount());
 					
-					JOptionPane.showMessageDialog(null, "그룹추가가 완료되었습니다.", "성공", 1);
+					JOptionPane.showMessageDialog(leftSplitPane, "그룹추가가 완료되었습니다.", "성공", 1);
 					
 				
 			}
@@ -216,7 +234,6 @@ public class AdressBookMainUI extends JFrame implements IAddUser {
 		});
 		
 		//그룹삭제이벤트
-		
 		btnDeleteGroup.addActionListener(e->{
 			
 //			 TreePath selectionPath=tree.getSelectionPath();
@@ -229,9 +246,9 @@ public class AdressBookMainUI extends JFrame implements IAddUser {
 			 DefaultMutableTreeNode node = getSelectedNode();
 			 
 			    if(node.getChildCount() > 0) {
-					JOptionPane.showMessageDialog(null, "그룹 안에 정보목록이 있으므로 삭제할 수 없습니다.", "주의", JOptionPane.WARNING_MESSAGE); 
+					JOptionPane.showMessageDialog(leftSplitPane, "그룹 안에 정보목록이 있으므로 삭제할 수 없습니다.", "주의", JOptionPane.WARNING_MESSAGE); 
 				}else {
-					int res = JOptionPane.showConfirmDialog(null, "삭제하면 다시 복원 불가능합니다.삭제하시겠습니까?", "삭제확인", JOptionPane.YES_NO_OPTION);
+					int res = JOptionPane.showConfirmDialog(leftSplitPane, "삭제하면 다시 복원 불가능합니다.삭제하시겠습니까?", "삭제확인", JOptionPane.YES_NO_OPTION);
 					if(res == JOptionPane.OK_OPTION) {
 				        DefaultTreeModel model = (DefaultTreeModel) (tree.getModel());
 				        TreePath[] paths = tree.getSelectionPaths();
@@ -282,23 +299,61 @@ public class AdressBookMainUI extends JFrame implements IAddUser {
 		tableSclPane = new JScrollPane();
 		rightSplitPane.add(tableSclPane, BorderLayout.CENTER);
 		
-		//테이블 에 들어갈 부분
-		String colNames[] = { "체크박스","이름", "핸드폰번호", "이메일", "회사", "부서", "직책", "메모", "그룹" };
-		model = new DefaultTableModel(colNames, 0);
-		model.addRow(new Object[] {false, "김한선", "123-123-456", "dd@naver.com", "ㅇㅇ", "ㅇㅇ", "ㅇㅇ", "ㅇㅇ", "%%" });
-		model.addRow(new Object[] {false ,"홍길동", "123-123-456", "dd@naver.com", "ㅇㅇ", "ㅇㅇ", "ㅇㅇ", "ㅇㅇ", "" });
 		
+		
+		
+		//테이블 에 들어갈 부분
+		
+//		String colNames[] = { " ","이름", "핸드폰번호", "이메일", "회사", "부서", "직책", "메모", "그룹" };
+//		model = new DefaultTableModel(colNames, 0);
+		//샘플 데이터
+		model.addRow(new Object[] {false, "김한선", "123-123-456", "dd@naver.com", "4", "5555", "예", "메모", "%%" });
+		model.addRow(new Object[] {false ,"홍길동", "123-123-456", "dd@naver.com", "ㅇㅇ", "00", "ㅇㅇ", "ㅇㅇ", "" });
 		
 		table = new JTable(model);
-		table.getColumn("체크박스"	).setCellRenderer(dcr);
+		
+		//테이블에 체크박스 넣기
+		table.getColumn(" "	).setCellRenderer(dcr);
 		JCheckBox box = new JCheckBox();
-		   box.setHorizontalAlignment(JLabel.CENTER);
-		   table.getColumn("체크박스").setCellEditor(new DefaultCellEditor(box));
-		  tableSclPane.setViewportView(table);
+	   box.setHorizontalAlignment(JLabel.CENTER);
+	   table.getColumn(" ").setCellEditor(new DefaultCellEditor(box));
+	   
+	   table.getTableHeader().setReorderingAllowed(false);//컬럼들 이동 불가
+	   table.getTableHeader().setResizingAllowed(false); // 컬럼 크기 조절 불가
+	   tableSclPane.setViewportView(table);
 
 
 		
-		
+		// 테이블 마우스 이벤트 부분
+		  table.addMouseListener(new MouseAdapter() {
+		    	
+			    public void mousePressed(MouseEvent event) {
+					// 마우스 선택 이벤트    	
+					if( table.getSelectedRowCount() > 0) {
+						
+					
+						DefaultMutableTreeNode selectedNode = getSelectedNode();
+						
+						 selectedRow = table.getSelectedRow();
+						 selectedCol = table.getSelectedColumn();
+						
+						
+						Object pobj = null;
+						pobj = table.getValueAt(selectedRow, selectedCol);
+						
+						
+						System.out.println(" row: [" + selectedRow + "], column : [" +selectedCol + "], 선택한내용:[" + pobj.toString() + "]");
+						
+					}
+					
+					if (((event.getModifiers() & InputEvent.BUTTON3_MASK) != 0)
+					    && ( table.getSelectedRowCount() > 0)) {
+						showMenuTable(event.getX(), event.getY());
+					}
+			    }
+		    });
+		 
+		  
 		
 		//인스턴스화
 		insertAddressdiag = new InsertAddressDialog(this, "주소록 추가");
@@ -342,11 +397,11 @@ public class AdressBookMainUI extends JFrame implements IAddUser {
 		// 추가
 		model.addRow(new Object[] {false,user.getAd_name(),user.getAd_hp(),user.getAd_mail(),user.getAd_com(),user.getAd_department(),user.getAd_postion(),user.getAd_memo(),user.getGroup_name()});
 	
-		
 	}
 	
+//////////////////////트리 관련 메서드//////////////////////////////////////////////////
 	
-	//tree부분
+//tree부분
 	//오늘쪽 마우스 이벤트 메뉴(tree)
 		protected void showMenu(int x, int y) {
 			
@@ -389,10 +444,10 @@ public class AdressBookMainUI extends JFrame implements IAddUser {
 		protected void deleteSelectedItems() {
 		    DefaultMutableTreeNode node = getSelectedNode();
 		    if(node.getChildCount() > 0) {
-				JOptionPane.showMessageDialog(null, "그룹 안에 정보목록이 있으므로 삭제할 수 없습니다.", "주의", JOptionPane.WARNING_MESSAGE); 
+				JOptionPane.showMessageDialog(leftSplitPane, "그룹 안에 정보목록이 있으므로 삭제할 수 없습니다.", "주의", JOptionPane.WARNING_MESSAGE); 
 			}
 			else {
-				int res = JOptionPane.showConfirmDialog(null, "삭제하면 다시 복원 불가능합니다.삭제하시겠습니까?", "삭제확인", JOptionPane.YES_NO_OPTION);
+				int res = JOptionPane.showConfirmDialog(leftSplitPane, "삭제하면 다시 복원 불가능합니다.삭제하시겠습니까?", "삭제확인", JOptionPane.YES_NO_OPTION);
 				if(res == JOptionPane.OK_OPTION) {
 			        DefaultTreeModel model = (DefaultTreeModel) (tree.getModel());
 			        TreePath[] paths = tree.getSelectionPaths();
@@ -409,11 +464,11 @@ public class AdressBookMainUI extends JFrame implements IAddUser {
 		private void modifySelectedNode() {
 		    DefaultMutableTreeNode node = getSelectedNode();
 		    if (node == null) {
-				JOptionPane.showMessageDialog(null, "변경할 그룹을 선택하세요", "Error",
+				JOptionPane.showMessageDialog(leftSplitPane, "변경할 그룹을 선택하세요", "Error",
 				          JOptionPane.ERROR_MESSAGE);
 				return;
 		    }
-		    String name = JOptionPane.showInputDialog(null, "새로운 그룹 이름을 입력하세요 ","그룹이름 수정",JOptionPane.CLOSED_OPTION);
+		    String name = JOptionPane.showInputDialog(leftSplitPane, "새로운 그룹 이름을 입력하세요 ","그룹이름 수정",JOptionPane.CLOSED_OPTION);
 			if(name != null && !"".equals(name)) {
 				node.setUserObject(name);
 			}
@@ -436,9 +491,10 @@ public class AdressBookMainUI extends JFrame implements IAddUser {
 	        }   
 	    } 
 		
+///////////////////////////////테이블관련메서드/////////////////////////////////////		
 		
-		
-		//테이블 // 셀렌더러	 
+		//테이블 셀렌더러
+		// 테이블 첫번째 row에 체크박스 추가함
 		 DefaultTableCellRenderer dcr = new DefaultTableCellRenderer() {
 		  public Component getTableCellRendererComponent    (JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)  {
 		   JCheckBox box= new JCheckBox();
@@ -447,7 +503,62 @@ public class AdressBookMainUI extends JFrame implements IAddUser {
 		   return box;
 		  }
 		 };
+		 
 
+// 테이블  팝업 이벤트
+		 
+		
+			//오늘쪽 마우스 이벤트 메뉴(table)
+				protected void showMenuTable(int x, int y) {
+					
+					JPopupMenu popup = new JPopupMenu();
+				    JMenuItem mi = new JMenuItem("수정");
+				    popup.add(mi);
+				    
+				  //오른쪽 마우스 수정버튼 이벤트
+					    mi.addActionListener(e->{
+					    	updateUserRow();
+					    });
+				    
+				  //오른쪽 마우스 삭제 이벤트
+					    mi = new JMenuItem("삭제");
+					    popup.add(mi);
+					    mi.addActionListener(e->{
+					    	// deleteSelectedItems();
+					    });
+				  
+				    popup.show(table, x, y);
+				}
+			
+		 
+		private void updateUserRow() {
+			
+			
+			String tableValue [] = new String [9];
+			
+			for(int i=1; i<9;i++) {
+				
+				tObj = table.getValueAt(selectedRow, i);
+				String objValue = tObj.toString();
+				
+				tableValue[i] = objValue;
+				
+				System.out.println(" row : [" + selectedRow +"]  col : ["+"순서 : "+i +"~"+objValue+" ]"+i+"번째 : col의 값 : ["+tableValue[i].toString()+"]");
+				System.out.println();
+				
+				useradd.setAd_name(tableValue[1].toString());
+			}
+			
+			
+			System.out.println(useradd.getAd_name().toString());
+			updateAddressdiag = new UpdateAddressDialog(this, "주소록 수정");
+			updateAddressdiag.updateUservalue(useradd);
+			updateAddressdiag.setVisible(true);
+			
+			System.out.println("=====================================================================");
+			
+		}
+			
 
 	
 }
