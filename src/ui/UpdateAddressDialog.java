@@ -147,6 +147,7 @@ public class UpdateAddressDialog extends JDialog {
 		//텍스트필드 값 넣기
 		txtName.setText(updateuser.getAd_name());
 		txtPhone.setText(updateuser.getAd_hp());
+		
 		txtEmail.setText(updateuser.getAd_mail().split("@")[0]);
 		txtEmail2.setText(updateuser.getAd_mail().split("@")[1]);
 //		mailCombo.setSelectedItem(updateuser.getAd_mail().split("@")[1]);

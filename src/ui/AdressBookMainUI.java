@@ -355,9 +355,12 @@ public class AdressBookMainUI extends JFrame implements IAddUser {
 		
 		lastRow = model.getRowCount()+1;
 		
+		user.setAd_no(lastRow);
+		
+		
 		
 		// 추가
-		model.addRow(new Object[] { false,lastRow, user.getAd_name(), user.getAd_hp(), user.getAd_mail(), user.getAd_com(),
+		model.addRow(new Object[] { false,user.getAd_no(), user.getAd_name(), user.getAd_hp(), user.getAd_mail(), user.getAd_com(),
 				user.getAd_department(), user.getAd_postion(), user.getAd_memo(), user.getGroup_name() });
 
 	}
