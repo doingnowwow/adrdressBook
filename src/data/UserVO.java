@@ -12,6 +12,32 @@ public class UserVO {
 	private String ad_memo;
 	private String group_name;
 	
+	
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return super.toString();
+	}
+	public UserVO() {
+		// TODO Auto-generated constructor stub
+	}
+	public UserVO(String[] dataArray) {
+		
+		if(dataArray.length==9) {
+			this.ad_no = Integer.parseInt(dataArray[0]);
+			this.ad_name = dataArray[1];     
+			this.ad_hp = dataArray[2];       
+			this.ad_mail= dataArray[3];     
+			this.ad_com = dataArray[4];      
+			this.ad_department =dataArray[5];
+			this.ad_postion = dataArray[6];  
+			this.ad_memo = dataArray[7];     
+			this.group_name = dataArray[8];  
+			
+		}
+	}
+	
 	public int getAd_no() {
 		return ad_no;
 	}
@@ -68,6 +94,6 @@ public class UserVO {
 	}
 	
 	
-
+	
 
 }

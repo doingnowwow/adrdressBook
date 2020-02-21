@@ -17,8 +17,7 @@ import data.UserVO;
 
 public class UpdateAddressDialog extends JDialog {
 
-	
-	private UserVO user;
+	private UserVO updateuser = new UserVO();
 	private JPanel mainContentPane;
 	private JPanel southPane;
 	private JPanel northPane;
@@ -52,30 +51,30 @@ public class UpdateAddressDialog extends JDialog {
 	private JButton btnUpdate = new JButton("수정완료");
 	private JButton btnClose = new JButton("닫기");
 	private JPanel mainPanel = new JPanel();
-	
+
 	private IAddUser listner = null;
 	private AdressBookMainUI adressBookMainUI = null;
-	
-	public void updateUservalue(UserVO user) {
-		System.out.println("유저정보넘어옴");
-	}
 
-	public UpdateAddressDialog(IAddUser listner, String title) {
-		this.listner =  listner;
+	
+	public UpdateAddressDialog(IAddUser listner, String title,UserVO user) {
+		this.updateuser = user;
+		this.listner = listner;
 		this.setTitle(title);
 		this.setModal(true);
 		this.setResizable(false);
 		this.initUI();
 
 	}
-	
-	public UpdateAddressDialog(AdressBookMainUI adressBookMainUI, String title) {
-		this.adressBookMainUI =  adressBookMainUI;
+
+	public UpdateAddressDialog(AdressBookMainUI adressBookMainUI, String title,UserVO user) {
+		this.adressBookMainUI = adressBookMainUI;
+		this.updateuser = user;
 		this.setTitle(title);
 		this.setModal(true);
 		this.setResizable(false);
 		this.initUI();
 	}
+
 
 	public void initUI() {
 
@@ -133,56 +132,68 @@ public class UpdateAddressDialog extends JDialog {
 		txtPosition = new JTextField();
 		txtMemo = new JTextArea();
 		txtGroup = new JTextField();
+		
 
 		// 이메일리스트
 		String mailList[] = { "naver.com", "gmail.com", "kakao.com", "hanmail.net", "직접입력하기" };
 		JComboBox mailCombo = new JComboBox(mailList);
 
 		// 그룹리스트
-		String groupList[] = {"그룹선택","가족","회사","친구"};
+		String groupList[] = { "그룹선택", "가족", "회사", "친구" };
 		JComboBox groupCombo = new JComboBox(groupList);
-
+		
+		
+		
+		//텍스트필드 값 넣기
+		txtName.setText(updateuser.getAd_name());
+		txtPhone.setText(updateuser.getAd_hp());
+		txtEmail.setText(updateuser.getAd_mail().split("@")[0]);
+		txtEmail2.setText(updateuser.getAd_mail().split("@")[1]);
+//		mailCombo.setSelectedItem(updateuser.getAd_mail().split("@")[1]);
+		txtCom.setText(updateuser.getAd_com());
+		txtDepartment.setText(updateuser.getAd_department());
+		txtPosition.setText(updateuser.getAd_postion());
+		txtMemo.setText(updateuser.getAd_memo());
+		txtGroup.setText(updateuser.getGroup_name());
+		
+		
 
 		// 텍스트필드위치
-		txtName.setBounds(100, 10, 200, 25);     
-		txtPhone.setBounds(100,50,200,25);    
+		txtName.setBounds(100, 10, 200, 25);
+		txtPhone.setBounds(100, 50, 200, 25);
 		txtEmail.setBounds(100, 100, 80, 25);
 		txtEmail2.setBounds(200, 100, 100, 25);
 		mailCombo.setBounds(310, 100, 100, 25);
-		txtCom.setBounds(100, 150, 200, 25);  
+		txtCom.setBounds(100, 150, 200, 25);
 		txtDepartment.setBounds(100, 200, 200, 25);
 		txtPosition.setBounds(100, 250, 200, 25);
-		txtMemo.setBounds(100, 300, 310, 80);  
-		txtGroup.setBounds(100, 400, 200, 25);        
+		txtMemo.setBounds(100, 300, 310, 80);
+		txtGroup.setBounds(100, 400, 200, 25);
 		groupCombo.setBounds(310, 400, 100, 25);
-		
-		//콤보박스 사용위해 임의 입력 막기 (이메일 ,그룹)
+
+		// 콤보박스 사용위해 임의 입력 막기 (이메일 ,그룹)
 //		txtEmail2.disable();
 		txtEmail2.setEnabled(false);
 		txtGroup.setEditable(false);
 
-		
-
-		//이메일 선택 콤보박스 선택 이벤트
-		mailCombo.addActionListener(e->{
+		// 이메일 선택 콤보박스 선택 이벤트
+		mailCombo.addActionListener(e -> {
 			txtEmail2.setText(mailCombo.getItemAt(mailCombo.getSelectedIndex()).toString());
 			String userEmail = mailCombo.getItemAt(mailCombo.getSelectedIndex()).toString();
 			txtEmail2.setEnabled(false);
-			
-			if(userEmail.equals("직접입력하기")) {
-//				txtEmail2.enable();
+
+			if (userEmail.equals("직접입력하기")) {
 				txtEmail2.setEnabled(true);
 				txtEmail2.setText("");
 			}
-			
+
 		});
-		
-		//그룹 콤보박스 선택시 이벤트
-		groupCombo.addActionListener(e->{
+
+		// 그룹 콤보박스 선택시 이벤트
+		groupCombo.addActionListener(e -> {
 			txtGroup.setText(groupCombo.getItemAt(groupCombo.getSelectedIndex()).toString());
-			
+
 		});
-		
 
 		// 텍스트필드 셋팅
 		centerPane.add(txtName);
@@ -207,7 +218,7 @@ public class UpdateAddressDialog extends JDialog {
 		southPane = new JPanel();
 		mainContentPane.add(southPane, BorderLayout.SOUTH);
 
-		// sout 버튼정렬
+		// south 버튼정렬
 		southPane.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
 		southPane.add(btnReset);
 		southPane.add(btnUpdate);
@@ -221,19 +232,26 @@ public class UpdateAddressDialog extends JDialog {
 		// 원래대로하는이벤트
 		btnReset.addActionListener(e -> {
 			
+			txtName.setText(updateuser.getAd_name());
+			txtPhone.setText(updateuser.getAd_hp());
+			txtEmail.setText(updateuser.getAd_mail().split("@")[0]);
+			txtEmail2.setText(updateuser.getAd_mail().split("@")[1]);
+//			mailCombo.setSelectedItem(updateuser.getAd_mail().split("@")[1]);
+			txtCom.setText(updateuser.getAd_com());
+			txtDepartment.setText(updateuser.getAd_department());
+			txtPosition.setText(updateuser.getAd_postion());
+			txtMemo.setText(updateuser.getAd_memo());
+			txtGroup.setText(updateuser.getGroup_name());
 
 		});
-		
-		//수정완료버튼
-		
-		btnUpdate.addActionListener(e->{
-			
+
+		// 수정완료버튼
+
+		btnUpdate.addActionListener(e -> {
+
 		});
 
 		setSize(450, 600);
 	}
-	
-	
-	
 
 }
