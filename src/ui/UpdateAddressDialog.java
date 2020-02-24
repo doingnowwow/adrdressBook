@@ -146,16 +146,32 @@ public class UpdateAddressDialog extends JDialog {
 		
 		//텍스트필드 값 넣기
 		txtName.setText(updateuser.getAd_name());
-		txtPhone.setText(updateuser.getAd_hp());
 		
-		txtEmail.setText(updateuser.getAd_mail().split("@")[0]);
-		txtEmail2.setText(updateuser.getAd_mail().split("@")[1]);
+		
+		if(updateuser.getAd_hp()!=null) {
+			txtPhone.setText(updateuser.getAd_hp());
+		}
+		if(updateuser.getAd_mail().length()>2) {
+			txtEmail.setText(updateuser.getAd_mail().split("@")[0]);
+			txtEmail2.setText(updateuser.getAd_mail().split("@")[1]);
 //		mailCombo.setSelectedItem(updateuser.getAd_mail().split("@")[1]);
-		txtCom.setText(updateuser.getAd_com());
-		txtDepartment.setText(updateuser.getAd_department());
-		txtPosition.setText(updateuser.getAd_postion());
-		txtMemo.setText(updateuser.getAd_memo());
-		txtGroup.setText(updateuser.getGroup_name());
+		}
+		if(updateuser.getAd_com()!=null) {
+			txtCom.setText(updateuser.getAd_com());
+		}
+		if(updateuser.getAd_department()!=null) {
+			txtDepartment.setText(updateuser.getAd_department());
+		}
+		if(updateuser.getAd_postion()!=null) {
+			txtPosition.setText(updateuser.getAd_postion());
+		}
+		if(updateuser.getAd_memo()!=null) {
+			txtMemo.setText(updateuser.getAd_memo());
+		}
+		if(updateuser.getGroup_name()!=null) {
+			txtGroup.setText(updateuser.getGroup_name());
+		}
+		
 		
 		
 
@@ -233,22 +249,45 @@ public class UpdateAddressDialog extends JDialog {
 		// 원래대로하는이벤트
 		btnReset.addActionListener(e -> {
 			
-			txtName.setText(updateuser.getAd_name());
-			txtPhone.setText(updateuser.getAd_hp());
-			txtEmail.setText(updateuser.getAd_mail().split("@")[0]);
-			txtEmail2.setText(updateuser.getAd_mail().split("@")[1]);
+			
+			if(updateuser.getAd_name()!=null) {
+				txtName.setText(updateuser.getAd_name());
+			}
+			
+			if(updateuser.getAd_hp()!=null) {
+				txtPhone.setText(updateuser.getAd_hp());
+			}
+			if(updateuser.getAd_mail().length()>2) {
+				txtEmail.setText(updateuser.getAd_mail().split("@")[0]);
+				txtEmail2.setText(updateuser.getAd_mail().split("@")[1]);
 //			mailCombo.setSelectedItem(updateuser.getAd_mail().split("@")[1]);
-			txtCom.setText(updateuser.getAd_com());
-			txtDepartment.setText(updateuser.getAd_department());
-			txtPosition.setText(updateuser.getAd_postion());
-			txtMemo.setText(updateuser.getAd_memo());
-			txtGroup.setText(updateuser.getGroup_name());
+			}
+			if(updateuser.getAd_com()!=null) {
+				txtCom.setText(updateuser.getAd_com());
+			}
+			if(updateuser.getAd_department()!=null) {
+				txtDepartment.setText(updateuser.getAd_department());
+			}
+			if(updateuser.getAd_postion()!=null) {
+				txtPosition.setText(updateuser.getAd_postion());
+			}
+			if(updateuser.getAd_memo()!=null) {
+				txtMemo.setText(updateuser.getAd_memo());
+			}
+			if(updateuser.getGroup_name()!=null) {
+				txtGroup.setText(updateuser.getGroup_name());
+			}
+			
 
 		});
 
 		// 수정완료버튼
 
 		btnUpdate.addActionListener(e -> {
+			
+			
+			
+			
 
 		});
 

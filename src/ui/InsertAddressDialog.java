@@ -2,11 +2,13 @@ package ui;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -14,7 +16,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import data.GroupVO;
 import data.UserVO;
 
 public class InsertAddressDialog extends JDialog {
@@ -54,6 +55,10 @@ public class InsertAddressDialog extends JDialog {
 	private JButton btnInsert = new JButton("등록");
 	private JButton btnClose = new JButton("닫기");
 
+	
+	
+	
+	
 	private JPanel mainPanel = new JPanel();
 
 	private IAddUser listner = null;
@@ -209,6 +214,8 @@ public class InsertAddressDialog extends JDialog {
 		centerPane.add(groupCombo);
 		
 		
+		
+		
 		//상단부분
 		lblTop = new JLabel("추가");
 		northPane = new JPanel(new FlowLayout());
@@ -261,6 +268,20 @@ public class InsertAddressDialog extends JDialog {
 				return;
 			}
 			
+			if(txtPhone.getText().trim().length()>0) {
+				boolean no = false;
+				no = isPhone(txtPhone.getText());
+				
+				System.out.println(no);
+				System.out.println(txtPhone.getText());
+				
+				if(no ==false) {
+					JOptionPane.showMessageDialog(mainContentPane, "핸드폰 번호 입력 형식이 잘못되었습니다.", "경고", JOptionPane.ERROR_MESSAGE); 
+					return;
+				}
+			}
+
+			
 			
 			// 값 보내기
 			user.setAd_name(txtName.getText());
@@ -294,5 +315,24 @@ public class InsertAddressDialog extends JDialog {
 
 		setSize(450, 600);
 	}
+	
+	
+	//핸드폰번호 유효성검사
+		private boolean isPhone(String hp) {
+			
+			Pattern p = Pattern.compile("^\\d{3}-\\d{3,4}-\\d{4}$");
+			System.out.println("===유효성검사메서드===");
+			System.out.println(hp);
+			
+			Matcher m = p.matcher(hp);
+
+			if (m.find()) {
+				
+				return true;
+				
+			} else {
+				return false;
+			}
+		}
 
 }

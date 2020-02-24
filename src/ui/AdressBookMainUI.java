@@ -1,12 +1,15 @@
 package ui;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
+import java.awt.Checkbox;
 import java.awt.FlowLayout;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.util.Date;
 import java.util.Enumeration;
+import java.util.Vector;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.DropMode;
@@ -24,17 +27,19 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeWillExpandListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import data.UserVO;
 
-public class AdressBookMainUI extends JFrame implements IAddUser {
+public class AdressBookMainUI extends JFrame implements IAddUser, TreeWillExpandListener  {
 
 	private UserVO userData = new UserVO();
 	private JPanel contentPane;
@@ -60,26 +65,47 @@ public class AdressBookMainUI extends JFrame implements IAddUser {
 	private UpdateAddressDialog updateAddressdiag;
 	private DefaultMutableTreeNode root;
 
-//	private DefaultTableModel model ;
+	private DefaultTableModel model;
+	
+	private Vector<Object> header = new Vector<Object>();
+    private Vector<Object> data = new Vector<Object>();
+
 
 	// 테이블 초기 셋팅
-	String colNames[] = { " ","번호", "이름", "핸드폰번호", "이메일", "회사", "부서", "직책", "메모", "그룹" };
-	DefaultTableModel model = new DefaultTableModel(colNames, 0) {
+	String colNames[] = { "x", "번호", "이름", "핸드폰번호", "이메일", "회사", "부서", "직책", "메모", "그룹" };
+//	DefaultTableModel model = new DefaultTableModel(colNames, 0) ;
 
-		// 내용편집안되게 하기
-		// 추상클래스 사용한거
-		public boolean isCellEditable(int i, int c) {
+//	{
+//
+//		// 내용편집안되게 하기
+//		// 추상클래스 사용한거
+//		public boolean isCellEditable(int i, int c) {
+//
+//			// c 가 열
+//			// c 가 0 인것만 true 로 바꿔주기
+//			if (c == 0) {
+//				return true;
+//			}
+//
+//			return false;
+//		}
+//
+//	};
 
-			// c 가 열
-			// c 가 0 인것만 true 로 바꿔주기
-			if (c == 0) {
-				return true;
-			}
+	// 테이블 셀렌더러
+	// 테이블 첫번째 row에 체크박스 추가함
+//	DefaultTableCellRenderer dcr = new DefaultTableCellRenderer(); 
+//	{
 
-			return false;
-		}
+//		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,int row, int column) {
+//			JCheckBox box = new JCheckBox();
+//			box.setSelected(((Boolean) value).booleanValue());
+//			box.setHorizontalAlignment(JLabel.CENTER);
+//			return box;
+//		}
+//		
 
-	};
+//	};
 
 	// 테이블 선택시 이벤트 발생을 위해
 	int selectedRow; // 테이블 row
@@ -278,19 +304,75 @@ public class AdressBookMainUI extends JFrame implements IAddUser {
 
 		// 테이블 에 들어갈 부분
 
+		DefaultTableModel model = new DefaultTableModel(colNames, 0) {
+			@Override
+			public Class getColumnClass(int column) {
+
+				switch (column) {
+				case 0:
+
+					return boolean.class;
+				case 1:
+					return String.class;
+				case 2:
+					return Integer.class;
+				case 3:
+
+					return String.class;
+				case 4:
+
+					return String.class;
+				case 5:
+
+					return String.class;
+				case 6:
+
+					return String.class;
+				case 7:
+
+					return String.class;
+				case 8:
+
+					return String.class;
+				case 9:
+
+					return String.class;
+				case 10:
+
+					return String.class;
+
+				default:
+					return String.class;
+				}
+
+			}
+
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				if (column == 0) {
+					return true;
+				}
+
+				return false;
+
+			}
+		};
+
 //		String colNames[] = { " ","이름", "핸드폰번호", "이메일", "회사", "부서", "직책", "메모", "그룹" };
 //		model = new DefaultTableModel(colNames, 0);
 		// 샘플 데이터
-		model.addRow(new Object[] { false, "1","김한선", "123-123-456", "dd@naver.com", "4", "5555", "예", "메모", "%%" });
-		model.addRow(new Object[] { false, "2","홍길동", "123-123-456", "dd@kakao.com", "ㅇㅇ", "00", "ㅇㅇ", "ㅇㅇ", "" });
+		model.addRow(new Object[] { false, "1", "김한선", "123-123-456", "dd@naver.com", "4", "5555", "예", "메모", "%%" });
+		model.addRow(new Object[] { false, "2", "홍길동", "123-123-456", "dd@kakao.com", "ㅇㅇ", "00", "ㅇㅇ", "ㅇㅇ", "" });
 
 		table = new JTable(model);
 
-		// 테이블에 체크박스 넣기
-		table.getColumn(" ").setCellRenderer(dcr);
-		JCheckBox box = new JCheckBox();
-		box.setHorizontalAlignment(JLabel.CENTER);
-		table.getColumn(" ").setCellEditor(new DefaultCellEditor(box));
+		JCheckBox checkBox = new JCheckBox();
+
+		DefaultCellEditor checkboxRend = new DefaultCellEditor(checkBox);
+//			
+		TableRenderer tableR = new TableRenderer();
+		table.getColumn("x").setCellRenderer(tableR);
+		table.getColumn("x").setCellEditor(checkboxRend);
 
 		table.getTableHeader().setReorderingAllowed(false);// 컬럼들 이동 불가
 		table.getTableHeader().setResizingAllowed(false); // 컬럼 크기 조절 불가
@@ -330,6 +412,35 @@ public class AdressBookMainUI extends JFrame implements IAddUser {
 			insertAddressdiag.setVisible(true);
 
 		});
+
+		// 테이블 주소록 삭제 클릭 이벤트
+		// 다중삭제이벤트
+		btnDeleteAddress.addActionListener(e -> {
+
+			System.out.println("---delete start---");
+
+			int tableRowCount = table.getModel().getRowCount();
+			Object tablecheckbox = null;
+
+			System.out.println("tableRowCount : " + tableRowCount);
+			for (int i = tableRowCount; i > 0; i--) {
+
+				System.out.println("tableRowCount : " + tableRowCount);
+
+				tablecheckbox = table.getValueAt(i - 1, 0);
+
+				System.out.println(i - 1 + "i?");
+
+				if (tablecheckbox.equals(true)) {
+					System.out.println("tableRowCount : " + tableRowCount);
+					System.out.println(i - 1 + "???");
+					((DefaultTableModel) table.getModel()).removeRow(i - 1);
+				}
+				System.out.println("---delete end---");
+			}
+
+		});
+
 	}
 
 	// 사용자 테이블 추가
@@ -347,21 +458,14 @@ public class AdressBookMainUI extends JFrame implements IAddUser {
 		System.out.println("그룹이름 : " + user.getGroup_name());
 		System.out.println("==================끝===================");
 
-		
-		user.setAd_no(3);;
-	
-		
-		int lastRow ;
-		
-		lastRow = model.getRowCount()+1;
-		
+		int lastRow;
+		lastRow = table.getModel().getRowCount() + 1;
 		user.setAd_no(lastRow);
-		
-		
-		
+
 		// 추가
-		model.addRow(new Object[] { false,user.getAd_no(), user.getAd_name(), user.getAd_hp(), user.getAd_mail(), user.getAd_com(),
-				user.getAd_department(), user.getAd_postion(), user.getAd_memo(), user.getGroup_name() });
+		((DefaultTableModel) table.getModel()).addRow(new Object[] { false, user.getAd_no(), user.getAd_name(),
+				user.getAd_hp(), user.getAd_mail(), user.getAd_com(), user.getAd_department(), user.getAd_postion(),
+				user.getAd_memo(), user.getGroup_name() });
 
 	}
 
@@ -460,18 +564,6 @@ public class AdressBookMainUI extends JFrame implements IAddUser {
 
 ///////////////////////////////테이블관련메서드/////////////////////////////////////		
 
-	// 테이블 셀렌더러
-	// 테이블 첫번째 row에 체크박스 추가함
-	DefaultTableCellRenderer dcr = new DefaultTableCellRenderer() {
-		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
-				int row, int column) {
-			JCheckBox box = new JCheckBox();
-			box.setSelected(((Boolean) value).booleanValue());
-			box.setHorizontalAlignment(JLabel.CENTER);
-			return box;
-		}
-	};
-
 // 테이블  팝업 이벤트
 
 	// 오늘쪽 마우스 이벤트 메뉴(table)
@@ -490,12 +582,13 @@ public class AdressBookMainUI extends JFrame implements IAddUser {
 		mi = new JMenuItem("삭제");
 		popup.add(mi);
 		mi.addActionListener(e -> {
-			// deleteSelectedItems();
+			deleteUserRow();
 		});
 
 		popup.show(table, x, y);
 	}
 
+	// 마우스이벤트 테이블 수정하기
 	private void updateUserRow() {
 
 		String tableValue[] = new String[10];
@@ -509,10 +602,9 @@ public class AdressBookMainUI extends JFrame implements IAddUser {
 			System.out.println(" row : [" + selectedRow + "]  col : [" + "순서 : " + i + "~  " + tabaDataValue + " ]" + i
 					+ "번째 : col의 값 : [" + tableValue[i] + "]");
 
-			
-			if(i==1) {
+			if (i == 1) {
 				userData.setAd_no(Integer.parseInt(tabaDataValue));
-			}else if (i == 2) {
+			} else if (i == 2) {
 				userData.setAd_name(tabaDataValue);
 			} else if (i == 3) {
 				userData.setAd_hp(tabaDataValue);
@@ -531,18 +623,54 @@ public class AdressBookMainUI extends JFrame implements IAddUser {
 			}
 
 		}
-		
+
 		System.out.println("======================for end ===========================");
 
-		updateAddressdiag = new UpdateAddressDialog(this, "주소록 수정",userData);
-		System.out.println("*******************선택한유저이름?********" +userData.getAd_name());
-		System.out.println("*******************선택한유저 핸드폰번호?********" +userData.getAd_hp());
+		updateAddressdiag = new UpdateAddressDialog(this, "주소록 수정", userData);
+		System.out.println("*******************선택한유저이름?********" + userData.getAd_name());
+		System.out.println("*******************선택한유저 핸드폰번호?********" + userData.getAd_hp());
 		updateAddressdiag.setVisible(true);
 
 	}
-	
+
+	// 마우스이벤트 테이블  삭제
 	public void deleteUserRow() {
-		    
+		((DefaultTableModel) table.getModel()).removeRow(selectedRow);
+
+	}
+	
+//	private void setTable(File[] f) {
+//        header.add("파일명");
+//        header.add("최종 수정일");
+//        header.add("크기");
+//        
+//        for(int i=0 ; i<f.length ; i++) {
+//            if(f[i].isFile()) {
+//                Vector<Object> vc = new Vector<Object>();
+//                vc.add(f[i].getName());
+//                vc.add(new Date(f[i].lastModified()));
+//                vc.add(f[i].length() + "bytes");
+//                data.add(vc);
+//            }
+//        }
+//        
+//        table = new JTable(data, header);
+//        tableScroll = new JScrollPane(table);
+//        
+//        splitPane.setRightComponent(tableScroll);
+//        
+//    }
+
+	@Override
+	public void treeWillExpand(TreeExpansionEvent event) throws ExpandVetoException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void treeWillCollapse(TreeExpansionEvent event) throws ExpandVetoException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
