@@ -1,4 +1,4 @@
-import ui.AdressBookMainUI;
+import ui.AddressBookMainUI;
 import ui.TestAddressBook;
 
 public class AddressBookMain {
@@ -7,7 +7,7 @@ public class AddressBookMain {
 //		InsertAddressBook frame = new InsertAddressBook();
 //		frame.setVisible(true);
 		
-		AdressBookMainUI frame = new AdressBookMainUI();
+		AddressBookMainUI frame = new AddressBookMainUI();
 		frame.setVisible(true);
 	}
 }

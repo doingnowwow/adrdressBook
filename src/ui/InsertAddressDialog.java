@@ -62,7 +62,7 @@ public class InsertAddressDialog extends JDialog {
 	private JPanel mainPanel = new JPanel();
 
 	private IAddUser listner = null;
-	private AdressBookMainUI adressBookMainUI = null;
+	private AddressBookMainUI addressBookMainUI = null;
 	
 	// case 1 : 인터페이스를 넘겨 받음
 	public InsertAddressDialog(IAddUser listner, String title) {
@@ -74,8 +74,8 @@ public class InsertAddressDialog extends JDialog {
 	}
 	
 	// case 2 부모 클래스 객체를 넘겨 받음
-	public InsertAddressDialog(AdressBookMainUI adressBookMainUI, String title) {
-		this.adressBookMainUI =  adressBookMainUI;
+	public InsertAddressDialog(AddressBookMainUI addressBookMainUI, String title) {
+		this.addressBookMainUI =  addressBookMainUI;
 		this.setTitle(title);
 		this.setModal(true);
 		this.setResizable(false);
@@ -293,7 +293,7 @@ public class InsertAddressDialog extends JDialog {
 			user.setAd_memo(txtMemo.getText());
 			user.setGroup_name(groupCombo.getSelectedItem().toString());
 			
-			this.adressBookMainUI.addUser(user);
+			this.addressBookMainUI.addUser(user);
 			
 			//등록하면서 값 비우기
 			txtName.setText("");

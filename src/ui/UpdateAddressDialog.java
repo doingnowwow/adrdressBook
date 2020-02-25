@@ -3,11 +3,14 @@ package ui;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Frame;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -45,6 +48,7 @@ public class UpdateAddressDialog extends JDialog {
 	private JTextField txtPosition;
 	private JTextArea txtMemo;
 	private JTextField txtGroup;
+	private JTextField txtNo;
 
 	private JTextField text = new JTextField(10);
 	private JButton btnReset = new JButton("원래대로");
@@ -53,10 +57,11 @@ public class UpdateAddressDialog extends JDialog {
 	private JPanel mainPanel = new JPanel();
 
 	private IAddUser listner = null;
-	private AdressBookMainUI adressBookMainUI = null;
-
+	private AddressBookMainUI addressBookMainUI = null;
 	
-	public UpdateAddressDialog(IAddUser listner, String title,UserVO user) {
+	private String userNo  = "";
+
+	public UpdateAddressDialog(IAddUser listner, String title, UserVO user) {
 		this.updateuser = user;
 		this.listner = listner;
 		this.setTitle(title);
@@ -66,15 +71,14 @@ public class UpdateAddressDialog extends JDialog {
 
 	}
 
-	public UpdateAddressDialog(AdressBookMainUI adressBookMainUI, String title,UserVO user) {
-		this.adressBookMainUI = adressBookMainUI;
+	public UpdateAddressDialog(AddressBookMainUI addressBookMainUI, String title, UserVO user) {
+		this.addressBookMainUI = addressBookMainUI;
 		this.updateuser = user;
 		this.setTitle(title);
 		this.setModal(true);
 		this.setResizable(false);
 		this.initUI();
 	}
-
 
 	public void initUI() {
 
@@ -132,7 +136,7 @@ public class UpdateAddressDialog extends JDialog {
 		txtPosition = new JTextField();
 		txtMemo = new JTextArea();
 		txtGroup = new JTextField();
-		
+		txtNo = new JTextField();
 
 		// 이메일리스트
 		String mailList[] = { "naver.com", "gmail.com", "kakao.com", "hanmail.net", "직접입력하기" };
@@ -141,39 +145,37 @@ public class UpdateAddressDialog extends JDialog {
 		// 그룹리스트
 		String groupList[] = { "그룹선택", "가족", "회사", "친구" };
 		JComboBox groupCombo = new JComboBox(groupList);
+
+		// 텍스트필드 값 넣기
 		
+		userNo  = String.valueOf(updateuser.getAd_no());
+		txtNo.setText(userNo);
 		
-		
-		//텍스트필드 값 넣기
 		txtName.setText(updateuser.getAd_name());
-		
-		
-		if(updateuser.getAd_hp()!=null) {
+
+		if (updateuser.getAd_hp() != null) {
 			txtPhone.setText(updateuser.getAd_hp());
 		}
-		if(updateuser.getAd_mail().length()>2) {
+		if (updateuser.getAd_mail().length() > 2) {
 			txtEmail.setText(updateuser.getAd_mail().split("@")[0]);
 			txtEmail2.setText(updateuser.getAd_mail().split("@")[1]);
 //		mailCombo.setSelectedItem(updateuser.getAd_mail().split("@")[1]);
 		}
-		if(updateuser.getAd_com()!=null) {
+		if (updateuser.getAd_com() != null) {
 			txtCom.setText(updateuser.getAd_com());
 		}
-		if(updateuser.getAd_department()!=null) {
+		if (updateuser.getAd_department() != null) {
 			txtDepartment.setText(updateuser.getAd_department());
 		}
-		if(updateuser.getAd_postion()!=null) {
+		if (updateuser.getAd_postion() != null) {
 			txtPosition.setText(updateuser.getAd_postion());
 		}
-		if(updateuser.getAd_memo()!=null) {
+		if (updateuser.getAd_memo() != null) {
 			txtMemo.setText(updateuser.getAd_memo());
 		}
-		if(updateuser.getGroup_name()!=null) {
+		if (updateuser.getGroup_name() != null) {
 			txtGroup.setText(updateuser.getGroup_name());
 		}
-		
-		
-		
 
 		// 텍스트필드위치
 		txtName.setBounds(100, 10, 200, 25);
@@ -187,6 +189,7 @@ public class UpdateAddressDialog extends JDialog {
 		txtMemo.setBounds(100, 300, 310, 80);
 		txtGroup.setBounds(100, 400, 200, 25);
 		groupCombo.setBounds(310, 400, 100, 25);
+		txtNo.setBounds(100, 450, 100, 25);
 
 		// 콤보박스 사용위해 임의 입력 막기 (이메일 ,그룹)
 //		txtEmail2.disable();
@@ -224,6 +227,10 @@ public class UpdateAddressDialog extends JDialog {
 		centerPane.add(txtMemo);
 		centerPane.add(txtGroup);
 		centerPane.add(groupCombo);
+		centerPane.add(txtNo);
+		
+		//번호받는 부분 숨겨버리기~
+		txtNo.setVisible(false);
 
 		// 상단부분
 		lblTop = new JLabel("수정");
@@ -248,50 +255,117 @@ public class UpdateAddressDialog extends JDialog {
 
 		// 원래대로하는이벤트
 		btnReset.addActionListener(e -> {
-			
-			
-			if(updateuser.getAd_name()!=null) {
+
+			if (updateuser.getAd_name() != null) {
 				txtName.setText(updateuser.getAd_name());
 			}
-			
-			if(updateuser.getAd_hp()!=null) {
+
+			if (updateuser.getAd_hp() != null) {
 				txtPhone.setText(updateuser.getAd_hp());
 			}
-			if(updateuser.getAd_mail().length()>2) {
+			if (updateuser.getAd_mail().length() > 2) {
 				txtEmail.setText(updateuser.getAd_mail().split("@")[0]);
 				txtEmail2.setText(updateuser.getAd_mail().split("@")[1]);
 //			mailCombo.setSelectedItem(updateuser.getAd_mail().split("@")[1]);
 			}
-			if(updateuser.getAd_com()!=null) {
+			if (updateuser.getAd_com() != null) {
 				txtCom.setText(updateuser.getAd_com());
 			}
-			if(updateuser.getAd_department()!=null) {
+			if (updateuser.getAd_department() != null) {
 				txtDepartment.setText(updateuser.getAd_department());
 			}
-			if(updateuser.getAd_postion()!=null) {
+			if (updateuser.getAd_postion() != null) {
 				txtPosition.setText(updateuser.getAd_postion());
 			}
-			if(updateuser.getAd_memo()!=null) {
+			if (updateuser.getAd_memo() != null) {
 				txtMemo.setText(updateuser.getAd_memo());
 			}
-			if(updateuser.getGroup_name()!=null) {
+			if (updateuser.getGroup_name() != null) {
 				txtGroup.setText(updateuser.getGroup_name());
 			}
-			
 
 		});
 
 		// 수정완료버튼
 
 		btnUpdate.addActionListener(e -> {
-			
-			
-			
-			
 
+			updateuser = new UserVO();
+
+			// 이름 필수 입력 발리데이션
+			if (txtName.getText().length() <= 0) {
+				JOptionPane.showMessageDialog(mainContentPane, "이릅입력은 필수입니다. \n이름을입력해주세요\n", "경고",
+						JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+
+			// 핸드폰번호 or 이메일 입력 발리데이션
+			if (txtPhone.getText().length() <= 0 && txtEmail.getText().length() <= 0) {
+				JOptionPane.showMessageDialog(mainContentPane, "핸드폰번호 또는 이메일  둘중 하나는 \n필수로 입력사항입니다.\n 입력해주세요.", "경고",
+						JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+
+			if (txtPhone.getText().trim().length() > 0) {
+				boolean no = false;
+				no = isPhone(txtPhone.getText());
+				System.out.println(no);
+				System.out.println(txtPhone.getText());
+
+				if (no == false) {
+					JOptionPane.showMessageDialog(mainContentPane, "핸드폰 번호 입력 형식이 잘못되었습니다.", "경고",
+							JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+			}
+
+			// 값 보내기
+			
+			
+			updateuser.setAd_no(Integer.parseInt(txtNo.getText()));
+			updateuser.setAd_name(txtName.getText());
+			updateuser.setAd_hp(txtPhone.getText());
+			updateuser.setAd_mail(txtEmail.getText() + "@" + txtEmail2.getText());
+			updateuser.setAd_com(txtCom.getText());
+			updateuser.setAd_department(txtDepartment.getText());
+			updateuser.setAd_postion(txtPosition.getText());
+			updateuser.setAd_memo(txtMemo.getText());
+			updateuser.setGroup_name(groupCombo.getSelectedItem().toString());
+			this.addressBookMainUI.updateUser(updateuser);
+			
+			//등록하면서 값 비우기
+			txtName.setText("");
+			txtPhone.setText("");
+			txtEmail.setText("");
+			txtEmail2.setText("");
+			txtCom.setText("");
+			txtDepartment.setText("");
+			txtPosition.setText("");
+			txtMemo.setText("");
+			
+			//화면꺼
+			setVisible(false);
+			
 		});
 
 		setSize(450, 600);
 	}
 
+	// 핸드폰번호 유효성검사
+	private boolean isPhone(String hp) {
+
+		Pattern p = Pattern.compile("^\\d{3}-\\d{3,4}-\\d{4}$");
+		System.out.println("===유효성검사메서드===");
+		System.out.println(hp);
+
+		Matcher m = p.matcher(hp);
+
+		if (m.find()) {
+
+			return true;
+
+		} else {
+			return false;
+		}
+	}
 }

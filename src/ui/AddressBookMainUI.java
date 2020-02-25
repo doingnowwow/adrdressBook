@@ -39,7 +39,7 @@ import javax.swing.tree.TreeSelectionModel;
 
 import data.UserVO;
 
-public class AdressBookMainUI extends JFrame implements IAddUser, TreeWillExpandListener  {
+public class AddressBookMainUI extends JFrame implements IAddUser, TreeWillExpandListener {
 
 	private UserVO userData = new UserVO();
 	private JPanel contentPane;
@@ -66,57 +66,27 @@ public class AdressBookMainUI extends JFrame implements IAddUser, TreeWillExpand
 	private DefaultMutableTreeNode root;
 
 	private DefaultTableModel model;
-	
-	private Vector<Object> header = new Vector<Object>();
-    private Vector<Object> data = new Vector<Object>();
 
+	private Vector<Object> header = new Vector<Object>();
+	private Vector<Object> data = new Vector<Object>();
 
 	// 테이블 초기 셋팅
 	String colNames[] = { "x", "번호", "이름", "핸드폰번호", "이메일", "회사", "부서", "직책", "메모", "그룹" };
-//	DefaultTableModel model = new DefaultTableModel(colNames, 0) ;
-
-//	{
-//
-//		// 내용편집안되게 하기
-//		// 추상클래스 사용한거
-//		public boolean isCellEditable(int i, int c) {
-//
-//			// c 가 열
-//			// c 가 0 인것만 true 로 바꿔주기
-//			if (c == 0) {
-//				return true;
-//			}
-//
-//			return false;
-//		}
-//
-//	};
-
-	// 테이블 셀렌더러
-	// 테이블 첫번째 row에 체크박스 추가함
-//	DefaultTableCellRenderer dcr = new DefaultTableCellRenderer(); 
-//	{
-
-//		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,int row, int column) {
-//			JCheckBox box = new JCheckBox();
-//			box.setSelected(((Boolean) value).booleanValue());
-//			box.setHorizontalAlignment(JLabel.CENTER);
-//			return box;
-//		}
-//		
-
-//	};
 
 	// 테이블 선택시 이벤트 발생을 위해
-	int selectedRow; // 테이블 row
-	int selectedCol; // 테이블 column
+
+	// 테이블 row
+	int selectedRow;
+
+	// 테이블 column
+	int selectedCol;
 
 	private Object tabeData = null; // 비어있는 오브젝트 생성
 
 	/**
 	 * Create the frame.
 	 */
-	public AdressBookMainUI() {
+	public AddressBookMainUI() {
 		jbInit();
 	}
 
@@ -313,9 +283,9 @@ public class AdressBookMainUI extends JFrame implements IAddUser, TreeWillExpand
 
 					return boolean.class;
 				case 1:
-					return String.class;
-				case 2:
 					return Integer.class;
+				case 2:
+					return String.class;
 				case 3:
 
 					return String.class;
@@ -358,8 +328,6 @@ public class AdressBookMainUI extends JFrame implements IAddUser, TreeWillExpand
 			}
 		};
 
-//		String colNames[] = { " ","이름", "핸드폰번호", "이메일", "회사", "부서", "직책", "메모", "그룹" };
-//		model = new DefaultTableModel(colNames, 0);
 		// 샘플 데이터
 		model.addRow(new Object[] { false, "1", "김한선", "123-123-456", "dd@naver.com", "4", "5555", "예", "메모", "%%" });
 		model.addRow(new Object[] { false, "2", "홍길동", "123-123-456", "dd@kakao.com", "ㅇㅇ", "00", "ㅇㅇ", "ㅇㅇ", "" });
@@ -466,6 +434,32 @@ public class AdressBookMainUI extends JFrame implements IAddUser, TreeWillExpand
 		((DefaultTableModel) table.getModel()).addRow(new Object[] { false, user.getAd_no(), user.getAd_name(),
 				user.getAd_hp(), user.getAd_mail(), user.getAd_com(), user.getAd_department(), user.getAd_postion(),
 				user.getAd_memo(), user.getGroup_name() });
+
+	}
+
+	// 사용자 테이블 수정
+	public void updateUser(UserVO updateuser) {
+
+		System.out.println("========수정확인하려는 메인이다========");
+		System.out.println("번호 : " + updateuser.getAd_no());
+		System.out.println("이름 : " + updateuser.getAd_name());
+		System.out.println("핸드폰 : " + updateuser.getAd_hp());
+		System.out.println("이메일 : " + updateuser.getAd_mail());
+		System.out.println("회사 : " + updateuser.getAd_com());
+		System.out.println("부서 : " + updateuser.getAd_department());
+		System.out.println("직책: " + updateuser.getAd_postion());
+		System.out.println("메모 : " + updateuser.getAd_memo());
+		System.out.println("그룹이름 : " + updateuser.getGroup_name());
+		System.out.println("==================끝===================");
+
+		int userNo = updateuser.getAd_no();
+
+		((DefaultTableModel) table.getModel()).removeRow(selectedRow);
+
+		// 수정
+		((DefaultTableModel) table.getModel()).addRow(new Object[] { false, userNo, updateuser.getAd_name(),
+				updateuser.getAd_hp(), updateuser.getAd_mail(), updateuser.getAd_com(), updateuser.getAd_department(),
+				updateuser.getAd_postion(), updateuser.getAd_memo(), updateuser.getGroup_name() });
 
 	}
 
@@ -627,18 +621,19 @@ public class AdressBookMainUI extends JFrame implements IAddUser, TreeWillExpand
 		System.out.println("======================for end ===========================");
 
 		updateAddressdiag = new UpdateAddressDialog(this, "주소록 수정", userData);
+		System.out.println(">>>선택한 유저 번호" + userData.getAd_no());
 		System.out.println("*******************선택한유저이름?********" + userData.getAd_name());
 		System.out.println("*******************선택한유저 핸드폰번호?********" + userData.getAd_hp());
 		updateAddressdiag.setVisible(true);
 
 	}
 
-	// 마우스이벤트 테이블  삭제
+	// 마우스이벤트 테이블 삭제
 	public void deleteUserRow() {
 		((DefaultTableModel) table.getModel()).removeRow(selectedRow);
 
 	}
-	
+
 //	private void setTable(File[] f) {
 //        header.add("파일명");
 //        header.add("최종 수정일");
@@ -664,13 +659,13 @@ public class AdressBookMainUI extends JFrame implements IAddUser, TreeWillExpand
 	@Override
 	public void treeWillExpand(TreeExpansionEvent event) throws ExpandVetoException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void treeWillCollapse(TreeExpansionEvent event) throws ExpandVetoException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }
