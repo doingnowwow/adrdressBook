@@ -156,7 +156,7 @@ public class UpdateAddressDialog extends JDialog {
 		if (updateuser.getAd_hp() != null) {
 			txtPhone.setText(updateuser.getAd_hp());
 		}
-		if (updateuser.getAd_mail().length() > 2) {
+		if ( updateuser.getAd_mail() !=null&& updateuser.getAd_mail().length() > 2 ) {
 			txtEmail.setText(updateuser.getAd_mail().split("@")[0]);
 			txtEmail2.setText(updateuser.getAd_mail().split("@")[1]);
 //		mailCombo.setSelectedItem(updateuser.getAd_mail().split("@")[1]);

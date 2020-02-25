@@ -149,10 +149,6 @@ public class InsertAddressDialog extends JDialog {
 		String groupList[] = {"그룹선택","가족","회사","친구"};
 		JComboBox groupCombo = new JComboBox(groupList);
 		
-//		GroupVO groupList = new GroupVO();
-//		groupList.setGroup_no(1);
-//		groupList.setGroup_name("가족");
-		
 		
 		
 		

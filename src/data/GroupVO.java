@@ -1,14 +1,13 @@
 package data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GroupVO {
 
 	private int group_no;
 	private String group_name;
-	private List<UserVO> memberList;
-	
-	
+	private List<UserVO> memberList = new ArrayList<UserVO>();
 
 	public int getGroup_no() {
 		return group_no;
@@ -33,6 +32,16 @@ public class GroupVO {
 	public void setMemberList(List<UserVO> memberList) {
 		this.memberList = memberList;
 	}
-	
-	
+
+	public void addUser(UserVO uer) {
+		if (this.memberList != null) {
+			this.memberList.add(uer);
+		}
+	}
+
+	@Override
+	public String toString() {
+		return group_name;
+	}
+
 }

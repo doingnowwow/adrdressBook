@@ -16,8 +16,7 @@ public class UserVO {
 	
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
-		return super.toString();
+		return  ad_name;
 	}
 	public UserVO() {
 		// TODO Auto-generated constructor stub
