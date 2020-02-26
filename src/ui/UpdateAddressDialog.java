@@ -17,6 +17,7 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 import data.UserVO;
+import handler.FileHandler;
 
 public class UpdateAddressDialog extends JDialog {
 
@@ -58,8 +59,8 @@ public class UpdateAddressDialog extends JDialog {
 
 	private IAddUser listner = null;
 	private AddressBookMainUI addressBookMainUI = null;
-	
-	private String userNo  = "";
+
+	private String userNo = "";
 
 	public UpdateAddressDialog(IAddUser listner, String title, UserVO user) {
 		this.updateuser = user;
@@ -143,23 +144,25 @@ public class UpdateAddressDialog extends JDialog {
 		JComboBox mailCombo = new JComboBox(mailList);
 
 		// 그룹리스트
-		String groupList[] = { "그룹선택", "가족", "회사", "친구" };
-		JComboBox groupCombo = new JComboBox(groupList);
+		JComboBox<?> groupCombo = new JComboBox(FileHandler.getInstance().getGroupList().toArray());
+		
 
 		// 텍스트필드 값 넣기
-		
-		userNo  = String.valueOf(updateuser.getAd_no());
+
+		userNo = String.valueOf(updateuser.getAd_no());
 		txtNo.setText(userNo);
-		
+
 		txtName.setText(updateuser.getAd_name());
 
 		if (updateuser.getAd_hp() != null) {
 			txtPhone.setText(updateuser.getAd_hp());
 		}
-		if ( updateuser.getAd_mail() !=null&& updateuser.getAd_mail().length() > 2 ) {
-			txtEmail.setText(updateuser.getAd_mail().split("@")[0]);
-			txtEmail2.setText(updateuser.getAd_mail().split("@")[1]);
-//		mailCombo.setSelectedItem(updateuser.getAd_mail().split("@")[1]);
+		if (updateuser.getAd_mail() != null && updateuser.getAd_mail().length() > 2) {
+			if (updateuser.getAd_mail().contains(("@"))) {
+
+				txtEmail.setText(updateuser.getAd_mail().split("@")[0]);
+				txtEmail2.setText(updateuser.getAd_mail().split("@")[1]);
+			}
 		}
 		if (updateuser.getAd_com() != null) {
 			txtCom.setText(updateuser.getAd_com());
@@ -173,8 +176,8 @@ public class UpdateAddressDialog extends JDialog {
 		if (updateuser.getAd_memo() != null) {
 			txtMemo.setText(updateuser.getAd_memo());
 		}
-		if (updateuser.getGroup_name() != null) {
-			txtGroup.setText(updateuser.getGroup_name());
+		if (updateuser.getGroup_no() != 0) {
+			txtGroup.setText(String.valueOf(updateuser.getGroup_no()));
 		}
 
 		// 텍스트필드위치
@@ -228,8 +231,8 @@ public class UpdateAddressDialog extends JDialog {
 		centerPane.add(txtGroup);
 		centerPane.add(groupCombo);
 		centerPane.add(txtNo);
-		
-		//번호받는 부분 숨겨버리기~
+
+		// 번호받는 부분 숨겨버리기~
 		txtNo.setVisible(false);
 
 		// 상단부분
@@ -280,8 +283,8 @@ public class UpdateAddressDialog extends JDialog {
 			if (updateuser.getAd_memo() != null) {
 				txtMemo.setText(updateuser.getAd_memo());
 			}
-			if (updateuser.getGroup_name() != null) {
-				txtGroup.setText(updateuser.getGroup_name());
+			if (updateuser.getGroup_no() != 0) {
+				txtGroup.setText(String.valueOf(updateuser.getGroup_no()));
 			}
 
 		});
@@ -320,8 +323,7 @@ public class UpdateAddressDialog extends JDialog {
 			}
 
 			// 값 보내기
-			
-			
+
 			updateuser.setAd_no(Integer.parseInt(txtNo.getText()));
 			updateuser.setAd_name(txtName.getText());
 			updateuser.setAd_hp(txtPhone.getText());
@@ -330,10 +332,11 @@ public class UpdateAddressDialog extends JDialog {
 			updateuser.setAd_department(txtDepartment.getText());
 			updateuser.setAd_postion(txtPosition.getText());
 			updateuser.setAd_memo(txtMemo.getText());
-			updateuser.setGroup_name(groupCombo.getSelectedItem().toString());
+
+			updateuser.setGroup_no(groupCombo.getSelectedIndex()+1);
 			this.addressBookMainUI.updateUser(updateuser);
-			
-			//등록하면서 값 비우기
+
+			// 등록하면서 값 비우기
 			txtName.setText("");
 			txtPhone.setText("");
 			txtEmail.setText("");
@@ -342,10 +345,11 @@ public class UpdateAddressDialog extends JDialog {
 			txtDepartment.setText("");
 			txtPosition.setText("");
 			txtMemo.setText("");
-			
-			//화면꺼
+
+			// 화면꺼
 			setVisible(false);
-			
+			FileHandler.getInstance().updateUser(updateuser);
+
 		});
 
 		setSize(450, 600);

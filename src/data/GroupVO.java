@@ -43,5 +43,14 @@ public class GroupVO {
 	public String toString() {
 		return group_name;
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof GroupVO) {
+			GroupVO target = (GroupVO) obj;
+			return target.getGroup_no() == this.group_no;
+		}
+		return false;
+	}
 
 }

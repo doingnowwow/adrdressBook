@@ -19,7 +19,27 @@ import data.UserVO;
 
 public class FileHandler {
 
-	public FileHandler() {
+	private static final FileHandler instance = new FileHandler();
+
+	// 새 엑셀 시트 생성
+	private XSSFWorkbook workbook = new XSSFWorkbook();
+	private ArrayList<GroupVO> groupList = new ArrayList<GroupVO>();
+	private ArrayList<UserVO> userList = new ArrayList<UserVO>();
+
+	private int groupIdx = 0;
+	private int userIdx = 0;
+
+	private FileHandler() {
+		readGroup();
+		readUser();
+	}
+
+	public static FileHandler getInstance() {
+		return instance;
+	}
+
+	public ArrayList<GroupVO> getGroupList() {
+		return groupList;
 	}
 
 	/**
@@ -28,8 +48,6 @@ public class FileHandler {
 	 * @return
 	 */
 	public ArrayList<GroupVO> readGroup() {
-
-		ArrayList<GroupVO> groupList = new ArrayList<GroupVO>();
 
 		try {
 			// 엑셀파일
@@ -56,11 +74,19 @@ public class FileHandler {
 				// 콘솔 출력
 				GroupVO group = new GroupVO();
 
-				group.setGroup_no((int) row.getCell(0).getNumericCellValue());
-				group.setGroup_name(row.getCell(1).getStringCellValue());
+				if (row.getCell(0) != null) {
+
+					group.setGroup_no((int) row.getCell(0).getNumericCellValue());
+				}
+				if (row.getCell(1) != null) {
+
+					group.setGroup_name(row.getCell(1).getStringCellValue());
+				}
 
 				groupList.add(group);
 			}
+
+			this.groupIdx = this.groupList.get(this.groupList.size() - 1).getGroup_no();
 
 		} catch (FileNotFoundException fe) {
 			System.out.println("FileNotFoundException >> " + fe.toString());
@@ -77,8 +103,6 @@ public class FileHandler {
 	 * @return
 	 */
 	public ArrayList<UserVO> readUser() {
-
-		ArrayList<UserVO> userList = new ArrayList<UserVO>();
 
 		try {
 			// 엑셀파일
@@ -128,13 +152,24 @@ public class FileHandler {
 					user.setAd_memo(row.getCell(7).getStringCellValue());
 				}
 				if (row.getCell(8) != null) {
-					user.setGroup_name(row.getCell(8).getStringCellValue());
+					user.setGroup_no((int) row.getCell(8).getNumericCellValue());
 
 				}
 
 				userList.add(user);
 
 			}
+
+			// 사용자 마지막 번호
+			if (this.userList.size() == 0) {
+				this.userIdx = 1;
+			} else {
+
+				this.userIdx = this.userList.get(this.userList.size() - 1).getAd_no();
+			}
+
+			System.out.println("userIdx = " + userIdx);
+
 		} catch (FileNotFoundException fe) {
 			System.out.println("FileNotFoundException >> " + fe.toString());
 		} catch (IOException ie) {
@@ -148,10 +183,8 @@ public class FileHandler {
 	 * 
 	 * @param groupList
 	 */
-	public void wirteGroup(ArrayList<GroupVO> groupList) {
+	public void wirteGroup() {
 
-		// 새 엑셀 생성
-		XSSFWorkbook workbook = new XSSFWorkbook();
 		// 새 시트(SXeet) 생성
 		XSSFSheet sheet = workbook.createSheet("그룹");
 
@@ -166,29 +199,317 @@ public class FileHandler {
 		cell.setCellValue("그룹이름");
 
 		// 그룹번호
-		for (int i = 1; i < groupList.size(); i++) {
+		for (int i = 0; i < groupList.size(); i++) {
 
-			row = sheet.createRow(i);
+			row = sheet.createRow(i + 1);
 			cell = row.createCell(0);
+			// 그룹번호 자동으로 증가하게 만들어야함
 			cell.setCellValue(groupList.get(i).getGroup_no());
-		}
 
-		// 그룹이름
-		for (int i = 1; i < groupList.size(); i++) {
-			row = sheet.createRow(1);
-			cell = row.createCell(i);
+			cell = row.createCell(1);
 			cell.setCellValue(groupList.get(i).getGroup_name());
+		}
+
+		groupIdx++;
+
+		// 파일만들기
+		this.wirteFile(sheet);
+
+	}
+
+	/**
+	 * 사용자를을 엑셀로 작성하는 메서드
+	 * 
+	 * @param groupList
+	 */
+	public void wirteUser() {
+
+		// 새 시트(SXeet) 생성
+		XSSFSheet sheet = workbook.createSheet("사용자");
+
+		String[] header = { "번호", "이름", "핸드폰번호", "이메일", "회사", "부서", "직책", "메모", "그룹" };
+		XSSFRow headerRow = sheet.createRow(0);
+
+		for (int i = 0; i < header.length; i++) {
+			XSSFCell cell = headerRow.createCell(i);
+			cell.setCellValue(header[i]);
+		}
+
+		for (int i = 0; i < userList.size(); i++) {
+			int idx = 0;
+			XSSFRow row = sheet.createRow(i + 1);
+
+			XSSFCell cell = row.createCell(idx++);
+			cell.setCellValue(userList.get(i).getAd_no());
+
+			cell = row.createCell(idx++);
+			cell.setCellValue(userList.get(i).getAd_name());
+
+			cell = row.createCell(idx++);
+			cell.setCellValue(userList.get(i).getAd_hp());
+
+			cell = row.createCell(idx++);
+			cell.setCellValue(userList.get(i).getAd_mail());
+
+			cell = row.createCell(idx++);
+			cell.setCellValue(userList.get(i).getAd_com());
+
+			cell = row.createCell(idx++);
+			cell.setCellValue(userList.get(i).getAd_department());
+
+			cell = row.createCell(idx++);
+			cell.setCellValue(userList.get(i).getAd_postion());
+
+			cell = row.createCell(idx++);
+			cell.setCellValue(userList.get(i).getAd_memo());
+
+			cell = row.createCell(idx++);
+			cell.setCellValue(userList.get(i).getGroup_no());
 
 		}
+
+		// 파일만들기
+		this.wirteFile(sheet);
+
+	}
+
+	/**
+	 * 그룹쓰기, 사용자쓰기 메서드를 받아서 엑셀 파일 생성하는 부분
+	 * 
+	 * @param workbook
+	 */
+	public void wirteFile(XSSFSheet sheet) {
 
 		try {
 			FileOutputStream fileoutputstream = new FileOutputStream("D://test2.xlsx");
+			FileOutputStream fileoutputstream2 = new FileOutputStream("D://test1.xlsx");
+
 			workbook.write(fileoutputstream);
+			workbook.write(fileoutputstream2);
+
 			fileoutputstream.close();
+			fileoutputstream2.close();
 			System.out.println("엑셀파일생성성공");
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("엑셀파일생성실패");
+		}
+	}
+
+	/**
+	 * 그룹에 있는 사용자 찾기
+	 * 
+	 * @param group
+	 * @return
+	 */
+	public ArrayList<UserVO> searchUserListByGroup(GroupVO group) {
+		ArrayList<UserVO> resList = new ArrayList<UserVO>();
+
+		if (group != null) {
+			System.out.println("111");
+			for (int i = 0; i < this.userList.size(); i++) {
+				UserVO user = this.userList.get(i);
+
+				if (user.getGroup_no() == group.getGroup_no()) {
+					resList.add(user);
+					System.out.println("====fileHandler====");
+					System.out.println(user.toString());
+				}
+
+			}
+			return resList;
+		}
+		System.out.println("222");
+		resList = this.userList;
+		return resList;
+	}
+
+	/**
+	 * 검색해서 해당하는 문자를 가지고 있는 사용자 리스트 보여주기
+	 * 
+	 * @param keword
+	 * @return
+	 */
+	public ArrayList<UserVO> searchUserListBykeword(String keword) {
+		System.out.println("검색결과가 넘어오나?====" + keword);
+		ArrayList<UserVO> resultList = new ArrayList<UserVO>();
+
+		for (int i = 0; i < this.userList.size(); i++) {
+			UserVO user = this.userList.get(i);
+			if (user.getAd_name().contains(keword)) {
+				resultList.add(user);
+				continue;
+			}
+			if (user.getAd_hp().contains(keword)) {
+				resultList.add(user);
+				continue;
+			}
+			if (user.getAd_mail().contains(keword)) {
+				resultList.add(user);
+				continue;
+			}
+			if (user.getAd_com().contains(keword)) {
+				resultList.add(user);
+				continue;
+			}
+			if (user.getAd_department().contains(keword)) {
+				resultList.add(user);
+				continue;
+			}
+			if (user.getAd_postion().contains(keword)) {
+				resultList.add(user);
+				continue;
+			}
+			if (user.getAd_postion().contains(keword)) {
+				resultList.add(user);
+				continue;
+			}
+			if (user.getAd_mail().contains(keword)) {
+				resultList.add(user);
+				continue;
+			}
+		}
+
+		return resultList;
+	}
+
+	/**
+	 * 그룹 이름 바꾸기
+	 * 
+	 * @param group
+	 */
+	public void updateGroup(GroupVO group) {
+
+		for (int i = 0; i < groupList.size(); i++) {
+			int groupNo = groupList.get(i).getGroup_no();
+			if (group.getGroup_no() == groupNo) {
+				groupList.get(i).setGroup_name(group.getGroup_name());
+			}
+		}
+
+	}
+
+	/**
+	 * 사용자 정보 바꾸기
+	 * 
+	 * @param user
+	 */
+	public void updateUser(UserVO user) {
+		System.out.println("업데이트되엇는감?");
+		System.out.println("user.toString" + user.toString());
+		System.out.println();
+
+		int userNo = user.getAd_no();
+		System.out.println(user.getAd_no());
+		for (int i = 0; i < userList.size(); i++) {
+			System.out.println(user.getAd_no());
+			if (userList.get(i).getAd_no() == userNo) {
+				System.out.println("userList.get(i)=============");
+				userList.get(i).setAd_name(user.getAd_name());
+				if (user.getAd_hp() != null) {
+					userList.get(i).setAd_hp(user.getAd_hp());
+				}
+				if (user.getAd_mail() != null) {
+					userList.get(i).setAd_mail(user.getAd_mail());
+				}
+				if (user.getAd_com() != null) {
+					userList.get(i).setAd_com(user.getAd_com());
+				}
+				if (user.getAd_department() != null) {
+					userList.get(i).setAd_department(user.getAd_department());
+				}
+				if (user.getAd_postion() != null) {
+					userList.get(i).setAd_postion(user.getAd_postion());
+				}
+				if (user.getAd_memo() != null) {
+					userList.get(i).setAd_memo(user.getAd_memo());
+				}
+				if (user.getGroup_no() == 0) {
+					userList.get(i).setGroup_no(user.getGroup_no());
+				}
+			}
+
+		}
+		System.out.println("업데이트되엇는감?");
+		System.out.println("성공했쯰 ㅋ");
+
+	}
+
+	/**
+	 * 사용자 추가하기
+	 * 
+	 * @param user
+	 */
+	public void addUser(UserVO user) {
+		System.out.println("===주소록 user추가===");
+
+		user.setAd_no(++this.userIdx);
+		user.setAd_name(user.getAd_name());
+		if (user.getAd_hp() != null) {
+			user.setAd_hp(user.getAd_hp());
+		}
+
+		if (user.getAd_mail() != null) {
+			user.setAd_mail(user.getAd_mail());
+		}
+		if (user.getAd_com() != null) {
+			user.setAd_com(user.getAd_com());
+		}
+		if (user.getAd_department() != null) {
+			user.setAd_department(user.getAd_department());
+		}
+		if (user.getAd_postion() != null) {
+			user.setAd_postion(user.getAd_postion());
+		}
+		if (user.getAd_memo() != null) {
+			user.setAd_memo(user.getAd_memo());
+		}
+		if (user.getGroup_no() != 0) {
+			user.setGroup_no(user.getGroup_no());
+		}
+		this.userList.add(user);
+		System.out.println("추가완료" + user.toString());
+	}
+
+	/**
+	 * 그룹추가하기
+	 * 
+	 * @param group
+	 */
+	public void addGroup(GroupVO group) {
+		System.out.println("===그룹추가====");
+		group.setGroup_no(++this.groupIdx);
+		group.setGroup_name(group.getGroup_name());
+
+		System.out.println("groupInsertName = " + group.getGroup_name());
+		this.groupList.add(group);
+	}
+
+	public void deleteGroup(GroupVO group) {
+		System.out.println("===delete Group===");
+
+//		for (int i = groupList.size() - 1; i >= 0; i--) {
+//			int groupNo = groupList.get(i).getGroup_no();
+//			if (group.getGroup_no() == groupNo) {
+//				groupList.remove(i);
+//			}
+//		}
+
+		System.out.println("........................................................................" + group.getGroup_no());
+		if (this.groupList.contains(group)) {
+			this.groupList.remove(group);
+		}
+	}
+
+	public void deleteUser(ArrayList<UserVO> userList) {
+		System.out.println("===deleteUser====");
+
+		for (int i = userList.size() - 1; i >= 0; i--) {
+			UserVO userVO = userList.get(i);
+			System.out.println("userVO = " + userVO.toString());
+			if (this.userList.contains(userVO)) {
+				this.userList.remove(userVO);
+			}
 		}
 
 	}
