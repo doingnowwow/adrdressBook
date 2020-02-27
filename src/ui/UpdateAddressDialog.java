@@ -148,7 +148,6 @@ public class UpdateAddressDialog extends JDialog {
 		
 
 		// 텍스트필드 값 넣기
-
 		userNo = String.valueOf(updateuser.getAd_no());
 		txtNo.setText(userNo);
 
@@ -159,7 +158,6 @@ public class UpdateAddressDialog extends JDialog {
 		}
 		if (updateuser.getAd_mail() != null && updateuser.getAd_mail().length() > 2) {
 			if (updateuser.getAd_mail().contains(("@"))) {
-
 				txtEmail.setText(updateuser.getAd_mail().split("@")[0]);
 				txtEmail2.setText(updateuser.getAd_mail().split("@")[1]);
 			}
@@ -176,9 +174,9 @@ public class UpdateAddressDialog extends JDialog {
 		if (updateuser.getAd_memo() != null) {
 			txtMemo.setText(updateuser.getAd_memo());
 		}
-		if (updateuser.getGroup_no() != 0) {
-			txtGroup.setText(String.valueOf(updateuser.getGroup_no()));
-		}
+//		if (updateuser !=null) {
+//			txtGroup.setText(String.valueOf(updateuser.getGroup_no()));
+//		}
 
 		// 텍스트필드위치
 		txtName.setBounds(100, 10, 200, 25);
@@ -269,7 +267,6 @@ public class UpdateAddressDialog extends JDialog {
 			if (updateuser.getAd_mail().length() > 2) {
 				txtEmail.setText(updateuser.getAd_mail().split("@")[0]);
 				txtEmail2.setText(updateuser.getAd_mail().split("@")[1]);
-//			mailCombo.setSelectedItem(updateuser.getAd_mail().split("@")[1]);
 			}
 			if (updateuser.getAd_com() != null) {
 				txtCom.setText(updateuser.getAd_com());
@@ -327,7 +324,11 @@ public class UpdateAddressDialog extends JDialog {
 			updateuser.setAd_no(Integer.parseInt(txtNo.getText()));
 			updateuser.setAd_name(txtName.getText());
 			updateuser.setAd_hp(txtPhone.getText());
-			updateuser.setAd_mail(txtEmail.getText() + "@" + txtEmail2.getText());
+			if (txtEmail.getText().trim().length()>1) {
+				updateuser.setAd_mail(txtEmail.getText() + "@" + txtEmail2.getText());
+			} else {
+				updateuser.setAd_mail("");
+			}
 			updateuser.setAd_com(txtCom.getText());
 			updateuser.setAd_department(txtDepartment.getText());
 			updateuser.setAd_postion(txtPosition.getText());

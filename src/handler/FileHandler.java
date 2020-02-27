@@ -41,6 +41,9 @@ public class FileHandler {
 	public ArrayList<GroupVO> getGroupList() {
 		return groupList;
 	}
+	
+
+	
 
 	/**
 	 * 엑셀 파일 읽어오는 메서드 1번째 시트 (그룹)
@@ -304,23 +307,24 @@ public class FileHandler {
 	 */
 	public ArrayList<UserVO> searchUserListByGroup(GroupVO group) {
 		ArrayList<UserVO> resList = new ArrayList<UserVO>();
-
+		System.out.println("searchUserListByGroup=====>Strart");
+		
 		if (group != null) {
-			System.out.println("111");
 			for (int i = 0; i < this.userList.size(); i++) {
 				UserVO user = this.userList.get(i);
 
 				if (user.getGroup_no() == group.getGroup_no()) {
 					resList.add(user);
-					System.out.println("====fileHandler====");
 					System.out.println(user.toString());
 				}
 
 			}
+			System.out.println("searchUserListByGroup=====>End");
 			return resList;
 		}
-		System.out.println("222");
+		System.out.println("searchUserListByGroup=====>End");
 		resList = this.userList;
+		
 		return resList;
 	}
 
@@ -330,41 +334,42 @@ public class FileHandler {
 	 * @param keword
 	 * @return
 	 */
-	public ArrayList<UserVO> searchUserListBykeword(String keword) {
-		System.out.println("검색결과가 넘어오나?====" + keword);
-		ArrayList<UserVO> resultList = new ArrayList<UserVO>();
+	public ArrayList<UserVO> searchUserListBykeyword(String keyword) {
+		
+		System.out.println("검색결과가 넘어오나?====" + keyword);
 
+		ArrayList<UserVO> resultList = new ArrayList<UserVO>();
 		for (int i = 0; i < this.userList.size(); i++) {
 			UserVO user = this.userList.get(i);
-			if (user.getAd_name().contains(keword)) {
+			if (user.getAd_name().contains(keyword)) {
 				resultList.add(user);
 				continue;
 			}
-			if (user.getAd_hp().contains(keword)) {
+			if (user.getAd_hp().contains(keyword)) {
 				resultList.add(user);
 				continue;
 			}
-			if (user.getAd_mail().contains(keword)) {
+			if (user.getAd_mail().contains(keyword)) {
 				resultList.add(user);
 				continue;
 			}
-			if (user.getAd_com().contains(keword)) {
+			if (user.getAd_com().contains(keyword)) {
 				resultList.add(user);
 				continue;
 			}
-			if (user.getAd_department().contains(keword)) {
+			if (user.getAd_department().contains(keyword)) {
 				resultList.add(user);
 				continue;
 			}
-			if (user.getAd_postion().contains(keword)) {
+			if (user.getAd_postion().contains(keyword)) {
 				resultList.add(user);
 				continue;
 			}
-			if (user.getAd_postion().contains(keword)) {
+			if (user.getAd_postion().contains(keyword)) {
 				resultList.add(user);
 				continue;
 			}
-			if (user.getAd_mail().contains(keword)) {
+			if (user.getAd_mail().contains(keyword)) {
 				resultList.add(user);
 				continue;
 			}
@@ -380,8 +385,10 @@ public class FileHandler {
 	 */
 	public void updateGroup(GroupVO group) {
 
+		System.out.println("======update======");
 		for (int i = 0; i < groupList.size(); i++) {
 			int groupNo = groupList.get(i).getGroup_no();
+			System.out.println("-----------------------?수정부분?--------------");
 			if (group.getGroup_no() == groupNo) {
 				groupList.get(i).setGroup_name(group.getGroup_name());
 			}
@@ -395,17 +402,23 @@ public class FileHandler {
 	 * @param user
 	 */
 	public void updateUser(UserVO user) {
-		System.out.println("업데이트되엇는감?");
+		System.out.println("=====updateUser start=========");
 		System.out.println("user.toString" + user.toString());
 		System.out.println();
 
 		int userNo = user.getAd_no();
 		System.out.println(user.getAd_no());
+
 		for (int i = 0; i < userList.size(); i++) {
+
 			System.out.println(user.getAd_no());
+
 			if (userList.get(i).getAd_no() == userNo) {
+
 				System.out.println("userList.get(i)=============");
+
 				userList.get(i).setAd_name(user.getAd_name());
+
 				if (user.getAd_hp() != null) {
 					userList.get(i).setAd_hp(user.getAd_hp());
 				}
@@ -424,14 +437,12 @@ public class FileHandler {
 				if (user.getAd_memo() != null) {
 					userList.get(i).setAd_memo(user.getAd_memo());
 				}
-				if (user.getGroup_no() == 0) {
+				if (user.getGroup_no() != 0) {
 					userList.get(i).setGroup_no(user.getGroup_no());
 				}
 			}
-
 		}
-		System.out.println("업데이트되엇는감?");
-		System.out.println("성공했쯰 ㅋ");
+		System.out.println("=====updateUser end=========");
 
 	}
 
@@ -480,11 +491,15 @@ public class FileHandler {
 		System.out.println("===그룹추가====");
 		group.setGroup_no(++this.groupIdx);
 		group.setGroup_name(group.getGroup_name());
-
 		System.out.println("groupInsertName = " + group.getGroup_name());
 		this.groupList.add(group);
 	}
 
+	/**
+	 * 그룹 삭제하기
+	 * 
+	 * @param group
+	 */
 	public void deleteGroup(GroupVO group) {
 		System.out.println("===delete Group===");
 
@@ -495,12 +510,17 @@ public class FileHandler {
 //			}
 //		}
 
-		System.out.println("........................................................................" + group.getGroup_no());
+		System.out.println("===delete Group end=======" + group.getGroup_no());
 		if (this.groupList.contains(group)) {
 			this.groupList.remove(group);
 		}
 	}
 
+	/**
+	 * 주소록 사람 삭제하기
+	 * 
+	 * @param userList
+	 */
 	public void deleteUser(ArrayList<UserVO> userList) {
 		System.out.println("===deleteUser====");
 

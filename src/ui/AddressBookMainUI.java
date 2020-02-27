@@ -66,8 +66,6 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 	private JTextField txtSearch;
 	private JButton btnSearch;
 	private JTable table;
-	private InsertAddressDialog insertAddressdiag;
-	private UpdateAddressDialog updateAddressdiag;
 	private DefaultMutableTreeNode root;
 
 	// 파일읽기
@@ -82,14 +80,13 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 	int cols[] = { 50, 50, 100, 150, 150, 100, 100, 100, 200 };
 
 	// 테이블 선택시 이벤트 발생을 위해
-
 	// 테이블 row
 	int selectedRow;
-
 	// 테이블 column
 	int selectedCol;
 
-	private Object tabeData = null; // 비어있는 오브젝트 생성
+	// 비어있는 오브젝트 생성
+	private Object tabeData = null;
 
 	/**
 	 * Create the frame.
@@ -148,7 +145,7 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 		treeSclPane = new JScrollPane();
 		leftSplitPane.add(treeSclPane, BorderLayout.CENTER);
 
-		// 트리부분
+		// 트리부분//
 
 		// 트리 넣기
 		initTree();
@@ -158,12 +155,12 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 		renderer.setLeafIcon(renderer.getDefaultClosedIcon());
 
 		tree.setCellRenderer(renderer);
+//		tree.setSelectionRow(0);
 		tree.setEditable(true);
 		tree.setDragEnabled(true);
 		tree.setDropMode(DropMode.ON_OR_INSERT);
 		treeSclPane.setViewportView(tree);
 		tree.setEditable(false);
-//		tree.setSelectionRow(0);
 		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.CONTIGUOUS_TREE_SELECTION);
 		expandTree(tree);
 
@@ -194,13 +191,19 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 		// 그룹추가버튼 이벤트
 		btnInsertGroup.addActionListener(e -> {
 
-			TreePath rootPath = tree.getSelectionPath();
-			DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) rootPath.getLastPathComponent();
+//			TreePath rootPath = tree.getSelectionPath();
 
-			if (!selectedNode.isRoot()) {
-				JOptionPane.showMessageDialog(leftSplitPane, "추가할 수없음", "Error", JOptionPane.ERROR_MESSAGE);
-				return;
-			}
+//			if (rootPath == null) {
+//				JOptionPane.showMessageDialog(leftSplitPane, "[전체]그룹 이름을  선택한 후에 추가 할 수 있습니다", "주의", JOptionPane.WARNING_MESSAGE);
+//				return;
+//			}
+
+//			DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) rootPath.getLastPathComponent();
+//
+//			if (!selectedNode.isRoot()) {
+//				JOptionPane.showMessageDialog(leftSplitPane, "현재 그룹 하위에 그룹을 추가할 수 없습니다.", "Error", JOptionPane.ERROR_MESSAGE);
+//				return;
+//			}
 
 			String addGroupName = JOptionPane.showInputDialog(leftSplitPane, "추가할 그룹명을 작성하세요", "그룹 추가하기", JOptionPane.CLOSED_OPTION);
 
@@ -209,11 +212,14 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 				return;
 			}
 
+			groupData = new GroupVO();
 			groupData.setGroup_name(addGroupName);
 			FileHandler.getInstance().addGroup(groupData);
-
 			DefaultMutableTreeNode newGroup = new DefaultMutableTreeNode(addGroupName);
-			((DefaultTreeModel) tree.getModel()).insertNodeInto(newGroup, selectedNode, selectedNode.getChildCount());
+			System.out.println("newGroup = " + newGroup.getUserObject().toString());
+			System.out.println("root is null ? " + (this.root == null));
+			System.out.println("root child = " + root.getChildCount());
+			((DefaultTreeModel) tree.getModel()).insertNodeInto(newGroup, root, root.getChildCount());
 			JOptionPane.showMessageDialog(leftSplitPane, "그룹추가가 완료되었습니다.", "성공", 1);
 
 			System.out.println(addGroupName);
@@ -224,6 +230,11 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 		btnDeleteGroup.addActionListener(e -> {
 
 			DefaultMutableTreeNode node = getSelectedNode();
+
+			if (node == null) {
+				JOptionPane.showMessageDialog(leftSplitPane, "그룹을 선택한 후에만 삭제할 수 있습니다..", "주의", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
 
 			if (node.getChildCount() > 0) {
 				JOptionPane.showMessageDialog(leftSplitPane, "그룹 안에 정보목록이 있으므로 삭제할 수 없습니다.", "주의", JOptionPane.WARNING_MESSAGE);
@@ -310,9 +321,6 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 				case 9:
 
 					return String.class;
-				case 10:
-
-					return String.class;
 
 				default:
 					return String.class;
@@ -374,11 +382,10 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 			}
 		});
 
-		// 인스턴스화
-		insertAddressdiag = new InsertAddressDialog(this, "주소록 추가");
-
 		// 주소록 추가 버튼 클릭 이벤트
 		btnInsertAddress.addActionListener(e -> {
+			// 인스턴스화
+			InsertAddressDialog insertAddressdiag = new InsertAddressDialog(this, "주소록 추가");
 			insertAddressdiag.setVisible(true);
 
 		});
@@ -390,11 +397,10 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 		});
 
 		// 검색버튼 이벤트
-
 		btnSearch.addActionListener(e -> {
-			String keword = txtSearch.getText();
+			String keyword = txtSearch.getText();
 
-			ArrayList<UserVO> userList = FileHandler.getInstance().searchUserListBykeword(keword);
+			ArrayList<UserVO> userList = FileHandler.getInstance().searchUserListBykeyword(keyword);
 			setTableData(userList);
 
 			txtSearch.setText("");
@@ -402,97 +408,9 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 
 	}
 
-	/**
-	 * 테이블 사용자 추가
-	 */
-	public void addUser(UserVO user) {
-
-		System.out.println("메인==================================>넘어온다");
-
-		System.out.println("이름 : " + user.getAd_name());
-		System.out.println("핸드폰 : " + user.getAd_hp());
-		System.out.println("이메일 : " + user.getAd_mail());
-		System.out.println("회사 : " + user.getAd_com());
-		System.out.println("부서 : " + user.getAd_department());
-		System.out.println("직책: " + user.getAd_postion());
-		System.out.println("메모 : " + user.getAd_memo());
-		System.out.println("그룹번호 : " + user.getGroup_no());
-		System.out.println("==================끝===================");
-
-		FileHandler.getInstance().addUser(user);
-
-		// 추가
-		((DefaultTableModel) table.getModel()).addRow(new Object[] { false, user.getAd_no(), user.getAd_name(), user.getAd_hp(), user.getAd_mail(), user.getAd_com(), user.getAd_department(), user.getAd_postion(), user.getAd_memo(), user.getGroup_no() });
-
-	}
-
-	/**
-	 * 테이블 사용자 수정
-	 * 
-	 * @param updateuser
-	 */
-	public void updateUser(UserVO updateuser) {
-
-		System.out.println("========수정확인하려는 메인이다========");
-		System.out.println("번호 : " + updateuser.getAd_no());
-		System.out.println("이름 : " + updateuser.getAd_name());
-		System.out.println("핸드폰 : " + updateuser.getAd_hp());
-		System.out.println("이메일 : " + updateuser.getAd_mail());
-		System.out.println("회사 : " + updateuser.getAd_com());
-		System.out.println("부서 : " + updateuser.getAd_department());
-		System.out.println("직책: " + updateuser.getAd_postion());
-		System.out.println("메모 : " + updateuser.getAd_memo());
-		System.out.println("그룹번호 : " + updateuser.getGroup_no());
-		System.out.println("==================끝===================");
-
-		int userNo = updateuser.getAd_no();
-
-		((DefaultTableModel) table.getModel()).removeRow(selectedRow);
-
-		// 수정
-		((DefaultTableModel) table.getModel()).addRow(new Object[] { false, userNo, updateuser.getAd_name(), updateuser.getAd_hp(), updateuser.getAd_mail(), updateuser.getAd_com(), updateuser.getAd_department(), updateuser.getAd_postion(), updateuser.getAd_memo(), updateuser.getGroup_no() });
-
-	}
-
-	private void deleteUesr() {
-		System.out.println("---delete start---");
-
-		int tableRowCount = table.getModel().getRowCount();
-		Object tablecheckbox = null;
-
-		ArrayList<UserVO> deleteUserList = new ArrayList<UserVO>();
-
-		for (int i = tableRowCount; i > 0; i--) {
-
-			tablecheckbox = table.getValueAt(i - 1, 0);
-
-			System.out.println(i - 1 + "i?");
-
-			if (tablecheckbox.equals(true)) {
-
-				userData = new UserVO();
-				userData.setAd_no((int) model.getValueAt(i - 1, 1));
-
-				deleteUserList.add(userData);
-				FileHandler.getInstance().deleteUser(deleteUserList);
-				((DefaultTableModel) table.getModel()).removeRow(i - 1);
-			}
-			System.out.println("---delete end---");
-		}
-	}
-
-	private void deleteUesr(int row) {
-		ArrayList<UserVO> deleteUserList = new ArrayList<UserVO>();
-		UserVO userData = new UserVO();
-		userData.setAd_no((int) model.getValueAt(row, 1));
-		deleteUserList.add(userData);
-		FileHandler.getInstance().deleteUser(deleteUserList);
-
-		((DefaultTableModel) table.getModel()).removeRow(row);
-	}
-
+///////////////////////////////////////////////////////////////////////////////////
 //////////////////////트리 관련 메서드//////////////////////////////////////////////////
-
+///////////////////////////////////////////////////////////////////////////////////
 	/**
 	 * 트리 초기화 메서드
 	 */
@@ -510,7 +428,7 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 	 */
 	private void setGroupTree(ArrayList<GroupVO> groupList) {
 
-		DefaultMutableTreeNode root, node;
+		DefaultMutableTreeNode node;
 
 		root = new DefaultMutableTreeNode("전체 ");
 
@@ -524,8 +442,6 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 		tree.addTreeSelectionListener(this);
 
 	}
-
-//tree부분
 
 	/**
 	 * 트리에서 사용하는 마우스 팝업 이벤트 메서드 - 수정 - 삭제
@@ -654,14 +570,12 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 
 			String selectGroupName = path.toString();
 			System.out.println("-----------------------여기");
-
 			System.out.println("그룹이름 : " + selectGroupName);
-
 			if (selectGroupName.equals("[전체 ]")) {
 				System.out.println("확인");
-
 				setTableData(FileHandler.getInstance().searchUserListByGroup(null));
 			}
+			
 		}
 
 		if (node == null) {
@@ -673,12 +587,15 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 		ArrayList<UserVO> userList = null;
 		if (obj instanceof GroupVO) {
 			GroupVO group = (GroupVO) obj;
+
 			groupData = group;
 			userList = FileHandler.getInstance().searchUserListByGroup(group);
 		} else {
 			userList = FileHandler.getInstance().searchUserListByGroup(null);
 		}
+		
 		System.out.println("UserList size = " + userList.size());
+
 		setTableData(userList);
 	}
 
@@ -687,6 +604,7 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 ///////////////////////////////테이블관련메서드/////////////////////////////////////	
 ///////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
+
 	/**
 	 * 트리에서 선택한 값 테이블에 넣어주기
 	 * 
@@ -779,7 +697,7 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 
 		System.out.println("======================for end ===========================");
 
-		updateAddressdiag = new UpdateAddressDialog(this, "주소록 수정", userData);
+		UpdateAddressDialog updateAddressdiag = new UpdateAddressDialog(this, "주소록 수정", userData);
 		System.out.println(">>>선택한 유저 번호" + userData.getAd_no());
 		System.out.println("*******************선택한유저이름?********" + userData.getAd_name());
 		System.out.println("*******************선택한유저 핸드폰번호?********" + userData.getAd_hp());
@@ -788,6 +706,101 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 
 	}
 
+	/**
+	 * 테이블 사용자 추가
+	 */
+	public void addUser(UserVO user) {
+
+		System.out.println("메인==================================>넘어온다");
+		System.out.println("이름 : " + user.getAd_name());
+		System.out.println("핸드폰 : " + user.getAd_hp());
+		System.out.println("이메일 : " + user.getAd_mail());
+		System.out.println("회사 : " + user.getAd_com());
+		System.out.println("부서 : " + user.getAd_department());
+		System.out.println("직책: " + user.getAd_postion());
+		System.out.println("메모 : " + user.getAd_memo());
+		System.out.println("그룹번호 : " + user.getGroup_no());
+		System.out.println("==================끝===================");
+
+		FileHandler.getInstance().addUser(user);
+
+		// 추가
+		((DefaultTableModel) table.getModel()).addRow(new Object[] { false, user.getAd_no(), user.getAd_name(), user.getAd_hp(), user.getAd_mail(), user.getAd_com(), user.getAd_department(), user.getAd_postion(), user.getAd_memo(), user.getGroup_no() });
+
+	}
+
+	/**
+	 * 테이블 사용자 수정
+	 * 
+	 * @param updateuser
+	 */
+	public void updateUser(UserVO updateuser) {
+
+		System.out.println("========수정확인하려는 메인이다========");
+		System.out.println("번호 : " + updateuser.getAd_no());
+		System.out.println("이름 : " + updateuser.getAd_name());
+		System.out.println("핸드폰 : " + updateuser.getAd_hp());
+		System.out.println("이메일 : " + updateuser.getAd_mail());
+		System.out.println("회사 : " + updateuser.getAd_com());
+		System.out.println("부서 : " + updateuser.getAd_department());
+		System.out.println("직책: " + updateuser.getAd_postion());
+		System.out.println("메모 : " + updateuser.getAd_memo());
+		System.out.println("그룹번호 : " + updateuser.getGroup_no());
+		System.out.println("==================끝===================");
+
+		int userNo = updateuser.getAd_no();
+
+		((DefaultTableModel) table.getModel()).removeRow(selectedRow);
+
+		// 수정
+		((DefaultTableModel) table.getModel()).addRow(new Object[] { false, userNo, updateuser.getAd_name(), updateuser.getAd_hp(), updateuser.getAd_mail(), updateuser.getAd_com(), updateuser.getAd_department(), updateuser.getAd_postion(), updateuser.getAd_memo(), updateuser.getGroup_no() });
+
+	}
+
+	/**
+	 * 테이블에 있는 유저를 삭제하는 메서드 체크박스 체크된 유저들만
+	 */
+	private void deleteUesr() {
+		System.out.println("---delete start---");
+
+		int tableRowCount = table.getModel().getRowCount();
+		Object tablecheckbox = null;
+
+		ArrayList<UserVO> deleteUserList = new ArrayList<UserVO>();
+
+		for (int i = tableRowCount; i > 0; i--) {
+
+			tablecheckbox = table.getValueAt(i - 1, 0);
+
+			System.out.println(i - 1 + "i?");
+
+			if (tablecheckbox.equals(true)) {
+
+				userData = new UserVO();
+				userData.setAd_no((int) model.getValueAt(i - 1, 1));
+
+				deleteUserList.add(userData);
+				FileHandler.getInstance().deleteUser(deleteUserList);
+				((DefaultTableModel) table.getModel()).removeRow(i - 1);
+			}
+			System.out.println("---delete end---");
+		}
+	}
+
+	/**
+	 * 선택된 사용자 삭제하기
+	 * 
+	 * @param row
+	 */
+	private void deleteUesr(int row) {
+		ArrayList<UserVO> deleteUserList = new ArrayList<UserVO>();
+		UserVO userData = new UserVO();
+		userData.setAd_no((int) model.getValueAt(row, 1));
+		deleteUserList.add(userData);
+		FileHandler.getInstance().deleteUser(deleteUserList);
+
+		((DefaultTableModel) table.getModel()).removeRow(row);
+	}
 
 	@Override
 	public void mouseClicked(MouseEvent e) {

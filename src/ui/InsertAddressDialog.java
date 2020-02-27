@@ -148,13 +148,9 @@ public class InsertAddressDialog extends JDialog {
 		// 그룹리스트
 //		String groupList[] = { "그룹선택", "가족", "회사", "친구" };
 //		JComboBox groupCombo = new JComboBox(groupList);
-		
-		
-		
+//		FileHandler.getInstance().readGroup();
 		groupList = FileHandler.getInstance().getGroupList();
 		JComboBox<?> groupCombo = new JComboBox(groupList.toArray());
-
-		
 
 		// 텍스트필드위치
 		txtName.setBounds(100, 10, 200, 25);
@@ -248,15 +244,18 @@ public class InsertAddressDialog extends JDialog {
 
 			// 이름 필수 입력 발리데이션
 			if (txtName.getText().length() <= 0) {
-				JOptionPane.showMessageDialog(mainContentPane, "이릅입력은 필수입니다. \n이름을입력해주세요\n", "경고",
-						JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(mainContentPane, "이릅입력은 필수입니다. \n이름을입력해주세요\n", "경고", JOptionPane.ERROR_MESSAGE);
 				return;
 			}
 
 			// 핸드폰번호 or 이메일 입력 발리데이션
 			if (txtPhone.getText().length() <= 0 && txtEmail.getText().length() <= 0) {
-				JOptionPane.showMessageDialog(mainContentPane, "핸드폰번호 또는 이메일  둘중 하나는 \n필수로 입력사항입니다.\n 입력해주세요.", "경고",
-						JOptionPane.ERROR_MESSAGE);
+
+				JOptionPane.showMessageDialog(mainContentPane, "핸드폰번호 또는 이메일  둘중 하나는 \n필수로 입력사항입니다.\n 입력해주세요.", "경고", JOptionPane.ERROR_MESSAGE);
+				return;
+
+			}else if (txtEmail.getText().trim().length()>1&& txtEmail2.getText().length() <= 0) {
+				JOptionPane.showMessageDialog(mainContentPane, "이메일 주소를 선택하거나 입력해주세요.", "경고", JOptionPane.ERROR_MESSAGE);
 				return;
 			}
 
@@ -268,8 +267,7 @@ public class InsertAddressDialog extends JDialog {
 				System.out.println(txtPhone.getText());
 
 				if (no == false) {
-					JOptionPane.showMessageDialog(mainContentPane, "핸드폰 번호 입력 형식이 잘못되었습니다.", "경고",
-							JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(mainContentPane, "핸드폰 번호 입력 형식이 잘못되었습니다.", "경고", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
 			}
@@ -277,13 +275,18 @@ public class InsertAddressDialog extends JDialog {
 			// 값 보내기
 			user.setAd_name(txtName.getText());
 			user.setAd_hp(txtPhone.getText());
-			user.setAd_mail(txtEmail.getText() + "@" + txtEmail2.getText());
+
+			if (txtEmail.getText().trim().length()>1) {
+				user.setAd_mail(txtEmail.getText() + "@" + txtEmail2.getText());
+			} else {
+				user.setAd_mail("");
+			}
 			user.setAd_com(txtCom.getText());
 			user.setAd_department(txtDepartment.getText());
 			user.setAd_postion(txtPosition.getText());
 			user.setAd_memo(txtMemo.getText());
 //			user.setGroup_name(groupCombo.getSelectedItem().toString());
-			user.setGroup_no(groupCombo.getSelectedIndex()+1);
+			user.setGroup_no(groupCombo.getSelectedIndex() + 1);
 
 			this.addressBookMainUI.addUser(user);
 
@@ -305,7 +308,13 @@ public class InsertAddressDialog extends JDialog {
 		setSize(450, 600);
 	}
 
-	// 핸드폰번호 유효성검사
+	/**
+	 * 
+	 * 핸드폰 유효성 검사
+	 * 
+	 * @param hp
+	 * @return
+	 */
 	private boolean isPhone(String hp) {
 
 		Pattern p = Pattern.compile("^\\d{3}-\\d{3,4}-\\d{4}$");
