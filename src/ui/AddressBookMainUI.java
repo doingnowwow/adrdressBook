@@ -2,6 +2,7 @@ package ui;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -212,10 +213,10 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 				return;
 			}
 
-			groupData = new GroupVO();
-			groupData.setGroup_name(addGroupName);
-			FileHandler.getInstance().addGroup(groupData);
-			DefaultMutableTreeNode newGroup = new DefaultMutableTreeNode(addGroupName);
+//			groupData = new GroupVO();
+//			groupData.setGroup_name(addGroupName);
+//			FileHandler.getInstance().addGroup(addGroupName);
+			DefaultMutableTreeNode newGroup = new DefaultMutableTreeNode(FileHandler.getInstance().addGroup(addGroupName));
 			System.out.println("newGroup = " + newGroup.getUserObject().toString());
 			System.out.println("root is null ? " + (this.root == null));
 			System.out.println("root child = " + root.getChildCount());
@@ -575,7 +576,7 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 				System.out.println("확인");
 				setTableData(FileHandler.getInstance().searchUserListByGroup(null));
 			}
-			
+
 		}
 
 		if (node == null) {
@@ -593,8 +594,6 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 		} else {
 			userList = FileHandler.getInstance().searchUserListByGroup(null);
 		}
-		
-		System.out.println("UserList size = " + userList.size());
 
 		setTableData(userList);
 	}

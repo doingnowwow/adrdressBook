@@ -310,6 +310,8 @@ public class FileHandler {
 		System.out.println("searchUserListByGroup=====>Strart");
 		
 		if (group != null) {
+			
+			System.out.println("group="+group.toString());
 			for (int i = 0; i < this.userList.size(); i++) {
 				UserVO user = this.userList.get(i);
 
@@ -322,12 +324,16 @@ public class FileHandler {
 			System.out.println("searchUserListByGroup=====>End");
 			return resList;
 		}
-		System.out.println("searchUserListByGroup=====>End");
+		
+		System.out.println("Null======searchUserListByGroup=====>End");
 		resList = this.userList;
 		
 		return resList;
 	}
+	
+	
 
+	
 	/**
 	 * 검색해서 해당하는 문자를 가지고 있는 사용자 리스트 보여주기
 	 * 
@@ -487,12 +493,14 @@ public class FileHandler {
 	 * 
 	 * @param group
 	 */
-	public void addGroup(GroupVO group) {
+	public GroupVO addGroup(String groupName) {
 		System.out.println("===그룹추가====");
+		GroupVO group = new GroupVO();
 		group.setGroup_no(++this.groupIdx);
-		group.setGroup_name(group.getGroup_name());
+		group.setGroup_name(groupName);
 		System.out.println("groupInsertName = " + group.getGroup_name());
 		this.groupList.add(group);
+		return group;
 	}
 
 	/**

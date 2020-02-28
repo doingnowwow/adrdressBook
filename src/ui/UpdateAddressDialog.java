@@ -359,7 +359,7 @@ public class UpdateAddressDialog extends JDialog {
 	// 핸드폰번호 유효성검사
 	private boolean isPhone(String hp) {
 
-		Pattern p = Pattern.compile("^\\d{3}-\\d{3,4}-\\d{4}$");
+		Pattern p = Pattern.compile("^\\d{3,4}-\\d{3,4}-\\d{4}$");
 		System.out.println("===유효성검사메서드===");
 		System.out.println(hp);
 

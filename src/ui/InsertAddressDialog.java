@@ -91,7 +91,9 @@ public class InsertAddressDialog extends JDialog {
 		mainContentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		mainContentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(mainContentPane);
-
+		
+		setLocation(500, 400);
+		
 		// 가운데 부분 시작
 		centerPane = new JPanel();
 		centerPane.setLayout(null);
@@ -317,7 +319,7 @@ public class InsertAddressDialog extends JDialog {
 	 */
 	private boolean isPhone(String hp) {
 
-		Pattern p = Pattern.compile("^\\d{3}-\\d{3,4}-\\d{4}$");
+		Pattern p = Pattern.compile("^\\d{3,4}-\\d{3,4}-\\d{4}$");
 		System.out.println("===유효성검사메서드===");
 		System.out.println(hp);
 
