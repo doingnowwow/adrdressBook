@@ -280,7 +280,7 @@ public class UpdateAddressDialog extends JDialog {
 			if (updateuser.getAd_memo() != null) {
 				txtMemo.setText(updateuser.getAd_memo());
 			}
-			if (updateuser.getGroup_no() != 0) {
+			if (updateuser.getGroup_no() != null) {
 				txtGroup.setText(String.valueOf(updateuser.getGroup_no()));
 			}
 
@@ -334,7 +334,7 @@ public class UpdateAddressDialog extends JDialog {
 			updateuser.setAd_postion(txtPosition.getText());
 			updateuser.setAd_memo(txtMemo.getText());
 
-			updateuser.setGroup_no(groupCombo.getSelectedIndex()+1);
+			updateuser.setGroup_no(String.valueOf(groupCombo.getSelectedIndex()+1));
 			this.addressBookMainUI.updateUser(updateuser);
 
 			// 등록하면서 값 비우기

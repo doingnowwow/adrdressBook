@@ -1,5 +1,8 @@
 package data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class UserVO {
 
 	private int ad_no;
@@ -10,10 +13,9 @@ public class UserVO {
 	private String ad_department;
 	private String ad_postion;
 	private String ad_memo;
-	private int group_no;
+	private String group_no;
 
 	public UserVO() {
-		// TODO Auto-generated constructor stub
 	}
 
 	public UserVO(String[] dataArray) {
@@ -27,10 +29,11 @@ public class UserVO {
 			this.ad_department = dataArray[5];
 			this.ad_postion = dataArray[6];
 			this.ad_memo = dataArray[7];
-			this.group_no = Integer.parseInt(dataArray[8]);
+			this.group_no = dataArray[8];
 
 		}
 	}
+
 
 	public int getAd_no() {
 		return ad_no;
@@ -96,11 +99,11 @@ public class UserVO {
 		this.ad_memo = ad_memo;
 	}
 
-	public int getGroup_no() {
+	public String getGroup_no() {
 		return group_no;
 	}
 
-	public void setGroup_no(int group_no) {
+	public void setGroup_no(String group_no) {
 		this.group_no = group_no;
 	}
 
@@ -117,5 +120,9 @@ public class UserVO {
 	public String toString() {
 		return "UserVO [ad_no=" + ad_no + ", ad_name=" + ad_name + ", ad_hp=" + ad_hp + ", ad_mail=" + ad_mail + ", ad_com=" + ad_com + ", ad_department=" + ad_department + ", ad_postion=" + ad_postion + ", ad_memo=" + ad_memo + ", group_no=" + group_no + "]";
 	}
+
+
+
+	
 
 }

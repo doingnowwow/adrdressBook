@@ -13,6 +13,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.DropMode;
@@ -90,7 +91,7 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 	 * Create the frame.
 	 */
 	public AddressBookMainUI() {
-		jbInit();
+		jbInit(this);
 	}
 
 	@Override
@@ -103,12 +104,12 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 		super.processWindowEvent(e);
 	}
 
-	private void jbInit() {
+	private void jbInit(AddressBookMainUI main) {
 
 		this.setTitle("주소록");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		setMinimumSize(new Dimension(700,500));
+		setMinimumSize(new Dimension(700, 500));
 
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -178,18 +179,24 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 			String addGroupName = JOptionPane.showInputDialog(leftSplitPane, "추가할 그룹명을 작성하세요", "그룹 추가하기", JOptionPane.CLOSED_OPTION);
 
 			if (addGroupName == null) {
-				JOptionPane.showMessageDialog(leftSplitPane, "그룹추가가 취소되었습니다..", "취소", JOptionPane.OK_OPTION);
+				JOptionPane.showMessageDialog(leftSplitPane, "그룹추가가 취소되었습니다.", "취소", JOptionPane.OK_OPTION);
 				return;
 			}
 
-			DefaultMutableTreeNode newGroup = new DefaultMutableTreeNode(FileHandler.getInstance().addGroup(addGroupName));
-			System.out.println("newGroup = " + newGroup.getUserObject().toString());
-			System.out.println("root is null ? " + (this.root == null));
-			System.out.println("root child = " + root.getChildCount());
-			((DefaultTreeModel) tree.getModel()).insertNodeInto(newGroup, root, root.getChildCount());
-			JOptionPane.showMessageDialog(leftSplitPane, "그룹추가가 완료되었습니다.", "성공", 1);
+			if (this.checkGroupName(addGroupName)) {
+				DefaultMutableTreeNode newGroup = new DefaultMutableTreeNode(FileHandler.getInstance().addGroup(addGroupName));
+				System.out.println("newGroup = " + newGroup.getUserObject().toString());
+				System.out.println("root is null ? " + (this.root == null));
+				System.out.println("root child = " + root.getChildCount());
+				((DefaultTreeModel) tree.getModel()).insertNodeInto(newGroup, root, root.getChildCount());
+				JOptionPane.showMessageDialog(leftSplitPane, "그룹추가가 완료되었습니다.", "성공", 1);
 
-			System.out.println(addGroupName);
+				System.out.println(addGroupName);
+
+			} else {
+				JOptionPane.showMessageDialog(leftSplitPane, "그룹명이 중복되어서 등록할 수없습니다.", "취소", JOptionPane.OK_OPTION);
+				return;
+			}
 
 		});
 
@@ -351,9 +358,11 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 
 		// 주소록 추가 버튼 클릭 이벤트
 		btnInsertAddress.addActionListener(e -> {
-			
+
 			// 인스턴스화
 			InsertAddressDialog insertAddressdiag = new InsertAddressDialog(this, "주소록 추가");
+			// 주소록 추가화면 가운데 뜨게 하기
+			insertAddressdiag.setLocationRelativeTo(main);
 			insertAddressdiag.setVisible(true);
 
 		});
@@ -488,7 +497,6 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 		if (groupNewname != null && !"".equals(groupNewname)) {
 			System.out.println("====수정====");
 			groupData.setGroup_name(groupNewname);
-//			node.setUserObject(groupNewname); <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 잘못됨 - 처음에 Node 생성시에는 GroupVO를 넣었으나 이름이 변경 되는 부분에서는 이름(String)객체를 넣어두었기 때문에 Jtree이벤트에서 object가 String으로 보여짐
 			node.setUserObject(groupData);
 
 			System.out.println(groupData.getGroup_no());
@@ -563,6 +571,27 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 		}
 
 		setTableData(userList);
+
+	}
+
+	/**
+	 * 그룹 명 중복 체크
+	 * 
+	 * @param groupName
+	 * @return
+	 */
+	public boolean checkGroupName(String groupName) {
+
+		List<GroupVO> groupList = FileHandler.getInstance().getGroupList();
+
+		for (int i = 0; i < groupList.size(); i++) {
+
+			if (groupName.equals(groupList.get(i).getGroup_name())) {
+				return false;
+			}
+
+		}
+		return true;
 
 	}
 
@@ -663,8 +692,9 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 		}
 
 		System.out.println("======================for end ===========================");
-
+	
 		UpdateAddressDialog updateAddressdiag = new UpdateAddressDialog(this, "주소록 수정", userData);
+		updateAddressdiag.setLocationRelativeTo(null);
 		System.out.println(">>>선택한 유저 번호" + userData.getAd_no());
 		System.out.println("*******************선택한유저이름?********" + userData.getAd_name());
 		System.out.println("*******************선택한유저 핸드폰번호?********" + userData.getAd_hp());

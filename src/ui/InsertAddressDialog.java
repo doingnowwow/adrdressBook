@@ -3,6 +3,7 @@ package ui;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -56,7 +57,7 @@ public class InsertAddressDialog extends JDialog {
 	private JTextArea txtMemo;
 	private JTextField txtGroup;
 	private String selectedGroup = "";
-	private int cnt =0;
+	private int cnt = 0;
 
 	private JTextField text = new JTextField(10);
 	private JButton btnReset = new JButton("초기화");
@@ -69,13 +70,13 @@ public class InsertAddressDialog extends JDialog {
 	private AddressBookMainUI addressBookMainUI = null;
 
 	// case 1 : 인터페이스를 넘겨 받음
-	public InsertAddressDialog(IAddUser listner, String title) {
-		this.listner = listner;
-		this.setTitle(title);
-		this.setModal(true);
-		this.setResizable(false);
-		this.initUI();
-	}
+//	public InsertAddressDialog(IAddUser listner, String title) {
+//		this.listner = listner;
+//		this.setTitle(title);
+//		this.setModal(true);
+//		this.setResizable(false);
+//		this.initUI();
+//	}
 
 	// case 2 부모 클래스 객체를 넘겨 받음
 	public InsertAddressDialog(AddressBookMainUI addressBookMainUI, String title) {
@@ -93,8 +94,6 @@ public class InsertAddressDialog extends JDialog {
 		mainContentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		mainContentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(mainContentPane);
-
-		setLocation(500, 400);
 
 		// 가운데 부분 시작
 		centerPane = new JPanel();
@@ -186,22 +185,21 @@ public class InsertAddressDialog extends JDialog {
 		// 그룹 콤보박스 선택시 이벤트
 		cnt = 0;
 		groupCombo.addActionListener(e -> {
-		
 
-			String selectGroup = groupCombo.getItemAt(groupCombo.getSelectedIndex()).toString();
+			String comboGroupo = groupCombo.getItemAt(groupCombo.getSelectedIndex()).toString();
 
 			String txtGroupFiled = txtGroup.getText();
-			System.out.println("txtGroupFiled = " + txtGroupFiled + "selectGroup" + selectGroup);
+			System.out.println("txtGroupFiled = " + txtGroupFiled + "selectGroup" + comboGroupo);
 
-			if (this.isSelectedGroup(txtGroupFiled, selectGroup)) {
-				if(cnt==0) {
-					selectedGroup += selectGroup;
-				}else {
-					
-					selectedGroup += ","+selectGroup;
+			if (this.isSelectedGroup(txtGroupFiled, comboGroupo)) {
+				if (cnt == 0) {
+					selectedGroup += comboGroupo;
+				} else {
+
+					selectedGroup += "," + comboGroupo;
 				}
 				System.out.println("selectedGroup===" + selectedGroup);
-				
+
 				cnt++;
 			}
 
@@ -303,6 +301,7 @@ public class InsertAddressDialog extends JDialog {
 			user.setAd_name(txtName.getText());
 			user.setAd_hp(txtPhone.getText());
 
+			// 이메일 입력 했을때만 @붙여서 올바른 이메일 값 보내기
 			if (txtEmail.getText().trim().length() > 1) {
 				user.setAd_mail(txtEmail.getText() + "@" + txtEmail2.getText());
 			} else {
@@ -312,19 +311,14 @@ public class InsertAddressDialog extends JDialog {
 			user.setAd_department(txtDepartment.getText());
 			user.setAd_postion(txtPosition.getText());
 			user.setAd_memo(txtMemo.getText());
-			user.setGroup_no(groupCombo.getSelectedIndex() + 1);
+
+			// 그룹선택에 관한 부분 ///
+			user.setGroup_no(this.setGroupNo(txtGroup.getText()));
 
 			this.addressBookMainUI.addUser(user);
 
 			// 등록하면서 값 비우기
-			txtName.setText("");
-			txtPhone.setText("");
-			txtEmail.setText("");
-			txtEmail2.setText("");
-			txtCom.setText("");
-			txtDepartment.setText("");
-			txtPosition.setText("");
-			txtMemo.setText("");
+			this.clearTextFiled();
 
 			// 화면꺼
 			setVisible(false);
@@ -332,6 +326,50 @@ public class InsertAddressDialog extends JDialog {
 		});
 
 		setSize(450, 600);
+	}
+
+	
+	
+	/**
+	 * 그룹리스트에서 번호를 가져오기..
+	 * 
+	 * @param txtGroupFiled
+	 * @return
+	 */
+	public String setGroupNo(String txtGroupFiled) {
+
+		String groupNo = "";
+
+		if (txtGroupFiled == null) {
+			groupNo = "0";
+
+			return groupNo;
+		} else if (txtGroupFiled.contains(",")) {
+
+			String[] groupList = txtGroupFiled.split(",");
+			List<GroupVO> filegroupList = FileHandler.getInstance().getGroupList();
+
+			
+			for (int i = 0; i < filegroupList.size(); i++) {
+
+				for (int j = 0; j < groupList.length; j++) {
+
+					System.out.println("filegroupList.get(i).getGroup_name()=" + filegroupList.get(i).getGroup_name() + " / groupList[j]) = " + groupList[j]);
+					if (filegroupList.get(i).getGroup_name().equals(groupList[j])) {
+						if(groupNo.equals("")) {
+							groupNo +=filegroupList.get(i).getGroup_no();
+						}else {
+							groupNo += ","+filegroupList.get(i).getGroup_no();
+						}
+					}
+				}
+			}
+			System.out.println("groupNO=" + groupNo);
+			return groupNo;
+		}
+
+		return groupNo;
+
 	}
 
 	/**
@@ -421,6 +459,9 @@ public class InsertAddressDialog extends JDialog {
 
 	}
 
+	/**
+	 * 전체 텍스트 필드를 지워주는 메서드
+	 */
 	private void clearTextFiled() {
 
 		txtName.setText("");
