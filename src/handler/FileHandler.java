@@ -29,9 +29,13 @@ public class FileHandler {
 	private int groupIdx = 0;
 	private int userIdx = 0;
 
+	private int userKey ;
+	private int groupKey ;
+
 	private FileHandler() {
 		readGroup();
 		readUser();
+		readKey();
 	}
 
 	public static FileHandler getInstance() {
@@ -41,9 +45,6 @@ public class FileHandler {
 	public ArrayList<GroupVO> getGroupList() {
 		return groupList;
 	}
-	
-
-	
 
 	/**
 	 * 엑셀 파일 읽어오는 메서드 1번째 시트 (그룹)
@@ -90,6 +91,7 @@ public class FileHandler {
 			}
 
 			this.groupIdx = this.groupList.get(this.groupList.size() - 1).getGroup_no();
+			this.groupKey = groupIdx ;
 
 		} catch (FileNotFoundException fe) {
 			System.out.println("FileNotFoundException >> " + fe.toString());
@@ -169,9 +171,13 @@ public class FileHandler {
 			} else {
 
 				this.userIdx = this.userList.get(this.userList.size() - 1).getAd_no();
+				
+				this.userKey = userIdx;
 			}
 
 			System.out.println("userIdx = " + userIdx);
+			
+			System.out.println("userKey = " + userKey);
 
 		} catch (FileNotFoundException fe) {
 			System.out.println("FileNotFoundException >> " + fe.toString());
@@ -180,6 +186,78 @@ public class FileHandler {
 		}
 		return userList;
 	}
+
+	/**
+	 * 전체 그룹 키 읽어오기
+	 */
+	public void readKey() {
+
+		try {
+			// 엑셀파일
+			File file = new File("D://test1.xlsx");
+
+			// 엑셀 파일 오픈
+			XSSFWorkbook wb = new XSSFWorkbook(new FileInputStream(file));
+
+			Cell cell = null;
+
+
+			for (Row row : wb.getSheetAt(2)) {
+				if (row.getRowNum() < 0) {
+					continue;
+				}
+
+//	              두번째 셀이 비어있으면 for문을 멈춘다.
+				if (row.getCell(1) == null) {
+					break;
+				}
+				
+				if(row.getRowNum()==0) {
+					groupKey = (int) row.getCell(1).getNumericCellValue();
+					System.out.println("===>groupkey=" + groupKey);
+				}else if(row.getRowNum()==1) {
+					userKey = (int) row.getCell(1).getNumericCellValue();
+					System.out.println("===>userKey=" + userKey);
+				}
+				
+				
+
+			}
+		} catch (FileNotFoundException fe) {
+			System.out.println("FileNotFoundException >> " + fe.toString());
+		} catch (IOException ie) {
+			System.out.println("IOException >> " + ie.toString());
+		}
+
+	}
+	
+	/**
+	 * 그룹 키 시트 다시 쓰는 메서드
+	 */
+	public void writeKey() {
+		
+		//새 시트 생성
+		XSSFSheet sheet = workbook.createSheet("키관리");
+		
+		// 엑셀의 행은 0번부터 시작
+		XSSFRow row = sheet.createRow(0);
+		// 행의 셀은 0번부터 시작
+		XSSFCell cell = row.createCell(0);
+		cell.setCellValue("그룹");
+		cell = row.createCell(1);
+		cell.setCellValue(groupKey);
+		
+		row = sheet.createRow(1);
+		cell = row.createCell(0);
+		cell.setCellValue("사용자");
+		cell = row.createCell(1);
+		cell.setCellValue(userKey);
+		
+		// 파일만들기
+		this.wirteFile(sheet);
+
+	}
+	
 
 	/**
 	 * 그룹을 엑셀로 작성하는 메서드
@@ -213,7 +291,8 @@ public class FileHandler {
 			cell.setCellValue(groupList.get(i).getGroup_name());
 		}
 
-		groupIdx++;
+		this.groupIdx++;
+		this.groupKey = groupIdx;
 
 		// 파일만들기
 		this.wirteFile(sheet);
@@ -270,6 +349,9 @@ public class FileHandler {
 			cell.setCellValue(userList.get(i).getGroup_no());
 
 		}
+		
+		this.userIdx++	;
+		this.userKey = userIdx;
 
 		// 파일만들기
 		this.wirteFile(sheet);
@@ -284,14 +366,11 @@ public class FileHandler {
 	public void wirteFile(XSSFSheet sheet) {
 
 		try {
-			FileOutputStream fileoutputstream = new FileOutputStream("D://test2.xlsx");
-			FileOutputStream fileoutputstream2 = new FileOutputStream("D://test1.xlsx");
+			FileOutputStream fileoutputstream = new FileOutputStream("D://test1.xlsx");
 
 			workbook.write(fileoutputstream);
-			workbook.write(fileoutputstream2);
 
 			fileoutputstream.close();
-			fileoutputstream2.close();
 			System.out.println("엑셀파일생성성공");
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -308,10 +387,10 @@ public class FileHandler {
 	public ArrayList<UserVO> searchUserListByGroup(GroupVO group) {
 		ArrayList<UserVO> resList = new ArrayList<UserVO>();
 		System.out.println("searchUserListByGroup=====>Strart");
-		
+
 		if (group != null) {
-			
-			System.out.println("group="+group.toString());
+
+			System.out.println("group=" + group.toString());
 			for (int i = 0; i < this.userList.size(); i++) {
 				UserVO user = this.userList.get(i);
 
@@ -324,16 +403,13 @@ public class FileHandler {
 			System.out.println("searchUserListByGroup=====>End");
 			return resList;
 		}
-		
+
 		System.out.println("Null======searchUserListByGroup=====>End");
 		resList = this.userList;
-		
+
 		return resList;
 	}
-	
-	
 
-	
 	/**
 	 * 검색해서 해당하는 문자를 가지고 있는 사용자 리스트 보여주기
 	 * 
@@ -341,7 +417,7 @@ public class FileHandler {
 	 * @return
 	 */
 	public ArrayList<UserVO> searchUserListBykeyword(String keyword) {
-		
+
 		System.out.println("검색결과가 넘어오나?====" + keyword);
 
 		ArrayList<UserVO> resultList = new ArrayList<UserVO>();
@@ -394,7 +470,6 @@ public class FileHandler {
 		System.out.println("======update======");
 		for (int i = 0; i < groupList.size(); i++) {
 			int groupNo = groupList.get(i).getGroup_no();
-			System.out.println("-----------------------?수정부분?--------------");
 			if (group.getGroup_no() == groupNo) {
 				groupList.get(i).setGroup_name(group.getGroup_name());
 			}
@@ -460,7 +535,7 @@ public class FileHandler {
 	public void addUser(UserVO user) {
 		System.out.println("===주소록 user추가===");
 
-		user.setAd_no(++this.userIdx);
+		user.setAd_no(userKey);
 		user.setAd_name(user.getAd_name());
 		if (user.getAd_hp() != null) {
 			user.setAd_hp(user.getAd_hp());
@@ -483,6 +558,8 @@ public class FileHandler {
 		}
 		if (user.getGroup_no() != 0) {
 			user.setGroup_no(user.getGroup_no());
+		} else if (user.getGroup_no() == 0) {
+			user.setGroup_no(user.getGroup_no());
 		}
 		this.userList.add(user);
 		System.out.println("추가완료" + user.toString());
@@ -496,7 +573,7 @@ public class FileHandler {
 	public GroupVO addGroup(String groupName) {
 		System.out.println("===그룹추가====");
 		GroupVO group = new GroupVO();
-		group.setGroup_no(++this.groupIdx);
+		group.setGroup_no(groupKey);
 		group.setGroup_name(groupName);
 		System.out.println("groupInsertName = " + group.getGroup_name());
 		this.groupList.add(group);

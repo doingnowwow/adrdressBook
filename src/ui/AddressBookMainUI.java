@@ -1,8 +1,10 @@
 package ui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Point;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -69,11 +71,6 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 	private JTable table;
 	private DefaultMutableTreeNode root;
 
-	// 파일읽기
-//	ArrayList<GroupVO> groupList = FileHandler.getInstance().readGroup();
-//	ArrayList<UserVO> userList = FileHandler.getInstance().readUser();
-
-//	ArrayList<GroupVO> groupList = new ArrayList<GroupVO>();
 	private DefaultTableModel model;
 
 	// 테이블 초기 셋팅
@@ -101,6 +98,7 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 		if (e.getID() == WindowEvent.WINDOW_CLOSING) {
 			FileHandler.getInstance().wirteGroup();
 			FileHandler.getInstance().wirteUser();
+			FileHandler.getInstance().writeKey();
 		}
 		super.processWindowEvent(e);
 	}
@@ -110,7 +108,7 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 		this.setTitle("주소록");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		setBounds(100, 100, 1024, 601);
+		setMinimumSize(new Dimension(700,500));
 
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -146,7 +144,7 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 		treeSclPane = new JScrollPane();
 		leftSplitPane.add(treeSclPane, BorderLayout.CENTER);
 
-		// 트리부분//
+///////////////////////// 트리부분////////////////////////////////////
 
 		// 트리 넣기
 		initTree();
@@ -156,7 +154,6 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 		renderer.setLeafIcon(renderer.getDefaultClosedIcon());
 
 		tree.setCellRenderer(renderer);
-//		tree.setSelectionRow(0);
 		tree.setEditable(true);
 		tree.setDragEnabled(true);
 		tree.setDropMode(DropMode.ON_OR_INSERT);
@@ -169,42 +166,14 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 		tree.addMouseListener(new MouseAdapter() {
 
 			public void mousePressed(MouseEvent event) {
-				// 마우스 선택 이벤트
-//				if (tree.getSelectionCount() > 0) { <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 하는 기능이 없습니다. 왜 만들었는지 알수 없습니다. 로그 확인 ?
-//					DefaultMutableTreeNode selectedNode = getSelectedNode();
-//					Object obj = selectedNode.getUserObject();
-//					Object pobj = null;
-//					DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) selectedNode.getParent();
-//					if (parentNode != null)
-//						pobj = parentNode.getUserObject();
-//					System.out.println("Selected MOUSE **>: [" + obj + "], isLeaf[" + selectedNode.isLeaf()
-//							+ "], parent:[" + pobj + "]");
-//					System.out.println();
-//				}
 				if (((event.getModifiers() & InputEvent.BUTTON3_MASK) != 0) && (tree.getSelectionCount() > 0)) {
 					showMenu(event.getX(), event.getY());
 				}
 			}
 		});
 
-//		tree.addMouseListener(this);
-
 		// 그룹추가버튼 이벤트
 		btnInsertGroup.addActionListener(e -> {
-
-//			TreePath rootPath = tree.getSelectionPath();
-
-//			if (rootPath == null) {
-//				JOptionPane.showMessageDialog(leftSplitPane, "[전체]그룹 이름을  선택한 후에 추가 할 수 있습니다", "주의", JOptionPane.WARNING_MESSAGE);
-//				return;
-//			}
-
-//			DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) rootPath.getLastPathComponent();
-//
-//			if (!selectedNode.isRoot()) {
-//				JOptionPane.showMessageDialog(leftSplitPane, "현재 그룹 하위에 그룹을 추가할 수 없습니다.", "Error", JOptionPane.ERROR_MESSAGE);
-//				return;
-//			}
 
 			String addGroupName = JOptionPane.showInputDialog(leftSplitPane, "추가할 그룹명을 작성하세요", "그룹 추가하기", JOptionPane.CLOSED_OPTION);
 
@@ -213,9 +182,6 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 				return;
 			}
 
-//			groupData = new GroupVO();
-//			groupData.setGroup_name(addGroupName);
-//			FileHandler.getInstance().addGroup(addGroupName);
 			DefaultMutableTreeNode newGroup = new DefaultMutableTreeNode(FileHandler.getInstance().addGroup(addGroupName));
 			System.out.println("newGroup = " + newGroup.getUserObject().toString());
 			System.out.println("root is null ? " + (this.root == null));
@@ -385,6 +351,7 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 
 		// 주소록 추가 버튼 클릭 이벤트
 		btnInsertAddress.addActionListener(e -> {
+			
 			// 인스턴스화
 			InsertAddressDialog insertAddressdiag = new InsertAddressDialog(this, "주소록 추가");
 			insertAddressdiag.setVisible(true);
@@ -596,6 +563,7 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 		}
 
 		setTableData(userList);
+
 	}
 
 ///////////////////////////////////////////////////////////////////////////////
