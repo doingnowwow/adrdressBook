@@ -3,8 +3,11 @@ package data;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserVO {
+import net.mbiz.edt.barcode.table.data.TableData;
 
+public class UserVO implements TableData {
+
+	private boolean isChecked = false;
 	private int ad_no;
 	private String ad_name;
 	private String ad_hp;
@@ -34,6 +37,13 @@ public class UserVO {
 		}
 	}
 
+	public boolean isChecked() {
+		return isChecked;
+	}
+
+	public void setChecked(boolean isChecked) {
+		this.isChecked = isChecked;
+	}
 
 	public int getAd_no() {
 		return ad_no;
@@ -118,11 +128,38 @@ public class UserVO {
 
 	@Override
 	public String toString() {
-		return "UserVO [ad_no=" + ad_no + ", ad_name=" + ad_name + ", ad_hp=" + ad_hp + ", ad_mail=" + ad_mail + ", ad_com=" + ad_com + ", ad_department=" + ad_department + ", ad_postion=" + ad_postion + ", ad_memo=" + ad_memo + ", group_no=" + group_no + "]";
+		return "UserVO [isChecked=" + isChecked + ", ad_no=" + ad_no + ", ad_name=" + ad_name + ", ad_hp=" + ad_hp + ", ad_mail=" + ad_mail + ", ad_com=" + ad_com + ", ad_department=" + ad_department + ", ad_postion=" + ad_postion + ", ad_memo=" + ad_memo + ", group_no=" + group_no + "]";
 	}
 
+	@Override
+	public Object getValueByColumIndex(int col) {
+		switch (col) {
+		case 0:
+			return this.isChecked;
+		case 1:
+			return this.ad_no;
+		case 2:
+			return this.ad_name;
+		case 3:
+			return this.ad_hp;
+		case 4:
+			return this.ad_mail;
+		case 5:
+			return this.ad_com;
+		case 6:
+			return this.ad_department;
+		case 7:
+			return this.ad_postion;
+		case 8:
+			return this.ad_memo;
 
+		}
+		return "";
+	}
 
-	
+	@Override
+	public void setValueByColumIndex(int col, Object obj) {
+		this.isChecked = (boolean) obj;
+	}
 
 }

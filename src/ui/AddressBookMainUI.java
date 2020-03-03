@@ -3,13 +3,10 @@ package ui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Point;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -40,11 +37,12 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import org.apache.xmlbeans.impl.xb.xsdschema.RedefineDocument.Redefine;
+
 import data.GroupVO;
 import data.UserVO;
 import handler.FileHandler;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+import net.mbiz.edt.barcode.table.model.MbizTableModel;
 
 public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener, TreeSelectionListener {
 
@@ -72,7 +70,7 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 	private JTable table;
 	private DefaultMutableTreeNode root;
 
-	private DefaultTableModel model;
+	private MbizTableModel model;
 
 	// 테이블 초기 셋팅
 	String colNames[] = { "x", "번호", "이름", "핸드폰번호", "이메일", "회사", "부서", "직책", "메모" };
@@ -189,6 +187,7 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 				System.out.println("root is null ? " + (this.root == null));
 				System.out.println("root child = " + root.getChildCount());
 				((DefaultTreeModel) tree.getModel()).insertNodeInto(newGroup, root, root.getChildCount());
+				((DefaultTreeModel) tree.getModel()).reload();
 				JOptionPane.showMessageDialog(leftSplitPane, "그룹추가가 완료되었습니다.", "성공", 1);
 
 				System.out.println(addGroupName);
@@ -261,67 +260,18 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 		rightSplitPane.add(tableSclPane, BorderLayout.CENTER);
 
 		// 테이블 에 들어갈 부분
-		model = new DefaultTableModel(colNames, 0) {
-
-			@Override
-			public Class getColumnClass(int column) {
-
-				switch (column) {
-				case 0:
-
-					return boolean.class;
-				case 1:
-					return Integer.class;
-				case 2:
-					return String.class;
-				case 3:
-
-					return String.class;
-				case 4:
-
-					return String.class;
-				case 5:
-
-					return String.class;
-				case 6:
-
-					return String.class;
-				case 7:
-
-					return String.class;
-				case 8:
-
-					return String.class;
-				case 9:
-
-					return String.class;
-
-				default:
-					return String.class;
-				}
-
-			}
-
-			@Override
-			public boolean isCellEditable(int row, int column) {
-				if (column == 0) {
-					return true;
-				}
-
-				return false;
-
-			}
-		};
-
+		model = new MbizTableModel(colNames, cols);
 		table = new JTable(model);
+
+		model.setEditColumn(0);
+		model.setSorting(false);
 
 		JCheckBox checkBox = new JCheckBox();
 
 		DefaultCellEditor checkboxRend = new DefaultCellEditor(checkBox);
-//			
 		TableRenderer tableR = new TableRenderer();
-		table.getColumn("x").setCellRenderer(tableR);
-		table.getColumn("x").setCellEditor(checkboxRend);
+		table.getColumnModel().getColumn(0).setCellRenderer(tableR);
+		table.getColumnModel().getColumn(0).setCellEditor(checkboxRend);
 
 		table.getTableHeader().setReorderingAllowed(false);// 컬럼들 이동 불가
 		table.getTableHeader().setResizingAllowed(false); // 컬럼 크기 조절 불가
@@ -338,15 +288,15 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 			public void mousePressed(MouseEvent event) {
 				// 마우스 선택 이벤트
 				if (table.getSelectedRowCount() > 0) {
-
-					DefaultMutableTreeNode selectedNode = getSelectedNode();
-
 					selectedRow = table.getSelectedRow();
 					selectedCol = table.getSelectedColumn();
 
-					Object pobj = null;
-					pobj = table.getValueAt(selectedRow, selectedCol);
-					System.out.println("Selected MOUSE TABLE --> row: [" + selectedRow + "], column : [" + selectedCol + "], 선택한내용:[" + pobj.toString() + "]");
+					int selRow = table.getSelectedRow();
+					UserVO user = (UserVO) model.getData(selRow);
+
+//					Object pobj = null;
+//					pobj = table.getValueAt(selectedRow, selectedCol);
+					System.out.println("Selected MOUSE TABLE --> row: [" + selectedRow + "], column : [" + selectedCol + "], 선택한내용:[" + user.toString() + "]");
 
 				}
 
@@ -477,6 +427,7 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 					node = (DefaultMutableTreeNode) (paths[i].getLastPathComponent());
 					model.removeNodeFromParent(node);
 				}
+				FileHandler.getInstance().updateGroup(groupData);
 				FileHandler.getInstance().deleteGroup(groupData);
 
 			}
@@ -608,13 +559,15 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 	 */
 	private void setTableData(ArrayList<UserVO> userList) {
 
-		table.getModel();
-		model.setNumRows(0);
+//		table.getModel();
+//		model.setNumRows(0);
 
-		for (int i = 0; i < userList.size(); i++) {
-			model.addRow(new Object[] { false, userList.get(i).getAd_no(), userList.get(i).getAd_name(), userList.get(i).getAd_hp(), userList.get(i).getAd_mail(), userList.get(i).getAd_com(), userList.get(i).getAd_department(), userList.get(i).getAd_postion(), userList.get(i).getAd_memo(), userList.get(i).getGroup_no() });
+		model.removeAll();
+		model.addDataList(userList);
 
-		}
+//		for (int i = 0; i < userList.size(); i++) {
+//			model.addRow(new Object[] { false, userList.get(i).getAd_no(), userList.get(i).getAd_name(), userList.get(i).getAd_hp(), userList.get(i).getAd_mail(), userList.get(i).getAd_com(), userList.get(i).getAd_department(), userList.get(i).getAd_postion(), userList.get(i).getAd_memo(), userList.get(i).getGroup_no() });
+//		}
 
 	}
 
@@ -692,7 +645,7 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 		}
 
 		System.out.println("======================for end ===========================");
-	
+
 		UpdateAddressDialog updateAddressdiag = new UpdateAddressDialog(this, "주소록 수정", userData);
 		updateAddressdiag.setLocationRelativeTo(null);
 		System.out.println(">>>선택한 유저 번호" + userData.getAd_no());
@@ -722,7 +675,8 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 		FileHandler.getInstance().addUser(user);
 
 		// 추가
-		((DefaultTableModel) table.getModel()).addRow(new Object[] { false, user.getAd_no(), user.getAd_name(), user.getAd_hp(), user.getAd_mail(), user.getAd_com(), user.getAd_department(), user.getAd_postion(), user.getAd_memo(), user.getGroup_no() });
+
+		model.addData(user);
 
 	}
 
@@ -761,27 +715,25 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 		System.out.println("---delete start---");
 
 		int tableRowCount = table.getModel().getRowCount();
-		Object tablecheckbox = null;
 
 		ArrayList<UserVO> deleteUserList = new ArrayList<UserVO>();
 
-		for (int i = tableRowCount; i > 0; i--) {
-
-			tablecheckbox = table.getValueAt(i - 1, 0);
-
-			System.out.println(i - 1 + "i?");
-
-			if (tablecheckbox.equals(true)) {
-
-				userData = new UserVO();
-				userData.setAd_no((int) model.getValueAt(i - 1, 1));
-
-				deleteUserList.add(userData);
-				FileHandler.getInstance().deleteUser(deleteUserList);
-				((DefaultTableModel) table.getModel()).removeRow(i - 1);
+		for (int i = 0; i < model.getRowCount(); i++) {
+			UserVO user = (UserVO) model.getData(i);
+			if (user.isChecked()) {
+				deleteUserList.add(user);
 			}
-			System.out.println("---delete end---");
 		}
+
+		FileHandler.getInstance().deleteUser(deleteUserList);
+
+		// 화면에서 삭제처리
+		for (UserVO userVO : deleteUserList) {
+			this.model.remove(userVO);
+		}
+
+		System.out.println("---delete end---");
+
 	}
 
 	/**

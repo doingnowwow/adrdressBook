@@ -13,8 +13,7 @@ public class TableRenderer extends JCheckBox implements TableCellRenderer {
 		setHorizontalAlignment(JLabel.CENTER);
 	}
 
-	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
-			int row, int column) {
+	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 		if (isSelected) {
 			setForeground(table.getSelectionForeground());
 			// super.setBackground(table.getSelectionBackground());
@@ -23,7 +22,7 @@ public class TableRenderer extends JCheckBox implements TableCellRenderer {
 			setForeground(table.getForeground());
 			setBackground(table.getBackground());
 		}
-		
+
 		this.setSelected((value != null && ((Boolean) value).booleanValue()));
 		return this;
 	}

@@ -381,7 +381,7 @@ public class FileHandler {
 	public ArrayList<UserVO> searchUserListByGroup(GroupVO group) {
 		ArrayList<UserVO> resList = new ArrayList<UserVO>();
 		System.out.println("searchUserListByGroup=====>Strart");
-		
+
 		String userGroupList = "";
 
 		if (group != null) {
@@ -389,17 +389,24 @@ public class FileHandler {
 			System.out.println("group=" + group.toString());
 			for (int i = 0; i < this.userList.size(); i++) {
 				UserVO user = this.userList.get(i);
-				
-				if(user.getGroup_no().contains(",")) {
-					String [] userGroup = user.getGroup_no().split(",");
-						
-				}
-				
-				
-				
 
-				if (user.getGroup_no().equals(String.valueOf(group.getGroup_no()))) {
-					resList.add(user);
+				if (user.getGroup_no().contains(",")) {
+
+					String[] userGroup = user.getGroup_no().split(",");
+
+					for (int j = 0; j < userGroup.length; j++) {
+						if (userGroup[j].equals(String.valueOf(group.getGroup_no()))) {
+							resList.add(user);
+						}
+
+					}
+
+				} else {
+
+					if (user.getGroup_no().equals(String.valueOf(group.getGroup_no()))) {
+						resList.add(user);
+					}
+
 					System.out.println(user.toString());
 				}
 

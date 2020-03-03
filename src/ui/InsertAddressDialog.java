@@ -4,11 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -328,8 +326,6 @@ public class InsertAddressDialog extends JDialog {
 		setSize(450, 600);
 	}
 
-	
-	
 	/**
 	 * 그룹리스트에서 번호를 가져오기..
 	 * 
@@ -349,17 +345,16 @@ public class InsertAddressDialog extends JDialog {
 			String[] groupList = txtGroupFiled.split(",");
 			List<GroupVO> filegroupList = FileHandler.getInstance().getGroupList();
 
-			
 			for (int i = 0; i < filegroupList.size(); i++) {
 
 				for (int j = 0; j < groupList.length; j++) {
 
 					System.out.println("filegroupList.get(i).getGroup_name()=" + filegroupList.get(i).getGroup_name() + " / groupList[j]) = " + groupList[j]);
 					if (filegroupList.get(i).getGroup_name().equals(groupList[j])) {
-						if(groupNo.equals("")) {
-							groupNo +=filegroupList.get(i).getGroup_no();
-						}else {
-							groupNo += ","+filegroupList.get(i).getGroup_no();
+						if (groupNo.equals("")) {
+							groupNo += filegroupList.get(i).getGroup_no();
+						} else {
+							groupNo += "," + filegroupList.get(i).getGroup_no();
 						}
 					}
 				}
@@ -437,7 +432,7 @@ public class InsertAddressDialog extends JDialog {
 		if (txtGroupFiled.isEmpty()) {
 
 			result = true;
-		} else if (txtGroupFiled.contains(",")) {
+		} else {
 
 			System.out.println("====contains,");
 			String[] groupList = txtGroupFiled.split(",");
@@ -452,8 +447,6 @@ public class InsertAddressDialog extends JDialog {
 				}
 			}
 
-		} else {
-			result = true;
 		}
 		return result;
 
