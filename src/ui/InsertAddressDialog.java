@@ -148,7 +148,8 @@ public class InsertAddressDialog extends JDialog {
 
 		// 그룹리스트
 		groupList = FileHandler.getInstance().getGroupList();
-		JComboBox<?> groupCombo = new JComboBox(groupList.toArray());
+		JComboBox<GroupVO> groupCombo = new JComboBox(groupList.toArray());
+		
 
 		// 텍스트필드위치
 		txtName.setBounds(100, 10, 200, 25);
@@ -179,12 +180,11 @@ public class InsertAddressDialog extends JDialog {
 			}
 
 		});
-
 		// 그룹 콤보박스 선택시 이벤트
 		cnt = 0;
 		groupCombo.addActionListener(e -> {
 
-			String comboGroupo = groupCombo.getItemAt(groupCombo.getSelectedIndex()).toString();
+			String comboGroupo = groupCombo.getSelectedItem().toString();
 
 			String txtGroupFiled = txtGroup.getText();
 			System.out.println("txtGroupFiled = " + txtGroupFiled + "selectGroup" + comboGroupo);
@@ -218,6 +218,7 @@ public class InsertAddressDialog extends JDialog {
 		centerPane.add(txtGroup);
 		centerPane.add(groupCombo);
 
+		//깨끗하게 비우기
 		this.clearTextFiled();
 
 		// 상단부분
@@ -345,10 +346,10 @@ public class InsertAddressDialog extends JDialog {
 			List<GroupVO> filegroupList = FileHandler.getInstance().getGroupList();
 
 			for (int i = 0; i < filegroupList.size(); i++) {
-
 				for (int j = 0; j < groupList.length; j++) {
 
 					System.out.println("filegroupList.get(i).getGroup_name()=" + filegroupList.get(i).getGroup_name() + " / groupList[j]) = " + groupList[j]);
+
 					if (filegroupList.get(i).getGroup_name().equals(groupList[j])) {
 						if (groupNo.equals("")) {
 							groupNo += filegroupList.get(i).getGroup_no();
@@ -360,6 +361,17 @@ public class InsertAddressDialog extends JDialog {
 			}
 			System.out.println("groupNO=" + groupNo);
 			return groupNo;
+		} else {
+			List<GroupVO> filegroupList = FileHandler.getInstance().getGroupList();
+			for (int i = 0; i < filegroupList.size(); i++) {
+
+				System.out.println("filegroupList.get(i).getGroup_name()=" + filegroupList.get(i).getGroup_name());
+
+				if (filegroupList.get(i).getGroup_name().equals(txtGroupFiled)) {
+					groupNo += filegroupList.get(i).getGroup_no();
+				} 
+			}
+
 		}
 
 		return groupNo;

@@ -73,8 +73,8 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 	private MbizTableModel model;
 
 	// 테이블 초기 셋팅
-	String colNames[] = { "x", "번호", "이름", "핸드폰번호", "이메일", "회사", "부서", "직책", "메모" };
-	int cols[] = { 50, 50, 100, 150, 150, 100, 100, 100, 200 };
+	String colNames[] = { " ", "번호", "이름", "핸드폰번호", "이메일", "회사", "부서", "직책", "메모" };
+	int cols[] = { 40, 50, 100, 150, 150, 100, 150, 100, 250 };
 
 	// 테이블 선택시 이벤트 발생을 위해
 	// 테이블 row
@@ -386,7 +386,7 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 
 		String selectGroupName = path.toString();
 
-		if (node == tree.getModel().getRoot() || selectGroupName.contentEquals("전체") || selectGroupName.contentEquals("가족") || selectGroupName.contentEquals("친구") || selectGroupName.contentEquals("회사") || selectGroupName.contentEquals("그룹없음")) {
+		if (node == tree.getModel().getRoot() || node==tree.getModel().getChild(root, 0)) {
 			mi.setEnabled(false);
 		}
 
@@ -399,7 +399,7 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 
 		// 오른쪽 마우스 삭제 이벤트
 		mi = new JMenuItem("삭제");
-		if (node == tree.getModel().getRoot()) {
+		if (node == tree.getModel().getRoot()|| node==tree.getModel().getChild(root, 0)) {
 			mi.setEnabled(false);
 		}
 		popup.add(mi);

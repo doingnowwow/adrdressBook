@@ -545,7 +545,7 @@ public class FileHandler {
 	public void addUser(UserVO user) {
 		System.out.println("===주소록 user추가===");
 
-		user.setAd_no(userKey);
+		user.setAd_no(++this.userKey);
 		user.setAd_name(user.getAd_name());
 		if (user.getAd_hp() != null) {
 			user.setAd_hp(user.getAd_hp());
@@ -583,7 +583,7 @@ public class FileHandler {
 	public GroupVO addGroup(String groupName) {
 		System.out.println("===그룹추가====");
 		GroupVO group = new GroupVO();
-		group.setGroup_no(groupKey);
+		group.setGroup_no(++this.groupKey);
 		group.setGroup_name(groupName);
 		System.out.println("groupInsertName = " + group.getGroup_name());
 		this.groupList.add(group);

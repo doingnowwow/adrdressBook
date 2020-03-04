@@ -152,7 +152,7 @@ public class UpdateAddressDialog extends JDialog {
 
 		// 그룹리스트
 		groupList = FileHandler.getInstance().getGroupList();
-		JComboBox<?> groupCombo = new JComboBox(groupList.toArray());
+		JComboBox<GroupVO> groupCombo = new JComboBox(groupList.toArray());
 
 		// 텍스트필드 값 넣기
 		userNo = String.valueOf(updateuser.getAd_no());
@@ -182,7 +182,7 @@ public class UpdateAddressDialog extends JDialog {
 			txtMemo.setText(updateuser.getAd_memo());
 		}
 		if (updateuser.getGroup_no() != null) {
-			txtGroup.setText(updateuser.getGroup_no());
+			txtGroup.setText(this.setGroupName(updateuser.getGroup_no()));
 		}
 
 		// 텍스트필드위치
@@ -306,7 +306,7 @@ public class UpdateAddressDialog extends JDialog {
 				txtMemo.setText(updateuser.getAd_memo());
 			}
 			if (updateuser.getGroup_no() != null) {
-				txtGroup.setText(updateuser.getGroup_no());
+				txtGroup.setText(this.setGroupName(updateuser.getGroup_no()));
 			}
 
 		});
@@ -424,9 +424,69 @@ public class UpdateAddressDialog extends JDialog {
 			}
 			System.out.println("groupNO=" + groupNo);
 			return groupNo;
+		} else {
+			List<GroupVO> filegroupList = FileHandler.getInstance().getGroupList();
+			for (int i = 0; i < filegroupList.size(); i++) {
+
+				System.out.println("filegroupList.get(i).getGroup_name()=" + filegroupList.get(i).getGroup_name());
+
+				if (filegroupList.get(i).getGroup_name().equals(txtGroupFiled)) {
+					groupNo += filegroupList.get(i).getGroup_no();
+				} 
+			}
+
 		}
 
 		return groupNo;
+
+	}
+
+	/**
+	 * 그룹 번호에 따른 그룹 이름 가져오기
+	 * 
+	 * @param txtGroupFiled
+	 * @return
+	 */
+	public String setGroupName(String txtGroupFiled) {
+
+		String groupName = "";
+
+		if (txtGroupFiled.isEmpty() || txtGroupFiled.equals("0")) {
+			groupName = "그룹미지정";
+			return groupName;
+		} else if (txtGroupFiled.contains(",")) {
+
+			String[] groupList = txtGroupFiled.split(",");
+			List<GroupVO> filegroupList = FileHandler.getInstance().getGroupList();
+
+			for (int i = 0; i < filegroupList.size(); i++) {
+				for (int j = 0; j < groupList.length; j++) {
+					System.out.println("filegroupList.get(i).getGroup_name()=" + filegroupList.get(i).getGroup_name() + " / groupList[j]) = " + groupList[j]);
+					if (String.valueOf(filegroupList.get(i).getGroup_no()).equals(groupList[j])) {
+						if (groupName.equals("")) {
+							groupName += filegroupList.get(i).getGroup_name();
+						} else {
+							groupName += "," + filegroupList.get(i).getGroup_name();
+						}
+					}
+				}
+			}
+			System.out.println("groupName=" + groupName);
+			return groupName;
+		}else {
+			List<GroupVO> filegroupList = FileHandler.getInstance().getGroupList();
+			for (int i = 0; i < filegroupList.size(); i++) {
+
+				System.out.println("filegroupList.get(i).getGroup_name()=" + filegroupList.get(i).getGroup_name());
+
+				if (String.valueOf(filegroupList.get(i).getGroup_no()).equals(txtGroupFiled)) {
+					groupName += filegroupList.get(i).getGroup_name();
+				} 
+			}
+
+		}
+
+		return groupName;
 
 	}
 
