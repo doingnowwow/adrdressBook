@@ -609,6 +609,17 @@ public class FileHandler {
 		if (this.groupList.contains(group)) {
 			this.groupList.remove(group);
 		}
+
+		for (int i = 0; i < userList.size(); i++) {
+			UserVO user = userList.get(i);
+
+			// 삭제한 그룹이 포함된 사용자 찾기
+			if (user.hasGroup(group)) {
+				user.deleteGroup(group); // 찾은 사용자의 그룹 정보에서 해당 그룹 삭제하기
+			}
+
+		}
+
 	}
 
 	/**

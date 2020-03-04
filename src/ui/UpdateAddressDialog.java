@@ -63,6 +63,7 @@ public class UpdateAddressDialog extends JDialog {
 	private JButton btnUpdate = new JButton("수정완료");
 	private JButton btnClose = new JButton("닫기");
 	private JPanel mainPanel = new JPanel();
+	private JComboBox<GroupVO> groupCombo;
 
 	private IAddUser listner = null;
 	private AddressBookMainUI addressBookMainUI = null;
@@ -151,8 +152,12 @@ public class UpdateAddressDialog extends JDialog {
 		JComboBox mailCombo = new JComboBox(mailList);
 
 		// 그룹리스트
+		groupCombo = new JComboBox<GroupVO>();
+		groupCombo.addItem(new GroupVO(0, "그룹 선택"));
 		groupList = FileHandler.getInstance().getGroupList();
-		JComboBox<GroupVO> groupCombo = new JComboBox(groupList.toArray());
+		for (GroupVO group : groupList) {
+			this.groupCombo.addItem(group);
+		}
 
 		// 텍스트필드 값 넣기
 		userNo = String.valueOf(updateuser.getAd_no());
@@ -217,7 +222,6 @@ public class UpdateAddressDialog extends JDialog {
 		});
 
 		// 그룹 콤보박스 선택시 이벤트
-		cnt = 0;
 		groupCombo.addActionListener(e -> {
 
 			String comboGroupo = groupCombo.getItemAt(groupCombo.getSelectedIndex()).toString();
@@ -226,18 +230,16 @@ public class UpdateAddressDialog extends JDialog {
 			System.out.println("txtGroupFiled = " + txtGroupFiled + "selectGroup" + comboGroupo);
 
 			if (this.isSelectedGroup(txtGroupFiled, comboGroupo)) {
-				if (cnt == 0) {
-					selectedGroup += comboGroupo;
+				if (txtGroupFiled.equals("")) {
+					txtGroupFiled += comboGroupo;
 				} else {
-
-					selectedGroup += "," + comboGroupo;
+					txtGroupFiled += "," + comboGroupo;
 				}
-				System.out.println("selectedGroup===" + selectedGroup);
+				System.out.println("selectedGroup===" + txtGroupFiled);
 
-				cnt++;
 			}
 
-			txtGroup.setText(selectedGroup);
+			txtGroup.setText(txtGroupFiled);
 
 		});
 
@@ -432,7 +434,7 @@ public class UpdateAddressDialog extends JDialog {
 
 				if (filegroupList.get(i).getGroup_name().equals(txtGroupFiled)) {
 					groupNo += filegroupList.get(i).getGroup_no();
-				} 
+				}
 			}
 
 		}
@@ -473,7 +475,7 @@ public class UpdateAddressDialog extends JDialog {
 			}
 			System.out.println("groupName=" + groupName);
 			return groupName;
-		}else {
+		} else {
 			List<GroupVO> filegroupList = FileHandler.getInstance().getGroupList();
 			for (int i = 0; i < filegroupList.size(); i++) {
 
@@ -481,7 +483,7 @@ public class UpdateAddressDialog extends JDialog {
 
 				if (String.valueOf(filegroupList.get(i).getGroup_no()).equals(txtGroupFiled)) {
 					groupName += filegroupList.get(i).getGroup_name();
-				} 
+				}
 			}
 
 		}

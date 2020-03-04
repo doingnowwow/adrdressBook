@@ -2,6 +2,9 @@ package data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.PrimitiveIterator.OfDouble;
+
+import org.apache.poi.hssf.util.HSSFColor.GOLD;
 
 import net.mbiz.edt.barcode.table.data.TableData;
 
@@ -17,6 +20,7 @@ public class UserVO implements TableData {
 	private String ad_postion;
 	private String ad_memo;
 	private String group_no;
+	private ArrayList<String> groupNoList = new ArrayList<String>();
 
 	public UserVO() {
 	}
@@ -32,8 +36,7 @@ public class UserVO implements TableData {
 			this.ad_department = dataArray[5];
 			this.ad_postion = dataArray[6];
 			this.ad_memo = dataArray[7];
-			this.group_no = dataArray[8];
-
+			setGroup_no(dataArray[8]);
 		}
 	}
 
@@ -115,6 +118,68 @@ public class UserVO implements TableData {
 
 	public void setGroup_no(String group_no) {
 		this.group_no = group_no;
+		String[] groupNoArr = this.group_no.split(",");
+		for (String groupNo : groupNoArr) {
+			this.groupNoList.add(groupNo);
+		}
+	}
+
+	/**
+	 * 그룹 추가
+	 * 
+	 * @param group
+	 */
+	public void addGroup(GroupVO group) {
+		for (String groupNo : groupNoList) {
+			if (groupNo.equals(String.valueOf(group.getGroup_no()))) {
+				return;
+			}
+		}
+
+		this.groupNoList.add("" + group.getGroup_no());
+	}
+
+	/**
+	 * 그룹 삭제
+	 * 
+	 * @param group
+	 */
+	public void deleteGroup(GroupVO group) {
+		for (int i = this.groupNoList.size() - 1; i > -1; i--) {
+			String groupNo = this.groupNoList.get(i);
+			if (groupNo.equals(String.valueOf(group.getGroup_no()))) {
+				this.groupNoList.remove(i);
+				
+			}
+		}
+		
+		if(groupNoList.size()==0) {
+			setGroup_no("0");
+		}
+	}
+
+	public boolean hasGroup(GroupVO group) {
+		for (String groupNo : groupNoList) {
+			if (groupNo.equals(String.valueOf(group.getGroup_no()))) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * 전체 그룹 정보 출력
+	 * 
+	 * @return
+	 */
+	public String getGroupListAsStr() {
+		String groupNo = "";
+		for (String no : groupNoList) {
+			groupNo += no + ",";
+		}
+
+		return groupNo.substring(0, groupNo.length() - 1);
 	}
 
 	@Override

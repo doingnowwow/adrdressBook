@@ -9,6 +9,14 @@ public class GroupVO {
 	private String group_name;
 	private List<UserVO> memberList = new ArrayList<UserVO>();
 
+	public GroupVO() {
+	}
+	
+	public GroupVO(int groupNo, String groupName) {
+		this.group_no = groupNo;
+		this.group_name = groupName;
+	}
+	
 	public int getGroup_no() {
 		return group_no;
 	}

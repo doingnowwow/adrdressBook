@@ -72,6 +72,8 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 
 	private MbizTableModel model;
 
+	private AddressBookMainUI main;
+
 	// 테이블 초기 셋팅
 	String colNames[] = { " ", "번호", "이름", "핸드폰번호", "이메일", "회사", "부서", "직책", "메모" };
 	int cols[] = { 40, 50, 100, 150, 150, 100, 150, 100, 250 };
@@ -173,56 +175,13 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 
 		// 그룹추가버튼 이벤트
 		btnInsertGroup.addActionListener(e -> {
-
-			String addGroupName = JOptionPane.showInputDialog(leftSplitPane, "추가할 그룹명을 작성하세요", "그룹 추가하기", JOptionPane.CLOSED_OPTION);
-
-			if (addGroupName == null) {
-				JOptionPane.showMessageDialog(leftSplitPane, "그룹추가가 취소되었습니다.", "취소", JOptionPane.OK_OPTION);
-				return;
-			}
-
-			if (this.checkGroupName(addGroupName)) {
-				DefaultMutableTreeNode newGroup = new DefaultMutableTreeNode(FileHandler.getInstance().addGroup(addGroupName));
-				System.out.println("newGroup = " + newGroup.getUserObject().toString());
-				System.out.println("root is null ? " + (this.root == null));
-				System.out.println("root child = " + root.getChildCount());
-				((DefaultTreeModel) tree.getModel()).insertNodeInto(newGroup, root, root.getChildCount());
-				((DefaultTreeModel) tree.getModel()).reload();
-				JOptionPane.showMessageDialog(leftSplitPane, "그룹추가가 완료되었습니다.", "성공", 1);
-
-				System.out.println(addGroupName);
-
-			} else {
-				JOptionPane.showMessageDialog(leftSplitPane, "그룹명이 중복되어서 등록할 수없습니다.", "취소", JOptionPane.OK_OPTION);
-				return;
-			}
+			addGroupEvent();
 
 		});
 
 		// 그룹삭제이벤트
 		btnDeleteGroup.addActionListener(e -> {
-
-			DefaultMutableTreeNode node = getSelectedNode();
-
-			if (node == null) {
-				JOptionPane.showMessageDialog(leftSplitPane, "그룹을 선택한 후에만 삭제할 수 있습니다..", "주의", JOptionPane.WARNING_MESSAGE);
-				return;
-			}
-
-			if (node.getChildCount() > 0) {
-				JOptionPane.showMessageDialog(leftSplitPane, "그룹 안에 정보목록이 있으므로 삭제할 수 없습니다.", "주의", JOptionPane.WARNING_MESSAGE);
-			} else {
-				int res = JOptionPane.showConfirmDialog(leftSplitPane, "삭제하면 다시 복원 불가능합니다.삭제하시겠습니까?", "삭제확인", JOptionPane.YES_NO_OPTION);
-				if (res == JOptionPane.OK_OPTION) {
-					DefaultTreeModel model = (DefaultTreeModel) (tree.getModel());
-					TreePath[] paths = tree.getSelectionPaths();
-					for (int i = 0; i < paths.length; i++) {
-						node = (DefaultMutableTreeNode) (paths[i].getLastPathComponent());
-						model.removeNodeFromParent(node);
-					}
-				}
-			}
-
+			deleteSelectedItems();
 		});
 
 		// 오른쪽
@@ -275,6 +234,7 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 
 		table.getTableHeader().setReorderingAllowed(false);// 컬럼들 이동 불가
 		table.getTableHeader().setResizingAllowed(false); // 컬럼 크기 조절 불가
+		table.setAutoCreateColumnsFromModel(false);
 
 		for (int i = 0; i < cols.length; i++) {
 			table.getColumnModel().getColumn(i).setPreferredWidth(cols[i]);
@@ -294,8 +254,6 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 					int selRow = table.getSelectedRow();
 					UserVO user = (UserVO) model.getData(selRow);
 
-//					Object pobj = null;
-//					pobj = table.getValueAt(selectedRow, selectedCol);
 					System.out.println("Selected MOUSE TABLE --> row: [" + selectedRow + "], column : [" + selectedCol + "], 선택한내용:[" + user.toString() + "]");
 
 				}
@@ -308,13 +266,7 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 
 		// 주소록 추가 버튼 클릭 이벤트
 		btnInsertAddress.addActionListener(e -> {
-
-			// 인스턴스화
-			InsertAddressDialog insertAddressdiag = new InsertAddressDialog(this, "주소록 추가");
-			// 주소록 추가화면 가운데 뜨게 하기
-			insertAddressdiag.setLocationRelativeTo(main);
-			insertAddressdiag.setVisible(true);
-
+			insertUser();
 		});
 
 		// 테이블 주소록 삭제 클릭 이벤트
@@ -325,13 +277,89 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 
 		// 검색버튼 이벤트
 		btnSearch.addActionListener(e -> {
-			String keyword = txtSearch.getText();
-
-			ArrayList<UserVO> userList = FileHandler.getInstance().searchUserListBykeyword(keyword);
-			setTableData(userList);
-
-			txtSearch.setText("");
+			searchEvent();
 		});
+
+	}
+
+	/**
+	 * 그룹 추가 이벤트
+	 */
+	private void addGroupEvent() {
+
+		String addGroupName = JOptionPane.showInputDialog(leftSplitPane, "추가할 그룹명을 작성하세요", "그룹 추가하기", JOptionPane.CLOSED_OPTION);
+
+		if (addGroupName == null) {
+			JOptionPane.showMessageDialog(leftSplitPane, "그룹추가가 취소되었습니다.", "취소", JOptionPane.OK_OPTION);
+			return;
+		}
+
+		if (this.checkGroupName(addGroupName)) {
+			DefaultMutableTreeNode newGroup = new DefaultMutableTreeNode(FileHandler.getInstance().addGroup(addGroupName));
+			System.out.println("newGroup = " + newGroup.getUserObject().toString());
+			System.out.println("root is null ? " + (this.root == null));
+			System.out.println("root child = " + root.getChildCount());
+			((DefaultTreeModel) tree.getModel()).insertNodeInto(newGroup, root, root.getChildCount());
+			((DefaultTreeModel) tree.getModel()).reload();
+			JOptionPane.showMessageDialog(leftSplitPane, "그룹추가가 완료되었습니다.", "성공", 1);
+
+			System.out.println(addGroupName);
+
+		} else {
+			JOptionPane.showMessageDialog(leftSplitPane, "그룹명이 중복되어서 등록할 수없습니다.", "취소", JOptionPane.OK_OPTION);
+			return;
+		}
+	}
+
+	/**
+	 * 그룹 삭제 이벤트 메서드
+	 */
+	private void deleteGroupEvent() {
+		DefaultMutableTreeNode node = getSelectedNode();
+
+		if (node == null) {
+			JOptionPane.showMessageDialog(leftSplitPane, "그룹을 선택한 후에만 삭제할 수 있습니다..", "주의", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+
+		if (node.getChildCount() > 0) {
+			JOptionPane.showMessageDialog(leftSplitPane, "그룹 안에 정보목록이 있으므로 삭제할 수 없습니다.", "주의", JOptionPane.WARNING_MESSAGE);
+		} else {
+			int res = JOptionPane.showConfirmDialog(leftSplitPane, "삭제하면 다시 복원 불가능합니다.삭제하시겠습니까?", "삭제확인", JOptionPane.YES_NO_OPTION);
+			if (res == JOptionPane.OK_OPTION) {
+				DefaultTreeModel model = (DefaultTreeModel) (tree.getModel());
+				TreePath[] paths = tree.getSelectionPaths();
+				for (int i = 0; i < paths.length; i++) {
+					node = (DefaultMutableTreeNode) (paths[i].getLastPathComponent());
+					model.removeNodeFromParent(node);
+					
+				}
+			}
+		}
+	}
+
+	/**
+	 * 검색버튼 이벤트
+	 */
+	private void searchEvent() {
+		String keyword = txtSearch.getText();
+
+		ArrayList<UserVO> userList = FileHandler.getInstance().searchUserListBykeyword(keyword);
+		setTableData(userList);
+
+		txtSearch.setText("");
+
+	}
+
+	/**
+	 * 주소록 추가버튼 Dialog 띄우는 메서드
+	 */
+	private void insertUser() {
+		// 인스턴스화
+		InsertAddressDialog insertAddressdiag = new InsertAddressDialog(this, "주소록 추가");
+		// 주소록 추가화면 가운데 뜨게 하기
+		insertAddressdiag.setLocationRelativeTo(main);
+		insertAddressdiag.setVisible(true);
 
 	}
 
@@ -376,7 +404,7 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 	 * @param x
 	 * @param y
 	 */
-	protected void showMenu(int x, int y) {
+	private void showMenu(int x, int y) {
 
 		JPopupMenu popup = new JPopupMenu();
 		JMenuItem mi = new JMenuItem("수정");
@@ -386,7 +414,7 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 
 		String selectGroupName = path.toString();
 
-		if (node == tree.getModel().getRoot() || node==tree.getModel().getChild(root, 0)) {
+		if (node == tree.getModel().getRoot() || node == tree.getModel().getChild(root, 0)) {
 			mi.setEnabled(false);
 		}
 
@@ -399,7 +427,7 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 
 		// 오른쪽 마우스 삭제 이벤트
 		mi = new JMenuItem("삭제");
-		if (node == tree.getModel().getRoot()|| node==tree.getModel().getChild(root, 0)) {
+		if (node == tree.getModel().getRoot() || node == tree.getModel().getChild(root, 0)) {
 			mi.setEnabled(false);
 		}
 		popup.add(mi);
@@ -414,7 +442,7 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 	/**
 	 * 트리 노드 삭제하는 메서드
 	 */
-	protected void deleteSelectedItems() {
+	private void deleteSelectedItems() {
 		DefaultMutableTreeNode node = getSelectedNode();
 		if (node.getChildCount() > 0) {
 			JOptionPane.showMessageDialog(leftSplitPane, "그룹 안에 정보목록이 있으므로 삭제할 수 없습니다.", "주의", JOptionPane.WARNING_MESSAGE);
@@ -608,7 +636,6 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 
 		UserVO userData = new UserVO();
 		userData = (UserVO) model.getData(selectedRow);
-
 
 		UpdateAddressDialog updateAddressdiag = new UpdateAddressDialog(this, "주소록 수정", userData);
 		updateAddressdiag.setLocationRelativeTo(null);
