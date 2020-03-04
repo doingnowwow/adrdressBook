@@ -336,9 +336,8 @@ public class InsertAddressDialog extends JDialog {
 
 		String groupNo = "";
 
-		if (txtGroupFiled == null) {
+		if (txtGroupFiled == "" || txtGroupFiled.isEmpty() || txtGroupFiled.equals("")) {
 			groupNo = "0";
-
 			return groupNo;
 		} else if (txtGroupFiled.contains(",")) {
 

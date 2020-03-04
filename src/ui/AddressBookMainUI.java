@@ -604,53 +604,16 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 	 */
 	private void updateUserRow() {
 
-		String tableValue[] = new String[9];
+		System.out.println("	model.getData(selectedRow)====" + model.getData(selectedRow).toString());
 
-		for (int i = 1; i < 9; i++) {
+		UserVO userData = new UserVO();
+		userData = (UserVO) model.getData(selectedRow);
 
-			tabeData = table.getValueAt(selectedRow, i);
-
-			System.out.println("UPDATE *-> row : [" + selectedRow + "]  col : [" + "순서 : " + i + "~  " + tabeData + " ]" + i + "번째 : col의 값 : [" + tableValue[i] + "]");
-
-			if (i == 1) {
-				userData.setAd_no(Integer.parseInt(tabeData.toString()));
-			} else if (i == 2) {
-				userData.setAd_name(tabeData.toString());
-			} else if (i == 3) {
-				if (tabeData != null) {
-					userData.setAd_hp(tabeData.toString());
-				}
-			} else if (i == 4) {
-				if (tabeData != null) {
-					userData.setAd_mail(tabeData.toString());
-				}
-			} else if (i == 5) {
-				if (tabeData != null) {
-					userData.setAd_com(tabeData.toString());
-				}
-			} else if (i == 6) {
-				if (tabeData != null) {
-					userData.setAd_department(tabeData.toString());
-				}
-			} else if (i == 7) {
-				if (tabeData != null) {
-					userData.setAd_postion(tabeData.toString());
-				}
-			} else if (i == 8) {
-				if (tabeData != null) {
-					userData.setAd_memo(tabeData.toString());
-				}
-			}
-
-		}
-
-		System.out.println("======================for end ===========================");
 
 		UpdateAddressDialog updateAddressdiag = new UpdateAddressDialog(this, "주소록 수정", userData);
 		updateAddressdiag.setLocationRelativeTo(null);
 		System.out.println(">>>선택한 유저 번호" + userData.getAd_no());
-		System.out.println("*******************선택한유저이름?********" + userData.getAd_name());
-		System.out.println("*******************선택한유저 핸드폰번호?********" + userData.getAd_hp());
+		System.out.println("selectedRow_getGroup_no : = " + userData.getGroup_no());
 
 		updateAddressdiag.setVisible(true);
 
@@ -699,12 +662,10 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 		System.out.println("그룹번호 : " + updateuser.getGroup_no());
 		System.out.println("==================끝===================");
 
-		int userNo = updateuser.getAd_no();
-
-		((DefaultTableModel) table.getModel()).removeRow(selectedRow);
+		this.model.remove(selectedRow);
 
 		// 수정
-		((DefaultTableModel) table.getModel()).addRow(new Object[] { false, userNo, updateuser.getAd_name(), updateuser.getAd_hp(), updateuser.getAd_mail(), updateuser.getAd_com(), updateuser.getAd_department(), updateuser.getAd_postion(), updateuser.getAd_memo(), updateuser.getGroup_no() });
+		this.model.addData(updateuser);
 
 	}
 
@@ -748,7 +709,7 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 		deleteUserList.add(userData);
 		FileHandler.getInstance().deleteUser(deleteUserList);
 
-		((DefaultTableModel) table.getModel()).removeRow(row);
+		model.remove(row);
 	}
 
 	@Override

@@ -3,6 +3,8 @@ package ui;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Frame;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,12 +18,15 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
+import data.GroupVO;
 import data.UserVO;
 import handler.FileHandler;
 
 public class UpdateAddressDialog extends JDialog {
 
 	private UserVO updateuser = new UserVO();
+
+	private ArrayList<GroupVO> groupList = new ArrayList<GroupVO>();
 	private JPanel mainContentPane;
 	private JPanel southPane;
 	private JPanel northPane;
@@ -50,6 +55,8 @@ public class UpdateAddressDialog extends JDialog {
 	private JTextArea txtMemo;
 	private JTextField txtGroup;
 	private JTextField txtNo;
+	private String selectedGroup = "";
+	private int cnt = 0;
 
 	private JTextField text = new JTextField(10);
 	private JButton btnReset = new JButton("원래대로");
@@ -144,8 +151,8 @@ public class UpdateAddressDialog extends JDialog {
 		JComboBox mailCombo = new JComboBox(mailList);
 
 		// 그룹리스트
-		JComboBox<?> groupCombo = new JComboBox(FileHandler.getInstance().getGroupList().toArray());
-		
+		groupList = FileHandler.getInstance().getGroupList();
+		JComboBox<?> groupCombo = new JComboBox(groupList.toArray());
 
 		// 텍스트필드 값 넣기
 		userNo = String.valueOf(updateuser.getAd_no());
@@ -174,9 +181,9 @@ public class UpdateAddressDialog extends JDialog {
 		if (updateuser.getAd_memo() != null) {
 			txtMemo.setText(updateuser.getAd_memo());
 		}
-//		if (updateuser !=null) {
-//			txtGroup.setText(String.valueOf(updateuser.getGroup_no()));
-//		}
+		if (updateuser.getGroup_no() != null) {
+			txtGroup.setText(updateuser.getGroup_no());
+		}
 
 		// 텍스트필드위치
 		txtName.setBounds(100, 10, 200, 25);
@@ -193,7 +200,6 @@ public class UpdateAddressDialog extends JDialog {
 		txtNo.setBounds(100, 450, 100, 25);
 
 		// 콤보박스 사용위해 임의 입력 막기 (이메일 ,그룹)
-//		txtEmail2.disable();
 		txtEmail2.setEnabled(false);
 		txtGroup.setEditable(false);
 
@@ -211,8 +217,27 @@ public class UpdateAddressDialog extends JDialog {
 		});
 
 		// 그룹 콤보박스 선택시 이벤트
+		cnt = 0;
 		groupCombo.addActionListener(e -> {
-			txtGroup.setText(groupCombo.getItemAt(groupCombo.getSelectedIndex()).toString());
+
+			String comboGroupo = groupCombo.getItemAt(groupCombo.getSelectedIndex()).toString();
+
+			String txtGroupFiled = txtGroup.getText();
+			System.out.println("txtGroupFiled = " + txtGroupFiled + "selectGroup" + comboGroupo);
+
+			if (this.isSelectedGroup(txtGroupFiled, comboGroupo)) {
+				if (cnt == 0) {
+					selectedGroup += comboGroupo;
+				} else {
+
+					selectedGroup += "," + comboGroupo;
+				}
+				System.out.println("selectedGroup===" + selectedGroup);
+
+				cnt++;
+			}
+
+			txtGroup.setText(selectedGroup);
 
 		});
 
@@ -281,7 +306,7 @@ public class UpdateAddressDialog extends JDialog {
 				txtMemo.setText(updateuser.getAd_memo());
 			}
 			if (updateuser.getGroup_no() != null) {
-				txtGroup.setText(String.valueOf(updateuser.getGroup_no()));
+				txtGroup.setText(updateuser.getGroup_no());
 			}
 
 		});
@@ -294,15 +319,13 @@ public class UpdateAddressDialog extends JDialog {
 
 			// 이름 필수 입력 발리데이션
 			if (txtName.getText().length() <= 0) {
-				JOptionPane.showMessageDialog(mainContentPane, "이릅입력은 필수입니다. \n이름을입력해주세요\n", "경고",
-						JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(mainContentPane, "이릅입력은 필수입니다. \n이름을입력해주세요\n", "경고", JOptionPane.ERROR_MESSAGE);
 				return;
 			}
 
 			// 핸드폰번호 or 이메일 입력 발리데이션
 			if (txtPhone.getText().length() <= 0 && txtEmail.getText().length() <= 0) {
-				JOptionPane.showMessageDialog(mainContentPane, "핸드폰번호 또는 이메일  둘중 하나는 \n필수로 입력사항입니다.\n 입력해주세요.", "경고",
-						JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(mainContentPane, "핸드폰번호 또는 이메일  둘중 하나는 \n필수로 입력사항입니다.\n 입력해주세요.", "경고", JOptionPane.ERROR_MESSAGE);
 				return;
 			}
 
@@ -313,8 +336,7 @@ public class UpdateAddressDialog extends JDialog {
 				System.out.println(txtPhone.getText());
 
 				if (no == false) {
-					JOptionPane.showMessageDialog(mainContentPane, "핸드폰 번호 입력 형식이 잘못되었습니다.", "경고",
-							JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(mainContentPane, "핸드폰 번호 입력 형식이 잘못되었습니다.", "경고", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
 			}
@@ -324,7 +346,7 @@ public class UpdateAddressDialog extends JDialog {
 			updateuser.setAd_no(Integer.parseInt(txtNo.getText()));
 			updateuser.setAd_name(txtName.getText());
 			updateuser.setAd_hp(txtPhone.getText());
-			if (txtEmail.getText().trim().length()>1) {
+			if (txtEmail.getText().trim().length() > 1) {
 				updateuser.setAd_mail(txtEmail.getText() + "@" + txtEmail2.getText());
 			} else {
 				updateuser.setAd_mail("");
@@ -334,18 +356,12 @@ public class UpdateAddressDialog extends JDialog {
 			updateuser.setAd_postion(txtPosition.getText());
 			updateuser.setAd_memo(txtMemo.getText());
 
-			updateuser.setGroup_no(String.valueOf(groupCombo.getSelectedIndex()+1));
+			// 그룹선택에 관한 부분 ///
+			updateuser.setGroup_no(this.setGroupNo(txtGroup.getText()));
 			this.addressBookMainUI.updateUser(updateuser);
 
 			// 등록하면서 값 비우기
-			txtName.setText("");
-			txtPhone.setText("");
-			txtEmail.setText("");
-			txtEmail2.setText("");
-			txtCom.setText("");
-			txtDepartment.setText("");
-			txtPosition.setText("");
-			txtMemo.setText("");
+			this.clearTextFiled();
 
 			// 화면꺼
 			setVisible(false);
@@ -373,4 +389,97 @@ public class UpdateAddressDialog extends JDialog {
 			return false;
 		}
 	}
+
+	/**
+	 * 그룹리스트에서 번호를 가져오기..
+	 * 
+	 * @param txtGroupFiled
+	 * @return
+	 */
+	public String setGroupNo(String txtGroupFiled) {
+
+		String groupNo = "";
+
+		if (txtGroupFiled == "" || txtGroupFiled.isEmpty() || txtGroupFiled.equals("")) {
+			groupNo = "0";
+			return groupNo;
+		} else if (txtGroupFiled.contains(",")) {
+
+			String[] groupList = txtGroupFiled.split(",");
+			List<GroupVO> filegroupList = FileHandler.getInstance().getGroupList();
+
+			for (int i = 0; i < filegroupList.size(); i++) {
+
+				for (int j = 0; j < groupList.length; j++) {
+
+					System.out.println("filegroupList.get(i).getGroup_name()=" + filegroupList.get(i).getGroup_name() + " / groupList[j]) = " + groupList[j]);
+					if (filegroupList.get(i).getGroup_name().equals(groupList[j])) {
+						if (groupNo.equals("")) {
+							groupNo += filegroupList.get(i).getGroup_no();
+						} else {
+							groupNo += "," + filegroupList.get(i).getGroup_no();
+						}
+					}
+				}
+			}
+			System.out.println("groupNO=" + groupNo);
+			return groupNo;
+		}
+
+		return groupNo;
+
+	}
+
+	/**
+	 * 이미 선택된 그룹인지 아닌지 알려주는 메서드
+	 * 
+	 * true : input값을 비교하여 동일한 값이 없을때 , 값이 비어있을때 false : input값을 비교하여 동일한 값이 있을때
+	 * 
+	 * @param txtGroupFiled ex)A,B,C ....
+	 * @param selectedGroup
+	 * @return boolean
+	 */
+	public boolean isSelectedGroup(String txtGroupFiled, String selectedGroup) {
+
+		boolean result = true;
+
+		if (txtGroupFiled.isEmpty()) {
+
+			result = true;
+		} else {
+
+			System.out.println("====contains,");
+			String[] groupList = txtGroupFiled.split(",");
+
+			for (int i = 0; i < groupList.length; i++) {
+				System.out.println("groupList===" + groupList[i]);
+				if (groupList[i].equals(selectedGroup)) {
+					System.out.println("selectedGroup===" + selectedGroup);
+
+					result = false;
+					break;
+				}
+			}
+
+		}
+		return result;
+
+	}
+
+	/**
+	 * 전체 텍스트 필드를 지워주는 메서드
+	 */
+	private void clearTextFiled() {
+
+		txtName.setText("");
+		txtPhone.setText("");
+		txtEmail.setText("");
+		txtEmail2.setText("");
+		txtCom.setText("");
+		txtDepartment.setText("");
+		txtPosition.setText("");
+		txtMemo.setText("");
+		txtGroup.setText("");
+	}
+
 }
