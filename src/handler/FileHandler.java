@@ -391,30 +391,23 @@ public class FileHandler {
 				UserVO user = this.userList.get(i);
 
 				if (user.getGroup_no().contains(",")) {
-
 					String[] userGroup = user.getGroup_no().split(",");
-
 					for (int j = 0; j < userGroup.length; j++) {
 						if (userGroup[j].equals(String.valueOf(group.getGroup_no()))) {
 							resList.add(user);
 						}
-
 					}
 
 				} else {
-
 					if (user.getGroup_no().equals(String.valueOf(group.getGroup_no()))) {
 						resList.add(user);
 					}
-
 					System.out.println(user.toString());
 				}
-
 			}
 			System.out.println("searchUserListByGroup=====>End");
 			return resList;
 		}
-
 		System.out.println("Null======searchUserListByGroup=====>End");
 		resList = this.userList;
 

@@ -85,7 +85,7 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 	int selectedCol;
 
 	// 비어있는 오브젝트 생성
-	private Object tabeData = null;
+	private Object tableData = null;
 
 	/**
 	 * Create the frame.
@@ -145,15 +145,12 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 		treeSclPane = new JScrollPane();
 		leftSplitPane.add(treeSclPane, BorderLayout.CENTER);
 
-///////////////////////// 트리부분////////////////////////////////////
-
 		// 트리 넣기
 		initTree();
 
 		// 트리 아이콘 설정하기
 		DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
 		renderer.setLeafIcon(renderer.getDefaultClosedIcon());
-
 		tree.setCellRenderer(renderer);
 		tree.setEditable(true);
 		tree.setDragEnabled(true);
@@ -165,7 +162,6 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 
 		// 트리 마우스 리스너
 		tree.addMouseListener(new MouseAdapter() {
-
 			public void mousePressed(MouseEvent event) {
 				if (((event.getModifiers() & InputEvent.BUTTON3_MASK) != 0) && (tree.getSelectionCount() > 0)) {
 					showMenu(event.getX(), event.getY());
@@ -244,20 +240,15 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 
 		// 테이블 마우스 이벤트 부분
 		table.addMouseListener(new MouseAdapter() {
-
 			public void mousePressed(MouseEvent event) {
 				// 마우스 선택 이벤트
 				if (table.getSelectedRowCount() > 0) {
 					selectedRow = table.getSelectedRow();
 					selectedCol = table.getSelectedColumn();
-
 					int selRow = table.getSelectedRow();
 					UserVO user = (UserVO) model.getData(selRow);
-
 					System.out.println("Selected MOUSE TABLE --> row: [" + selectedRow + "], column : [" + selectedCol + "], 선택한내용:[" + user.toString() + "]");
-
 				}
-
 				if (((event.getModifiers() & InputEvent.BUTTON3_MASK) != 0) && (table.getSelectedRowCount() > 0)) {
 					showMenuTable(event.getX(), event.getY());
 				}
@@ -280,6 +271,16 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 			searchEvent();
 		});
 
+	}
+	
+	/**
+	 * 트리 초기화 메서드
+	 */
+	private void initTree() {
+
+		System.out.println("==========트리 초기화 시작=========");
+
+		this.setGroupTree(FileHandler.getInstance().getGroupList());
 	}
 
 	/**
@@ -332,10 +333,11 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 				for (int i = 0; i < paths.length; i++) {
 					node = (DefaultMutableTreeNode) (paths[i].getLastPathComponent());
 					model.removeNodeFromParent(node);
-					
 				}
 			}
 		}
+		FileHandler.getInstance().updateGroup(groupData);
+		FileHandler.getInstance().deleteGroup(groupData);
 	}
 
 	/**
@@ -361,19 +363,6 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 		insertAddressdiag.setLocationRelativeTo(main);
 		insertAddressdiag.setVisible(true);
 
-	}
-
-///////////////////////////////////////////////////////////////////////////////////
-//////////////////////트리 관련 메서드//////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////
-	/**
-	 * 트리 초기화 메서드
-	 */
-	private void initTree() {
-
-		System.out.println("==========트리 초기화 시작=========");
-
-		this.setGroupTree(FileHandler.getInstance().getGroupList());
 	}
 
 	/**
@@ -407,32 +396,31 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 	private void showMenu(int x, int y) {
 
 		JPopupMenu popup = new JPopupMenu();
-		JMenuItem mi = new JMenuItem("수정");
-		popup.add(mi);
+		JMenuItem popnupItem = new JMenuItem("수정");
+		popup.add(popnupItem);
 		TreePath path = tree.getSelectionPath();
 		Object node = path.getLastPathComponent();
-
 		String selectGroupName = path.toString();
 
 		if (node == tree.getModel().getRoot() || node == tree.getModel().getChild(root, 0)) {
-			mi.setEnabled(false);
+			popnupItem.setEnabled(false);
 		}
 
-		popup.add(mi);
+		popup.add(popnupItem);
 
 		// 오른쪽 마우스 수정버튼 이벤트
-		mi.addActionListener(e -> {
+		popnupItem.addActionListener(e -> {
 			modifySelectedNode();
 		});
 
 		// 오른쪽 마우스 삭제 이벤트
-		mi = new JMenuItem("삭제");
+		popnupItem = new JMenuItem("삭제");
 		if (node == tree.getModel().getRoot() || node == tree.getModel().getChild(root, 0)) {
-			mi.setEnabled(false);
+			popnupItem.setEnabled(false);
 		}
-		popup.add(mi);
+		popup.add(popnupItem);
 
-		mi.addActionListener(e -> {
+		popnupItem.addActionListener(e -> {
 			deleteSelectedItems();
 		});
 
@@ -445,8 +433,13 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 	private void deleteSelectedItems() {
 		DefaultMutableTreeNode node = getSelectedNode();
 		if (node.getChildCount() > 0) {
+			System.out.println("node==?" + node.toString());
 			JOptionPane.showMessageDialog(leftSplitPane, "그룹 안에 정보목록이 있으므로 삭제할 수 없습니다.", "주의", JOptionPane.WARNING_MESSAGE);
 		} else {
+			if (node.toString().equals("그룹미지정")) {
+				JOptionPane.showMessageDialog(leftSplitPane, "미지정 그룹은 삭제할 수 없습니다.", "주의", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
 			int res = JOptionPane.showConfirmDialog(leftSplitPane, "삭제하면 다시 복원 불가능합니다.삭제하시겠습니까?", "삭제확인", JOptionPane.YES_NO_OPTION);
 			if (res == JOptionPane.OK_OPTION) {
 				DefaultTreeModel model = (DefaultTreeModel) (tree.getModel());
@@ -665,7 +658,6 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 		FileHandler.getInstance().addUser(user);
 
 		// 추가
-
 		model.addData(user);
 
 	}
@@ -723,6 +715,8 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 		System.out.println("---delete end---");
 
 	}
+
+	
 
 	/**
 	 * 선택된 사용자 삭제하기

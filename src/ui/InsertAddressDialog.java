@@ -61,7 +61,7 @@ public class InsertAddressDialog extends JDialog {
 	private JButton btnReset = new JButton("초기화");
 	private JButton btnInsert = new JButton("등록");
 	private JButton btnClose = new JButton("닫기");
-
+	private JComboBox<GroupVO> groupCombo;
 	private JPanel mainPanel = new JPanel();
 
 	private IAddUser listner = null;
@@ -98,74 +98,67 @@ public class InsertAddressDialog extends JDialog {
 		centerPane.setLayout(null);
 		mainContentPane.add(centerPane, BorderLayout.CENTER);
 
-		// 라벨
+		// 라벨 ====start=====
 		lblName = new JLabel("이   름");
-		lblPhone = new JLabel("폰번호");
-		lblEmail = new JLabel("이메일");
-		lblGol = new JLabel(" @ ");
-		lblCom = new JLabel("회   사");
-		lblDepartment = new JLabel("부   서");
-		lblPosition = new JLabel("직   책");
-		lblMemo = new JLabel("메   모");
-		lblGroup = new JLabel("그   룹");
-
-		// 라벨위치
 		lblName.setBounds(10, 10, 100, 30);
-		lblPhone.setBounds(10, 50, 100, 30);
-		lblEmail.setBounds(10, 100, 100, 30);
-		lblGol.setBounds(180, 100, 100, 30);
-		lblCom.setBounds(10, 150, 100, 30);
-		lblDepartment.setBounds(10, 200, 100, 30);
-		lblPosition.setBounds(10, 250, 100, 30);
-		lblMemo.setBounds(10, 300, 100, 30);
-		lblGroup.setBounds(10, 400, 100, 30);
-
-		// 라벨셋팅
 		centerPane.add(lblName);
+
+		lblPhone = new JLabel("폰번호");
+		lblPhone.setBounds(10, 50, 100, 30);
 		centerPane.add(lblPhone);
+
+		lblEmail = new JLabel("이메일");
+		lblEmail.setBounds(10, 100, 100, 30);
 		centerPane.add(lblEmail);
+
+		lblGol = new JLabel(" @ ");
+		lblGol.setBounds(180, 100, 100, 30);
 		centerPane.add(lblGol);
+
+		lblCom = new JLabel("회   사");
+		lblCom.setBounds(10, 150, 100, 30);
 		centerPane.add(lblCom);
+
+		lblDepartment = new JLabel("부   서");
+		lblDepartment.setBounds(10, 200, 100, 30);
 		centerPane.add(lblDepartment);
-		centerPane.add(lblMemo);
+
+		lblPosition = new JLabel("직   책");
+		lblPosition.setBounds(10, 250, 100, 30);
 		centerPane.add(lblPosition);
+
+		lblMemo = new JLabel("메   모");
+		lblMemo.setBounds(10, 300, 100, 30);
+		centerPane.add(lblMemo);
+
+		lblGroup = new JLabel("그   룹");
+		lblGroup.setBounds(10, 400, 100, 30);
 		centerPane.add(lblGroup);
 
-		// 텍스트필드
+		// 이름
 		txtName = new JTextField();
+		txtName.setBounds(100, 10, 200, 25);
+		centerPane.add(txtName);
+
+		// 핸드폰번호
 		txtPhone = new JTextField();
+		txtPhone.setBounds(100, 50, 200, 25);
+		centerPane.add(txtPhone);
+
+		// 이메일
 		txtEmail = new JTextField();
 		txtEmail2 = new JTextField();
-		txtCom = new JTextField();
-		txtDepartment = new JTextField();
-		txtPosition = new JTextField();
-		txtMemo = new JTextArea();
-		txtGroup = new JTextField();
+		txtEmail.setBounds(100, 100, 80, 25);
+		txtEmail2.setBounds(200, 100, 100, 25);
+		txtEmail2.setEnabled(false);
+		centerPane.add(txtEmail);
+		centerPane.add(txtEmail2);
 
 		// 이메일리스트
 		String mailList[] = { "naver.com", "gmail.com", "kakao.com", "hanmail.net", "직접입력하기" };
 		JComboBox mailCombo = new JComboBox(mailList);
-
-		// 그룹리스트
-		groupList = FileHandler.getInstance().getGroupList();
-		JComboBox<GroupVO> groupCombo = new JComboBox(groupList.toArray());
-
-		// 텍스트필드위치
-		txtName.setBounds(100, 10, 200, 25);
-		txtPhone.setBounds(100, 50, 200, 25);
-		txtEmail.setBounds(100, 100, 80, 25);
-		txtEmail2.setBounds(200, 100, 100, 25);
 		mailCombo.setBounds(310, 100, 100, 25);
-		txtCom.setBounds(100, 150, 200, 25);
-		txtDepartment.setBounds(100, 200, 200, 25);
-		txtPosition.setBounds(100, 250, 200, 25);
-		txtMemo.setBounds(100, 300, 310, 80);
-		txtGroup.setBounds(100, 400, 200, 25);
-		groupCombo.setBounds(310, 400, 100, 25);
-
-		// 콤보박스 사용위해 임의 입력 막기 (이메일 ,그룹)
-		txtEmail2.setEnabled(false);
-		txtGroup.setEditable(false);
+		centerPane.add(mailCombo);
 
 		// 이메일 선택 콤보박스 선택 이벤트
 		mailCombo.addActionListener(e -> {
@@ -179,8 +172,48 @@ public class InsertAddressDialog extends JDialog {
 			}
 
 		});
+
+		// 회사
+		txtCom = new JTextField();
+		txtCom.setBounds(100, 150, 200, 25);
+		centerPane.add(txtCom);
+
+		// 부서
+		txtDepartment = new JTextField();
+		txtDepartment.setBounds(100, 200, 200, 25);
+		centerPane.add(txtDepartment);
+
+		// 직책
+		txtPosition = new JTextField();
+		txtPosition.setBounds(100, 250, 200, 25);
+		centerPane.add(txtPosition);
+
+		// 메모
+		txtMemo = new JTextArea();
+		txtMemo.setBounds(100, 300, 310, 80);
+		centerPane.add(txtMemo);
+
+		// 그룹
+		txtGroup = new JTextField();
+		txtGroup.setBounds(100, 400, 200, 25);
+		centerPane.add(txtGroup);
+		txtGroup.setEditable(false);
+
+		// 그룹리스트
+//		groupList = FileHandler.getInstance().getGroupList();
+//		JComboBox<GroupVO> groupCombo = new JComboBox(groupList.toArray());
+
+		groupCombo = new JComboBox<GroupVO>();
+		groupCombo.addItem(new GroupVO(0, "그룹 선택"));
+		groupList = FileHandler.getInstance().getGroupList();
+		for (GroupVO group : groupList) {
+			this.groupCombo.addItem(group);
+		}
+
+		groupCombo.setBounds(310, 400, 100, 25);
+		centerPane.add(groupCombo);
+
 		// 그룹 콤보박스 선택시 이벤트
-		cnt = 0;
 		groupCombo.addActionListener(e -> {
 
 			String comboGroupo = groupCombo.getSelectedItem().toString();
@@ -190,33 +223,27 @@ public class InsertAddressDialog extends JDialog {
 			System.out.println("txtGroupFiled = " + txtGroupFiled + "selectGroup" + comboGroupo);
 
 			if (this.isSelectedGroup(txtGroupFiled, comboGroupo)) {
-				if (cnt == 0) {
+
+				if (txtGroupFiled.equals("")) {
+					if (comboGroupo.equals("그룹미지정")||comboGroupo.equals("그룹 선택")) {
+						System.out.println(comboGroupo);
+						selectedGroup += "";
+					}
+
 					selectedGroup += comboGroupo;
 				} else {
+					if (comboGroupo.equals("그룹미지정") || comboGroupo.equals("그룹 선택")) {
+						selectedGroup += "";
+					}
 
 					selectedGroup += "," + comboGroupo;
 				}
 				System.out.println("selectedGroup===" + selectedGroup);
-
-				cnt++;
 			}
 
 			this.txtGroup.setText(selectedGroup);
 
 		});
-
-		// 텍스트필드 셋팅
-		centerPane.add(txtName);
-		centerPane.add(txtPhone);
-		centerPane.add(txtEmail);
-		centerPane.add(txtEmail2);
-		centerPane.add(mailCombo);
-		centerPane.add(txtCom);
-		centerPane.add(txtDepartment);
-		centerPane.add(txtPosition);
-		centerPane.add(txtMemo);
-		centerPane.add(txtGroup);
-		centerPane.add(groupCombo);
 
 		// 깨끗하게 비우기
 		this.clearTextFiled();
@@ -245,13 +272,11 @@ public class InsertAddressDialog extends JDialog {
 		// 초기화 버튼 이벤트
 		btnReset.addActionListener(e -> {
 			this.clearTextFiled();
-			this.txtGroup = new JTextField();
 		});
 
 		// 주소록 등버튼 이벤트
 		btnInsert.addActionListener(e -> {
 			this.addUserEvent();
-
 		});
 
 		setSize(450, 600);
@@ -387,6 +412,42 @@ public class InsertAddressDialog extends JDialog {
 	}
 
 	/**
+	 * 이미 선택된 그룹인지 아닌지 알려주는 메서드
+	 * 
+	 * true : input값을 비교하여 동일한 값이 없을때 , 값이 비어있을때 false : input값을 비교하여 동일한 값이 있을때
+	 * 
+	 * @param txtGroupFiled ex)A,B,C ....
+	 * @param selectedGroup
+	 * @return boolean
+	 */
+	private boolean isSelectedGroup(String txtGroupFiled, String selectedGroup) {
+
+		boolean result = true;
+
+		if (txtGroupFiled.isEmpty()) {
+
+			result = true;
+		} else {
+
+			System.out.println("====contains,");
+			String[] groupList = txtGroupFiled.split(",");
+
+			for (int i = 0; i < groupList.length; i++) {
+				System.out.println("groupList===" + groupList[i]);
+				if (groupList[i].equals(selectedGroup)) {
+					System.out.println("selectedGroup===" + selectedGroup);
+
+					result = false;
+					break;
+				}
+			}
+
+		}
+		return result;
+
+	}
+
+	/**
 	 * 
 	 * 핸드폰 유효성 검사
 	 * 
@@ -436,42 +497,6 @@ public class InsertAddressDialog extends JDialog {
 	}
 
 	/**
-	 * 이미 선택된 그룹인지 아닌지 알려주는 메서드
-	 * 
-	 * true : input값을 비교하여 동일한 값이 없을때 , 값이 비어있을때 false : input값을 비교하여 동일한 값이 있을때
-	 * 
-	 * @param txtGroupFiled ex)A,B,C ....
-	 * @param selectedGroup
-	 * @return boolean
-	 */
-	private boolean isSelectedGroup(String txtGroupFiled, String selectedGroup) {
-
-		boolean result = true;
-
-		if (txtGroupFiled.isEmpty()) {
-
-			result = true;
-		} else {
-
-			System.out.println("====contains,");
-			String[] groupList = txtGroupFiled.split(",");
-
-			for (int i = 0; i < groupList.length; i++) {
-				System.out.println("groupList===" + groupList[i]);
-				if (groupList[i].equals(selectedGroup)) {
-					System.out.println("selectedGroup===" + selectedGroup);
-
-					result = false;
-					break;
-				}
-			}
-
-		}
-		return result;
-
-	}
-
-	/**
 	 * 전체 텍스트 필드를 지워주는 메서드
 	 */
 	private void clearTextFiled() {
@@ -485,7 +510,7 @@ public class InsertAddressDialog extends JDialog {
 		txtPosition.setText("");
 		txtMemo.setText("");
 		txtGroup.setText("");
-
+		selectedGroup = "";
 	}
 
 }
