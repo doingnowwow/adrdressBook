@@ -242,13 +242,13 @@ public class FileHandler {
 		XSSFCell cell = row.createCell(0);
 		cell.setCellValue("그룹");
 		cell = row.createCell(1);
-		cell.setCellValue(groupKey);
+		cell.setCellValue(this.groupKey);
 
 		row = sheet.createRow(1);
 		cell = row.createCell(0);
 		cell.setCellValue("사용자");
 		cell = row.createCell(1);
-		cell.setCellValue(userKey);
+		cell.setCellValue(this.userKey);
 
 		// 파일만들기
 		this.wirteFile(sheet);
@@ -288,7 +288,7 @@ public class FileHandler {
 		}
 
 		this.groupIdx++;
-		this.groupKey = groupIdx;
+//		this.groupKey = groupIdx;
 
 		// 파일만들기
 		this.wirteFile(sheet);
@@ -347,7 +347,7 @@ public class FileHandler {
 		}
 
 		this.userIdx++;
-		this.userKey = userIdx;
+//		this.userKey = userIdx;
 
 		// 파일만들기
 		this.wirteFile(sheet);
@@ -584,6 +584,7 @@ public class FileHandler {
 		System.out.println("===그룹추가====");
 		GroupVO group = new GroupVO();
 		group.setGroup_no(++this.groupKey);
+		System.out.println("groupKey==" + groupKey);
 		group.setGroup_name(groupName);
 		System.out.println("groupInsertName = " + group.getGroup_name());
 		this.groupList.add(group);

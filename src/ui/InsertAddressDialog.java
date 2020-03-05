@@ -149,7 +149,6 @@ public class InsertAddressDialog extends JDialog {
 		// 그룹리스트
 		groupList = FileHandler.getInstance().getGroupList();
 		JComboBox<GroupVO> groupCombo = new JComboBox(groupList.toArray());
-		
 
 		// 텍스트필드위치
 		txtName.setBounds(100, 10, 200, 25);
@@ -186,7 +185,8 @@ public class InsertAddressDialog extends JDialog {
 
 			String comboGroupo = groupCombo.getSelectedItem().toString();
 
-			String txtGroupFiled = txtGroup.getText();
+			String txtGroupFiled = this.txtGroup.getText();
+
 			System.out.println("txtGroupFiled = " + txtGroupFiled + "selectGroup" + comboGroupo);
 
 			if (this.isSelectedGroup(txtGroupFiled, comboGroupo)) {
@@ -201,7 +201,7 @@ public class InsertAddressDialog extends JDialog {
 				cnt++;
 			}
 
-			txtGroup.setText(selectedGroup);
+			this.txtGroup.setText(selectedGroup);
 
 		});
 
@@ -218,7 +218,7 @@ public class InsertAddressDialog extends JDialog {
 		centerPane.add(txtGroup);
 		centerPane.add(groupCombo);
 
-		//깨끗하게 비우기
+		// 깨끗하게 비우기
 		this.clearTextFiled();
 
 		// 상단부분
@@ -244,87 +244,95 @@ public class InsertAddressDialog extends JDialog {
 
 		// 초기화 버튼 이벤트
 		btnReset.addActionListener(e -> {
-
 			this.clearTextFiled();
+			this.txtGroup = new JTextField();
 		});
 
 		// 주소록 등버튼 이벤트
 		btnInsert.addActionListener(e -> {
-
-			user = new UserVO();
-
-			// 이름 필수 입력 발리데이션
-			if (txtName.getText().length() <= 0) {
-				JOptionPane.showMessageDialog(mainContentPane, "이릅입력은 필수입니다. \n이름을입력해주세요\n", "경고", JOptionPane.ERROR_MESSAGE);
-				return;
-			}
-
-			// 핸드폰번호 or 이메일 입력 발리데이션
-			if (txtPhone.getText().length() <= 0 && txtEmail.getText().length() <= 0) {
-
-				JOptionPane.showMessageDialog(mainContentPane, "핸드폰번호 또는 이메일  둘중 하나는 \n필수로 입력사항입니다.\n 입력해주세요.", "경고", JOptionPane.ERROR_MESSAGE);
-				return;
-
-			} else if (txtEmail.getText().trim().length() > 1 && txtEmail2.getText().length() <= 0) {
-				JOptionPane.showMessageDialog(mainContentPane, "이메일 주소를 선택하거나 입력해주세요.", "경고", JOptionPane.ERROR_MESSAGE);
-				return;
-			}
-
-			if (txtPhone.getText().trim().length() > 0) {
-				boolean no = false;
-				no = isPhone(txtPhone.getText());
-
-				System.out.println(no);
-				System.out.println(txtPhone.getText());
-
-				if (no == false) {
-					JOptionPane.showMessageDialog(mainContentPane, "핸드폰 번호 입력 형식이 잘못되었습니다\n 예)010-1111-4444.", "경고", JOptionPane.ERROR_MESSAGE);
-					return;
-				}
-			}
-
-			if (txtEmail.getText().trim().length() > 0) {
-				boolean no = false;
-				no = isMailId(txtEmail.getText());
-
-				System.out.println(no);
-				System.out.println(txtEmail.getText());
-
-				if (no == false) {
-					JOptionPane.showMessageDialog(mainContentPane, "이메일 아이디가 잘못되었습니다. 영어,숫자로만 입력해주세요", "경고", JOptionPane.ERROR_MESSAGE);
-					return;
-				}
-			}
-
-			// 값 보내기
-			user.setAd_name(txtName.getText());
-			user.setAd_hp(txtPhone.getText());
-
-			// 이메일 입력 했을때만 @붙여서 올바른 이메일 값 보내기
-			if (txtEmail.getText().trim().length() > 1) {
-				user.setAd_mail(txtEmail.getText() + "@" + txtEmail2.getText());
-			} else {
-				user.setAd_mail("");
-			}
-			user.setAd_com(txtCom.getText());
-			user.setAd_department(txtDepartment.getText());
-			user.setAd_postion(txtPosition.getText());
-			user.setAd_memo(txtMemo.getText());
-
-			// 그룹선택에 관한 부분 ///
-			user.setGroup_no(this.setGroupNo(txtGroup.getText()));
-
-			this.addressBookMainUI.addUser(user);
-
-			// 등록하면서 값 비우기
-			this.clearTextFiled();
-
-			// 화면꺼
-			setVisible(false);
+			this.addUserEvent();
 
 		});
 
 		setSize(450, 600);
+	}
+
+	/**
+	 * 주소록 등록버튼 이벤트
+	 */
+	private void addUserEvent() {
+
+		user = new UserVO();
+
+		// 이름 필수 입력 발리데이션
+		if (txtName.getText().length() <= 0) {
+			JOptionPane.showMessageDialog(mainContentPane, "이릅입력은 필수입니다. \n이름을입력해주세요\n", "경고", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+
+		// 핸드폰번호 or 이메일 입력 발리데이션
+		if (txtPhone.getText().length() <= 0 && txtEmail.getText().length() <= 0) {
+
+			JOptionPane.showMessageDialog(mainContentPane, "핸드폰번호 또는 이메일  둘중 하나는 \n필수로 입력사항입니다.\n 입력해주세요.", "경고", JOptionPane.ERROR_MESSAGE);
+			return;
+
+		} else if (txtEmail.getText().trim().length() > 1 && txtEmail2.getText().length() <= 0) {
+			JOptionPane.showMessageDialog(mainContentPane, "이메일 주소를 선택하거나 입력해주세요.", "경고", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+
+		if (txtPhone.getText().trim().length() > 0) {
+			boolean no = false;
+			no = isPhone(txtPhone.getText());
+
+			System.out.println(no);
+			System.out.println(txtPhone.getText());
+
+			if (no == false) {
+				JOptionPane.showMessageDialog(mainContentPane, "핸드폰 번호 입력 형식이 잘못되었습니다\n 예)010-1111-4444.", "경고", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+		}
+
+		if (txtEmail.getText().trim().length() > 0) {
+			boolean no = false;
+			no = isMailId(txtEmail.getText());
+
+			System.out.println(no);
+			System.out.println(txtEmail.getText());
+
+			if (no == false) {
+				JOptionPane.showMessageDialog(mainContentPane, "이메일 아이디가 잘못되었습니다. 영어,숫자로만 입력해주세요", "경고", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+		}
+
+		// 값 보내기
+		user.setAd_name(txtName.getText());
+		user.setAd_hp(txtPhone.getText());
+
+		// 이메일 입력 했을때만 @붙여서 올바른 이메일 값 보내기
+		if (txtEmail.getText().trim().length() > 1) {
+			user.setAd_mail(txtEmail.getText() + "@" + txtEmail2.getText());
+		} else {
+			user.setAd_mail("");
+		}
+		user.setAd_com(txtCom.getText());
+		user.setAd_department(txtDepartment.getText());
+		user.setAd_postion(txtPosition.getText());
+		user.setAd_memo(txtMemo.getText());
+
+		// 그룹선택에 관한 부분 ///
+		user.setGroup_no(this.setGroupNo(txtGroup.getText()));
+
+		this.addressBookMainUI.addUser(user);
+
+		// 등록하면서 값 비우기
+		this.clearTextFiled();
+
+		// 화면꺼
+		setVisible(false);
+
 	}
 
 	/**
@@ -333,7 +341,7 @@ public class InsertAddressDialog extends JDialog {
 	 * @param txtGroupFiled
 	 * @return
 	 */
-	public String setGroupNo(String txtGroupFiled) {
+	private String setGroupNo(String txtGroupFiled) {
 
 		String groupNo = "";
 
@@ -369,7 +377,7 @@ public class InsertAddressDialog extends JDialog {
 
 				if (filegroupList.get(i).getGroup_name().equals(txtGroupFiled)) {
 					groupNo += filegroupList.get(i).getGroup_no();
-				} 
+				}
 			}
 
 		}
@@ -436,7 +444,7 @@ public class InsertAddressDialog extends JDialog {
 	 * @param selectedGroup
 	 * @return boolean
 	 */
-	public boolean isSelectedGroup(String txtGroupFiled, String selectedGroup) {
+	private boolean isSelectedGroup(String txtGroupFiled, String selectedGroup) {
 
 		boolean result = true;
 
@@ -477,6 +485,7 @@ public class InsertAddressDialog extends JDialog {
 		txtPosition.setText("");
 		txtMemo.setText("");
 		txtGroup.setText("");
+
 	}
 
 }

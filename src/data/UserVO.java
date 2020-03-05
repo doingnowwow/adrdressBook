@@ -158,6 +158,11 @@ public class UserVO implements TableData {
 		}
 	}
 
+	/**
+	 * 그룹에 속해있는지 확인
+	 * @param group
+	 * @return
+	 */
 	public boolean hasGroup(GroupVO group) {
 		for (String groupNo : groupNoList) {
 			if (groupNo.equals(String.valueOf(group.getGroup_no()))) {

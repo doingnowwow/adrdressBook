@@ -402,7 +402,7 @@ public class UpdateAddressDialog extends JDialog {
 
 		String groupNo = "";
 
-		if (txtGroupFiled == "" || txtGroupFiled.isEmpty() || txtGroupFiled.equals("")) {
+		if (txtGroupFiled == "" || txtGroupFiled.isEmpty() || txtGroupFiled.equals("그룹미지정")) {
 			groupNo = "0";
 			return groupNo;
 		} else if (txtGroupFiled.contains(",")) {
@@ -454,7 +454,7 @@ public class UpdateAddressDialog extends JDialog {
 		String groupName = "";
 
 		if (txtGroupFiled.isEmpty() || txtGroupFiled.equals("0")) {
-			groupName = "그룹미지정";
+			groupName = "";
 			return groupName;
 		} else if (txtGroupFiled.contains(",")) {
 
