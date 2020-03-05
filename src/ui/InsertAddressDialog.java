@@ -232,7 +232,7 @@ public class InsertAddressDialog extends JDialog {
 
 					selectedGroup += comboGroupo;
 				} else {
-					if (comboGroupo.equals("그룹미지정") || comboGroupo.equals("그룹 선택")) {
+					if (comboGroupo.equals("그룹미지정") || comboGroupo.equals("그룹선택")) {
 						selectedGroup += "";
 					}
 

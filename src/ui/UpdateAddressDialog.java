@@ -241,6 +241,7 @@ public class UpdateAddressDialog extends JDialog {
 				}
 			}
 			cnt++;
+
 			txtGroup.setText(txtGroupFiled);
 
 		});
@@ -324,6 +325,7 @@ public class UpdateAddressDialog extends JDialog {
 		if (updateuser.getAd_name() != null) {
 			txtName.setText(updateuser.getAd_name());
 		}
+
 		if (updateuser.getAd_hp() != null) {
 			txtPhone.setText(updateuser.getAd_hp());
 		}
