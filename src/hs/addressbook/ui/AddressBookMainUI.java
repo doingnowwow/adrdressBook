@@ -288,10 +288,10 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 	 */
 	private void addGroupEvent() {
 
-		String addGroupName = JOptionPane.showInputDialog(leftSplitPane, "추가할 그룹명을 작성하세요", "그룹 추가하기", JOptionPane.CLOSED_OPTION);
+		String addGroupName = JOptionPane.showInputDialog(contentPane, "추가할 그룹명을 작성하세요", "그룹 추가하기", JOptionPane.CLOSED_OPTION);
 
 		if (addGroupName == null) {
-			JOptionPane.showMessageDialog(leftSplitPane, "그룹추가가 취소되었습니다.", "취소", JOptionPane.OK_OPTION);
+			JOptionPane.showMessageDialog(contentPane, "그룹추가가 취소되었습니다.", "취소", JOptionPane.OK_OPTION);
 			return;
 		}
 
@@ -302,12 +302,12 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 			System.out.println("root child = " + root.getChildCount());
 			((DefaultTreeModel) tree.getModel()).insertNodeInto(newGroup, root, root.getChildCount());
 			((DefaultTreeModel) tree.getModel()).reload();
-			JOptionPane.showMessageDialog(leftSplitPane, "그룹추가가 완료되었습니다.", "성공", 1);
+			JOptionPane.showMessageDialog(contentPane, "그룹추가가 완료되었습니다.", "성공", 1);
 
 			System.out.println(addGroupName);
 
 		} else {
-			JOptionPane.showMessageDialog(leftSplitPane, "그룹명이 중복되어서 등록할 수없습니다.", "취소", JOptionPane.OK_OPTION);
+			JOptionPane.showMessageDialog(contentPane, "그룹명이 중복되어서 등록할 수없습니다.", "취소", JOptionPane.OK_OPTION);
 			return;
 		}
 	}
@@ -319,14 +319,14 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 		DefaultMutableTreeNode node = getSelectedNode();
 
 		if (node == null) {
-			JOptionPane.showMessageDialog(leftSplitPane, "그룹을 선택한 후에만 삭제할 수 있습니다..", "주의", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(contentPane, "그룹을 선택한 후에만 삭제할 수 있습니다..", "주의", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 
 		if (node.getChildCount() > 0) {
-			JOptionPane.showMessageDialog(leftSplitPane, "그룹 안에 정보목록이 있으므로 삭제할 수 없습니다.", "주의", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(contentPane, "그룹 안에 정보목록이 있으므로 삭제할 수 없습니다.", "주의", JOptionPane.WARNING_MESSAGE);
 		} else {
-			int res = JOptionPane.showConfirmDialog(leftSplitPane, "삭제하면 다시 복원 불가능합니다.삭제하시겠습니까?", "삭제확인", JOptionPane.YES_NO_OPTION);
+			int res = JOptionPane.showConfirmDialog(contentPane, "삭제하면 다시 복원 불가능합니다.삭제하시겠습니까?", "삭제확인", JOptionPane.YES_NO_OPTION);
 			if (res == JOptionPane.OK_OPTION) {
 				DefaultTreeModel model = (DefaultTreeModel) (tree.getModel());
 				TreePath[] paths = tree.getSelectionPaths();
@@ -434,13 +434,13 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 		DefaultMutableTreeNode node = getSelectedNode();
 		if (node.getChildCount() > 0) {
 			System.out.println("node==?" + node.toString());
-			JOptionPane.showMessageDialog(leftSplitPane, "그룹 안에 정보목록이 있으므로 삭제할 수 없습니다.", "주의", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(contentPane, "그룹 안에 정보목록이 있으므로 삭제할 수 없습니다.", "주의", JOptionPane.WARNING_MESSAGE);
 		} else {
 			if (node.toString().equals("그룹미지정")) {
-				JOptionPane.showMessageDialog(leftSplitPane, "미지정 그룹은 삭제할 수 없습니다.", "주의", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(contentPane, "미지정 그룹은 삭제할 수 없습니다.", "주의", JOptionPane.WARNING_MESSAGE);
 				return;
 			}
-			int res = JOptionPane.showConfirmDialog(leftSplitPane, "삭제하면 다시 복원 불가능합니다.삭제하시겠습니까?", "삭제확인", JOptionPane.YES_NO_OPTION);
+			int res = JOptionPane.showConfirmDialog(contentPane, "삭제하면 다시 복원 불가능합니다.삭제하시겠습니까?", "삭제확인", JOptionPane.YES_NO_OPTION);
 			if (res == JOptionPane.OK_OPTION) {
 				DefaultTreeModel model = (DefaultTreeModel) (tree.getModel());
 				TreePath[] paths = tree.getSelectionPaths();
@@ -461,11 +461,11 @@ public class AddressBookMainUI extends JFrame implements IAddUser, MouseListener
 	private void modifySelectedNode() {
 		DefaultMutableTreeNode node = getSelectedNode();
 		if (node == null) {
-			JOptionPane.showMessageDialog(leftSplitPane, "변경할 그룹을 선택하세요", "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(contentPane, "변경할 그룹을 선택하세요", "Error", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 
-		String groupNewname = JOptionPane.showInputDialog(leftSplitPane, "새로운 그룹 이름을 입력하세요 ", "그룹이름 수정", JOptionPane.CLOSED_OPTION);
+		String groupNewname = JOptionPane.showInputDialog(contentPane, "새로운 그룹 이름을 입력하세요 ", "그룹이름 수정", JOptionPane.CLOSED_OPTION);
 		if (groupNewname != null && !"".equals(groupNewname)) {
 			System.out.println("====수정====");
 			groupData.setGroup_name(groupNewname);

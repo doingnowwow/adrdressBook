@@ -225,7 +225,7 @@ public class InsertAddressDialog extends JDialog {
 			if (this.isSelectedGroup(txtGroupFiled, comboGroupo)) {
 
 				if (txtGroupFiled.equals("")) {
-					if (comboGroupo.equals("그룹미지정")||comboGroupo.equals("그룹 선택")) {
+					if (comboGroupo.equals("그룹미지정") || comboGroupo.equals("그룹 선택")) {
 						System.out.println(comboGroupo);
 						selectedGroup += "";
 					}
@@ -334,14 +334,29 @@ public class InsertAddressDialog extends JDialog {
 
 		// 값 보내기
 		user.setAd_name(txtName.getText());
-		user.setAd_hp(txtPhone.getText());
 
-		// 이메일 입력 했을때만 @붙여서 올바른 이메일 값 보내기
-		if (txtEmail.getText().trim().length() > 1) {
-			user.setAd_mail(txtEmail.getText() + "@" + txtEmail2.getText());
+		String userPhone = txtPhone.getText();
+		if (this.checkPhoneByUser(userPhone) == false) {
+			JOptionPane.showMessageDialog(mainContentPane, "핸드폰번호가 중복이여서 사용할 수 없습니다..", "취소", JOptionPane.OK_OPTION);
+
+			return;
 		} else {
-			user.setAd_mail("");
+			user.setAd_hp(userPhone);
 		}
+
+		String userMail = txtEmail.getText() + "@" + txtEmail2.getText();
+
+		if (this.checkMailByUser(userMail) == false) {
+			JOptionPane.showMessageDialog(mainContentPane, "이메일이 중복이여서 사용할 수 없습니다..", "취소", JOptionPane.OK_OPTION);
+		} else {
+			// 이메일 입력 했을때만 @붙여서 올바른 이메일 값 보내기
+			if (txtEmail.getText().trim().length() > 1) {
+				user.setAd_mail(txtEmail.getText() + "@" + txtEmail2.getText());
+			} else {
+				user.setAd_mail("");
+			}
+		}
+		
 		user.setAd_com(txtCom.getText());
 		user.setAd_department(txtDepartment.getText());
 		user.setAd_postion(txtPosition.getText());
@@ -428,15 +443,12 @@ public class InsertAddressDialog extends JDialog {
 
 			result = true;
 		} else {
-
 			System.out.println("====contains,");
 			String[] groupList = txtGroupFiled.split(",");
-
 			for (int i = 0; i < groupList.length; i++) {
 				System.out.println("groupList===" + groupList[i]);
 				if (groupList[i].equals(selectedGroup)) {
 					System.out.println("selectedGroup===" + selectedGroup);
-
 					result = false;
 					break;
 				}
@@ -511,6 +523,47 @@ public class InsertAddressDialog extends JDialog {
 		txtMemo.setText("");
 		txtGroup.setText("");
 		selectedGroup = "";
+	}
+
+	/**
+	 * 핸드폰번호 중복검사
+	 * 
+	 * @param userPhone
+	 * @return boolean
+	 */
+	public boolean checkPhoneByUser(String userPhone) {
+
+		List<UserVO> userList = FileHandler.getInstance().readUser();
+
+		for (int i = 0; i < userList.size(); i++) {
+
+			if (userPhone.equals(userList.get(i).getAd_hp())) {
+				return false;
+			}
+
+		}
+
+		return true;
+	}
+
+	/**
+	 * 이메일 중복검사
+	 * 
+	 * @param userMail
+	 * @return boolean
+	 */
+	public boolean checkMailByUser(String userMail) {
+		List<UserVO> userList = FileHandler.getInstance().readUser();
+
+		for (int i = 0; i < userList.size(); i++) {
+
+			if (userMail.equals(userList.get(i).getAd_mail())) {
+				return false;
+			}
+
+		}
+
+		return true;
 	}
 
 }
