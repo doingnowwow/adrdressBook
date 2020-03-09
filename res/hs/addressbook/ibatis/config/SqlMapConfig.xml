@@ -8,7 +8,7 @@
 	DB와 연결하는 정보를 properties파일에 설정해 놓고 이 properties파일의
 	내용을 읽어와 설정한다.
 	 -->
-	<properties resource="SqlMapConfig.properties" />
+	<properties resource="hs/addressbook/ibatis/config/SqlMapConfig.properties" />
 	
 	<!-- ibatis를 처리하기 위한 환경설정 부분 -->
 	<settings cacheModelsEnabled="true" enhancementEnabled="true"
@@ -35,8 +35,8 @@
 		 -->
 			<property name="JDBC.Driver" value="${driver}" />
 			<property name="JDBC.ConnectionURL" value="${url}" />
-<!-- 			<property name="JDBC.Username" value="${username}" /> -->
-<!-- 			<property name="JDBC.Password" value="${password}" /> -->
+			<property name="JDBC.Username" value="${username}" />
+			<property name="JDBC.Password" value="${password}" />
 		</dataSource>
 	</transactionManager>
 	
@@ -44,7 +44,8 @@
 		실제 처리할 SQL문은 xml문서로 따로 만든 후	그 xml문서와 아래와 같이 연결하여 사용한다.	형식) <sqlMap resource="경로명/파일명.xml"/> 
 	-->
 	
-	<sqlMap resource="sqlmap/group.xml"/>
+	<sqlMap resource="hs/addressbook/ibatis/mapper/group.xml"/>
+	<sqlMap resource="hs/addressbook/ibatis/mapper/user.xml"/>
 	
 </sqlMapConfig>
 

@@ -1,4 +1,4 @@
-package hs.addressbook.util;
+package hs.addressbook.ibatis.config;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -17,7 +17,7 @@ public class SqlMapClientFactory {
 			Reader rd;
 			
 			try {
-				rd = Resources.getResourceAsReader("SqlMapConfig.xml");
+				rd = Resources.getResourceAsReader("hs/addressbook/ibatis/config/SqlMapConfig.xml");
 				smc = SqlMapClientBuilder.buildSqlMapClient(rd);
 				rd.close();
 			} catch (IOException e) {

@@ -9,6 +9,7 @@ public class AddressBookMain {
 
 
 		AddressBookMainUI frame = new AddressBookMainUI();
+		
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 

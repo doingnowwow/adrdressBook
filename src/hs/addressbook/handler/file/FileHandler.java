@@ -17,7 +17,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import hs.addressbook.data.GroupVO;
 import hs.addressbook.data.UserVO;
 
-public class FileHandler {
+public class FileHandler{
 
 	private static final FileHandler instance = new FileHandler();
 
@@ -133,7 +133,7 @@ public class FileHandler {
 
 				// 콘솔 출력
 				UserVO user = new UserVO();
-				user.setAd_no((int) row.getCell(0).getNumericCellValue());
+				user.setAd_no(row.getCell(0).getStringCellValue());
 				user.setAd_name(row.getCell(1).getStringCellValue());
 
 				if (row.getCell(2) != null) {
@@ -151,7 +151,7 @@ public class FileHandler {
 
 				}
 				if (row.getCell(6) != null) {
-					user.setAd_postion(row.getCell(6).getStringCellValue());
+					user.setAd_position(row.getCell(6).getStringCellValue());
 				}
 				if (row.getCell(7) != null) {
 					user.setAd_memo(row.getCell(7).getStringCellValue());
@@ -170,7 +170,7 @@ public class FileHandler {
 				this.userIdx = 1;
 			} else {
 
-				this.userIdx = this.userList.get(this.userList.size() - 1).getAd_no();
+				this.userIdx = Integer.parseInt(this.userList.get(this.userList.size() - 1).getAd_no());
 
 				this.userKey = userIdx;
 			}
@@ -288,7 +288,7 @@ public class FileHandler {
 		}
 
 		this.groupIdx++;
-//		this.groupKey = groupIdx;
+		this.groupKey = groupIdx;
 
 		// 파일만들기
 		this.wirteFile(sheet);
@@ -336,7 +336,7 @@ public class FileHandler {
 			cell.setCellValue(userList.get(i).getAd_department());
 
 			cell = row.createCell(idx++);
-			cell.setCellValue(userList.get(i).getAd_postion());
+			cell.setCellValue(userList.get(i).getAd_position());
 
 			cell = row.createCell(idx++);
 			cell.setCellValue(userList.get(i).getAd_memo());
@@ -447,11 +447,11 @@ public class FileHandler {
 				resultList.add(user);
 				continue;
 			}
-			if (user.getAd_postion().contains(keyword)) {
+			if (user.getAd_position().contains(keyword)) {
 				resultList.add(user);
 				continue;
 			}
-			if (user.getAd_postion().contains(keyword)) {
+			if (user.getAd_position().contains(keyword)) {
 				resultList.add(user);
 				continue;
 			}
@@ -490,14 +490,14 @@ public class FileHandler {
 		System.out.println("=====updateUser start=========");
 		System.out.println("user.toString" + user.toString());
 
-		int userNo = user.getAd_no();
+		int userNo = Integer.parseInt(user.getAd_no());
 		System.out.println(user.getAd_no());
 
 		for (int i = 0; i < userList.size(); i++) {
 
 			System.out.println(user.getAd_no());
 
-			if (userList.get(i).getAd_no() == userNo) {
+			if (Integer.parseInt(userList.get(i).getAd_no()) == userNo) {
 
 				System.out.println("userList.get(i)=============");
 
@@ -515,8 +515,8 @@ public class FileHandler {
 				if (user.getAd_department() != null) {
 					userList.get(i).setAd_department(user.getAd_department());
 				}
-				if (user.getAd_postion() != null) {
-					userList.get(i).setAd_postion(user.getAd_postion());
+				if (user.getAd_position() != null) {
+					userList.get(i).setAd_position(user.getAd_position());
 				}
 				if (user.getAd_memo() != null) {
 					userList.get(i).setAd_memo(user.getAd_memo());
@@ -538,7 +538,7 @@ public class FileHandler {
 	public void addUser(UserVO user) {
 		System.out.println("===주소록 user추가===");
 
-		user.setAd_no(++this.userKey);
+		user.setAd_no(String.valueOf(++this.userKey));
 		user.setAd_name(user.getAd_name());
 		if (user.getAd_hp() != null) {
 			user.setAd_hp(user.getAd_hp());
@@ -553,8 +553,8 @@ public class FileHandler {
 		if (user.getAd_department() != null) {
 			user.setAd_department(user.getAd_department());
 		}
-		if (user.getAd_postion() != null) {
-			user.setAd_postion(user.getAd_postion());
+		if (user.getAd_position() != null) {
+			user.setAd_position(user.getAd_position());
 		}
 		if (user.getAd_memo() != null) {
 			user.setAd_memo(user.getAd_memo());
@@ -633,4 +633,6 @@ public class FileHandler {
 		}
 
 	}
+
+
 }

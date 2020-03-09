@@ -19,6 +19,8 @@ import javax.swing.border.EmptyBorder;
 
 import hs.addressbook.data.GroupVO;
 import hs.addressbook.data.UserVO;
+import hs.addressbook.handler.database.GroupDataHandler;
+import hs.addressbook.handler.database.UserDataHandler;
 import hs.addressbook.handler.file.FileHandler;
 
 public class InsertAddressDialog extends JDialog {
@@ -67,6 +69,9 @@ public class InsertAddressDialog extends JDialog {
 	private IAddUser listner = null;
 	private AddressBookMainUI addressBookMainUI = null;
 
+	private String pickData="";
+
+
 	// case 1 : 인터페이스를 넘겨 받음
 //	public InsertAddressDialog(IAddUser listner, String title) {
 //		this.listner = listner;
@@ -77,15 +82,17 @@ public class InsertAddressDialog extends JDialog {
 //	}
 
 	// case 2 부모 클래스 객체를 넘겨 받음
-	public InsertAddressDialog(AddressBookMainUI addressBookMainUI, String title) {
+	public InsertAddressDialog(AddressBookMainUI addressBookMainUI, String title, String data) {
 		this.addressBookMainUI = addressBookMainUI;
 		this.setTitle(title);
 		this.setModal(true);
 		this.setResizable(false);
-		this.initUI();
+		this.pickData = data;
+		this.initUI(pickData);
+		System.out.println("data???"+data + "packData==" + pickData);
 	}
 
-	public void initUI() {
+	public void initUI(String pickData) {
 
 		// 메인페널
 		mainContentPane = new JPanel();
@@ -205,10 +212,25 @@ public class InsertAddressDialog extends JDialog {
 
 		groupCombo = new JComboBox<GroupVO>();
 		groupCombo.addItem(new GroupVO(0, "그룹 선택"));
-		groupList = FileHandler.getInstance().getGroupList();
+		
+		
+		if (pickData.equals("file")) {
+			System.out.println("파일부분");
+			groupList = FileHandler.getInstance().getGroupList();
+		}else if(pickData.equals("database")) {
+			
+			System.out.println("===database=====");
+			
+			groupList = (ArrayList<GroupVO>) GroupDataHandler.getInstance().selectGroupList();
+			
+			System.out.println(groupList);
+		}
+		
 		for (GroupVO group : groupList) {
 			this.groupCombo.addItem(group);
 		}
+		
+		
 
 		groupCombo.setBounds(310, 400, 100, 25);
 		centerPane.add(groupCombo);
@@ -356,10 +378,10 @@ public class InsertAddressDialog extends JDialog {
 				user.setAd_mail("");
 			}
 		}
-		
+
 		user.setAd_com(txtCom.getText());
 		user.setAd_department(txtDepartment.getText());
-		user.setAd_postion(txtPosition.getText());
+		user.setAd_position(txtPosition.getText());
 		user.setAd_memo(txtMemo.getText());
 
 		// 그룹선택에 관한 부분 ///
@@ -391,7 +413,14 @@ public class InsertAddressDialog extends JDialog {
 		} else if (txtGroupFiled.contains(",")) {
 
 			String[] groupList = txtGroupFiled.split(",");
-			List<GroupVO> filegroupList = FileHandler.getInstance().getGroupList();
+			List<GroupVO> filegroupList = null;
+			if (pickData.equals("file")) {
+
+				filegroupList = FileHandler.getInstance().getGroupList();
+			} else {
+
+				filegroupList = GroupDataHandler.getInstance().selectGroupList();
+			}
 
 			for (int i = 0; i < filegroupList.size(); i++) {
 				for (int j = 0; j < groupList.length; j++) {
@@ -410,7 +439,16 @@ public class InsertAddressDialog extends JDialog {
 			System.out.println("groupNO=" + groupNo);
 			return groupNo;
 		} else {
-			List<GroupVO> filegroupList = FileHandler.getInstance().getGroupList();
+			List<GroupVO> filegroupList = null;
+
+			if (pickData.equals("file")) {
+
+				filegroupList = FileHandler.getInstance().getGroupList();
+			} else {
+
+				filegroupList = GroupDataHandler.getInstance().selectGroupList();
+			}
+
 			for (int i = 0; i < filegroupList.size(); i++) {
 
 				System.out.println("filegroupList.get(i).getGroup_name()=" + filegroupList.get(i).getGroup_name());
@@ -533,12 +571,23 @@ public class InsertAddressDialog extends JDialog {
 	 */
 	public boolean checkPhoneByUser(String userPhone) {
 
-		List<UserVO> userList = FileHandler.getInstance().readUser();
+		List<UserVO> userList = null;
+
+		if (pickData.equals("file")) {
+
+			userList = FileHandler.getInstance().readUser();
+
+		} else {
+			userList = UserDataHandler.getInstance().selectAllUser();
+		}
 
 		for (int i = 0; i < userList.size(); i++) {
 
-			if (userPhone.equals(userList.get(i).getAd_hp())) {
-				return false;
+			if (userPhone != null || userPhone.equals("")) {
+
+				if (userPhone.equals(userList.get(i).getAd_hp())) {
+					return false;
+				}
 			}
 
 		}
@@ -553,7 +602,15 @@ public class InsertAddressDialog extends JDialog {
 	 * @return boolean
 	 */
 	public boolean checkMailByUser(String userMail) {
-		List<UserVO> userList = FileHandler.getInstance().readUser();
+		List<UserVO> userList = null;
+
+		if (pickData.equals("file")) {
+
+			userList = FileHandler.getInstance().readUser();
+
+		} else {
+			userList = UserDataHandler.getInstance().selectAllUser();
+		}
 
 		for (int i = 0; i < userList.size(); i++) {
 

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+			PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+			"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+			
+<!-- namespace속성 : 아래에서 작성한 SQL을 호출할 때 같이 사용된다. -->
+<sqlMap namespace="group">
+
+	<resultMap class="GroupVO" id="groupResultMap">
+		<result property="group_no" column="group_no"/>
+		<result property="group_name" column="group_name"/>
+	</resultMap>
+	
+	<!--전체 그룹 조회하기  -->
+	<select id="selectGroupList" resultClass="GroupVO" resultMap="groupResultMap">
+		SELECT * FROM TB_GROUP
+	</select>
+
+	<!--그룹 추가하기 -->
+	<insert id="insertGroup" parameterClass="String">
+		INSERT INTO TB_GROUP
+		(GROUP_NO, GROUP_NAME)
+		VALUES(GROUP_SEQ.NEXTVAL,#group_name#)
+	</insert>
+
+	<!--그룹 삭제하기 -->
+	<delete id="deleteGroup" parameterClass="int">
+		DELETE FROM TB_GROUP
+		WHERE GROUP_NO = #group_no#
+	</delete>
+
+	<!--그룹 이름 변경하기 -->
+	<update id="updateGroup" parameterClass="int">
+		UPDATE TB_GROUP
+		SET GROUP_NAME = #group_name#
+		WHERE GROUP_NO = #group_no#
+	</update>
+	
+	
+	
+	
+	
+</sqlMap>
+
+
+
+
+

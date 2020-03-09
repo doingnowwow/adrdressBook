@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+			PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+			"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="user">
+
+	<!-- resultMap -->
+	<resultMap class="UserVO" id="userResultMap">
+		<result property="ad_no" column="ad_no" />
+		<result property="ad_name" column="ad_name" />
+		<result property="ad_hp" column="ad_hp" />
+		<result property="ad_mail" column="ad_mail" />
+		<result property="ad_com" column="ad_com" />
+		<result property="ad_department" column="ad_department" />
+		<result property="ad_position" column="ad_position" />
+		<result property="ad_memo" column="ad_memo" />
+	</resultMap>
+
+	<!--검색 -->
+
+	<sql id="searchList">
+		<dynamic prepend="WHERE">
+			<isNotEmpty property="ad_name" prepend="AND">
+			AD_NAME LIKE '%' || #ad_name# || '%'
+			</isNotEmpty>
+		
+			<isNotEmpty property="ad_hp" prepend="AND">
+			AD_HP LIKE '%' || #ad_hp# || '%'
+			</isNotEmpty>
+		
+			<isNotEmpty property="ad_mail" prepend="AND">
+			AD_MAIL LIKE '%' || #ad_mail# || '%'
+			</isNotEmpty>
+		
+			<isNotEmpty property="ad_com" prepend="AND">
+			AD_COM LIKE '%' || #ad_com# || '%'
+			</isNotEmpty>
+		
+			<isNotEmpty property="ad_department" prepend="AND">
+			AD_DEPARTMENT LIKE '%' || #ad_department# || '%'
+			</isNotEmpty>
+		
+			<isNotEmpty property="ad_position" prepend="AND">
+			AD_POSITION LIKE '%' || #ad_position# || '%'
+			</isNotEmpty>
+			
+			<isNotEmpty property="ad_memo" prepend="AND">
+			AD_MEMO LIKE '%' || #ad_memo# || '%'
+			</isNotEmpty>
+		
+		</dynamic>
+
+	</sql>
+
+	<!--전체 주소록 목록 조회 -->
+	<select id="selectAllUser" resultMap="userResultMap"	resultClass="UserVO" parameterClass="String">
+		SELECT * FROM TB_USER
+		<include refid="searchList"/>
+	</select>
+
+	<!--사용자 정보 조회 -->
+
+	<select id="userInfo" parameterClass="UserVO" resultMap="userResultMap" resultClass="UserVO">
+		SELECT *
+		FROM TB_USER
+		WHERE AD_NO=#ad_no#
+	</select>
+
+	<!--주소록에 사용자 추가하기 -->
+	<insert id="insertUser" parameterClass="UserVO">
+		INSERT INTO
+		TB_USER(AD_NO,AD_NAME,AD_HP,AD_MAIL,AD_COM,AD_DEPARTMENT,AD_POSITION,AD_MEMO)
+		VALUES(USER_SEQ.NEXTVAL,#ad_name#,#ad_hp#,#ad_mail#,#ad_com#,#ad_department#,#ad_position#,#ad_memo#)
+	</insert>
+
+	<!--주소록 사용자 삭제하기 -->
+	<delete id="deleteUser" parameterClass="UserVO">
+		DELETE FROM TB_USER
+		WHERE
+		AD_NO = #ad_no#
+	</delete>
+
+	<!--주소록 사용자 수정하기 -->
+	<update id="updateUser" parameterClass="UserVO">
+		UPDATE TB_USER
+		SET
+		AD_NAME =#ad_name#
+		,AD_HP=#ad_hp#
+		,AD_MAIL=#ad_mail#
+		,AD_COM=#ad_com#
+		,AD_DEPARTMENT=#ad_department#
+		,AD_POSITION=#ad_position#
+		,AD_MEMO=#ad_memo#
+		WHERE AD_NO = #ad_no#
+	</update>
+	
+	<select id="selectUserListByGroup" resultMap="userResultMap" parameterClass="Integer">
+	SELECT  G.GROUP_NO ,G.GROUP_NAME,U.AD_NO,U.AD_NAME,U.AD_HP,U.AD_MAIL,U.AD_COM,U.AD_DEPARTMENT,U.AD_POSITION,U.AD_MEMO  
+	FROM TB_GROUP G
+	INNER JOIN TB_MATCH_GROUP M ON G.GROUP_NO = M.GROUP_NO
+	LEFT JOIN TB_USER U ON M.AD_NO = U.AD_NO
+	WHERE G.GROUP_NO = #group_no#
+	</select>
+	
+
+</sqlMap>
+
+
+
+
+

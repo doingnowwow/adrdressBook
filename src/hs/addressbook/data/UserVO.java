@@ -11,13 +11,13 @@ import net.mbiz.edt.barcode.table.data.TableData;
 public class UserVO implements TableData {
 
 	private boolean isChecked = false;
-	private int ad_no;
+	private String ad_no;
 	private String ad_name;
 	private String ad_hp;
 	private String ad_mail;
 	private String ad_com;
 	private String ad_department;
-	private String ad_postion;
+	private String ad_position;
 	private String ad_memo;
 	private String group_no;
 	private ArrayList<String> groupNoList = new ArrayList<String>();
@@ -28,13 +28,13 @@ public class UserVO implements TableData {
 	public UserVO(String[] dataArray) {
 
 		if (dataArray.length == 9) {
-			this.ad_no = Integer.parseInt(dataArray[0]);
+			this.ad_no = dataArray[0];
 			this.ad_name = dataArray[1];
 			this.ad_hp = dataArray[2];
 			this.ad_mail = dataArray[3];
 			this.ad_com = dataArray[4];
 			this.ad_department = dataArray[5];
-			this.ad_postion = dataArray[6];
+			this.ad_position = dataArray[6];
 			this.ad_memo = dataArray[7];
 			setGroup_no(dataArray[8]);
 		}
@@ -48,11 +48,11 @@ public class UserVO implements TableData {
 		this.isChecked = isChecked;
 	}
 
-	public int getAd_no() {
+	public String getAd_no() {
 		return ad_no;
 	}
 
-	public void setAd_no(int ad_no) {
+	public void setAd_no(String ad_no) {
 		this.ad_no = ad_no;
 	}
 
@@ -96,12 +96,20 @@ public class UserVO implements TableData {
 		this.ad_department = ad_department;
 	}
 
-	public String getAd_postion() {
-		return ad_postion;
+	public String getAd_position() {
+		return ad_position;
 	}
 
-	public void setAd_postion(String ad_postion) {
-		this.ad_postion = ad_postion;
+	public void setAd_position(String ad_position) {
+		this.ad_position = ad_position;
+	}
+
+	public ArrayList<String> getGroupNoList() {
+		return groupNoList;
+	}
+
+	public void setGroupNoList(ArrayList<String> groupNoList) {
+		this.groupNoList = groupNoList;
 	}
 
 	public String getAd_memo() {
@@ -149,17 +157,18 @@ public class UserVO implements TableData {
 			String groupNo = this.groupNoList.get(i);
 			if (groupNo.equals(String.valueOf(group.getGroup_no()))) {
 				this.groupNoList.remove(i);
-				
+
 			}
 		}
-		
-		if(groupNoList.size()==0) {
+
+		if (groupNoList.size() == 0) {
 			setGroup_no("0");
 		}
 	}
 
 	/**
 	 * 그룹에 속해있는지 확인
+	 * 
 	 * @param group
 	 * @return
 	 */
@@ -198,7 +207,7 @@ public class UserVO implements TableData {
 
 	@Override
 	public String toString() {
-		return "UserVO [isChecked=" + isChecked + ", ad_no=" + ad_no + ", ad_name=" + ad_name + ", ad_hp=" + ad_hp + ", ad_mail=" + ad_mail + ", ad_com=" + ad_com + ", ad_department=" + ad_department + ", ad_postion=" + ad_postion + ", ad_memo=" + ad_memo + ", group_no=" + group_no + "]";
+		return "UserVO [isChecked=" + isChecked + ", ad_no=" + ad_no + ", ad_name=" + ad_name + ", ad_hp=" + ad_hp + ", ad_mail=" + ad_mail + ", ad_com=" + ad_com + ", ad_department=" + ad_department + ", ad_postion=" + ad_position + ", ad_memo=" + ad_memo + ", group_no=" + group_no + "]";
 	}
 
 	@Override
@@ -219,7 +228,7 @@ public class UserVO implements TableData {
 		case 6:
 			return this.ad_department;
 		case 7:
-			return this.ad_postion;
+			return this.ad_position;
 		case 8:
 			return this.ad_memo;
 

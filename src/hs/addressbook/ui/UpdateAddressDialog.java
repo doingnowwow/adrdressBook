@@ -267,8 +267,8 @@ public class UpdateAddressDialog extends JDialog {
 		if (updateuser.getAd_department() != null) {
 			txtDepartment.setText(updateuser.getAd_department());
 		}
-		if (updateuser.getAd_postion() != null) {
-			txtPosition.setText(updateuser.getAd_postion());
+		if (updateuser.getAd_position() != null) {
+			txtPosition.setText(updateuser.getAd_position());
 		}
 		if (updateuser.getAd_memo() != null) {
 			txtMemo.setText(updateuser.getAd_memo());
@@ -339,8 +339,8 @@ public class UpdateAddressDialog extends JDialog {
 		if (updateuser.getAd_department() != null) {
 			txtDepartment.setText(updateuser.getAd_department());
 		}
-		if (updateuser.getAd_postion() != null) {
-			txtPosition.setText(updateuser.getAd_postion());
+		if (updateuser.getAd_position() != null) {
+			txtPosition.setText(updateuser.getAd_position());
 		}
 		if (updateuser.getAd_memo() != null) {
 			txtMemo.setText(updateuser.getAd_memo());
@@ -383,7 +383,7 @@ public class UpdateAddressDialog extends JDialog {
 		}
 
 		// 값 보내기
-		updateuser.setAd_no(Integer.parseInt(txtNo.getText()));
+		updateuser.setAd_no(txtNo.getText());
 		updateuser.setAd_name(txtName.getText());
 		updateuser.setAd_hp(txtPhone.getText());
 		if (txtEmail.getText().trim().length() > 1) {
@@ -393,7 +393,7 @@ public class UpdateAddressDialog extends JDialog {
 		}
 		updateuser.setAd_com(txtCom.getText());
 		updateuser.setAd_department(txtDepartment.getText());
-		updateuser.setAd_postion(txtPosition.getText());
+		updateuser.setAd_position(txtPosition.getText());
 		updateuser.setAd_memo(txtMemo.getText());
 
 		// 그룹선택에 관한 부분 ///
