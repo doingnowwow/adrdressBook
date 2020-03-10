@@ -20,6 +20,8 @@ import javax.swing.border.EmptyBorder;
 
 import hs.addressbook.data.GroupVO;
 import hs.addressbook.data.UserVO;
+import hs.addressbook.handler.database.GroupDataHandler;
+import hs.addressbook.handler.database.UserDataHandler;
 import hs.addressbook.handler.file.FileHandler;
 
 public class UpdateAddressDialog extends JDialog {
@@ -70,27 +72,30 @@ public class UpdateAddressDialog extends JDialog {
 
 	private String userNo = "";
 	private String txtGroupFiled = "";
+	private String pickData = "";
 
-	public UpdateAddressDialog(IAddUser listner, String title, UserVO user) {
-		this.updateuser = user;
-		this.listner = listner;
-		this.setTitle(title);
-		this.setModal(true);
-		this.setResizable(false);
-		this.initUI();
+//	public UpdateAddressDialog(IAddUser listner, String title, UserVO user) {
+//		this.updateuser = user;
+//		this.listner = listner;
+//		this.setTitle(title);
+//		this.setModal(true);
+//		this.setResizable(false);
+//		this.initUI();
+//
+//	}
 
-	}
-
-	public UpdateAddressDialog(AddressBookMainUI addressBookMainUI, String title, UserVO user) {
+	public UpdateAddressDialog(AddressBookMainUI addressBookMainUI, String title, UserVO user, String data) {
 		this.addressBookMainUI = addressBookMainUI;
 		this.updateuser = user;
 		this.setTitle(title);
 		this.setModal(true);
 		this.setResizable(false);
-		this.initUI();
+		this.pickData = data;
+		this.initUI(pickData);
+		System.out.println("data???" + data + "packData==" + pickData);
 	}
 
-	public void initUI() {
+	public void initUI(String pickData) {
 
 		// 메인페널
 		mainContentPane = new JPanel();
@@ -209,8 +214,20 @@ public class UpdateAddressDialog extends JDialog {
 		// 그룹리스트
 		groupCombo = new JComboBox<GroupVO>();
 		groupCombo.addItem(new GroupVO(0, "그룹 선택"));
-		groupList = FileHandler.getInstance().getGroupList();
 
+		if (pickData.equals("file")) {
+			System.out.println("파일부분");
+			groupList = FileHandler.getInstance().getGroupList();
+		} else if (pickData.equals("database")) {
+
+			System.out.println("===database=====");
+
+			groupList = (ArrayList<GroupVO>) GroupDataHandler.getInstance().selectGroupList();
+
+			System.out.println(groupList);
+		}
+
+		// 콤보박스에 그룹리스트 넣기!
 		for (GroupVO group : groupList) {
 			this.groupCombo.addItem(group);
 		}
@@ -405,7 +422,13 @@ public class UpdateAddressDialog extends JDialog {
 
 		// 화면꺼
 		setVisible(false);
-		FileHandler.getInstance().updateUser(updateuser);
+
+		if (pickData.equals("file")) {
+			FileHandler.getInstance().updateUser(updateuser);
+		} else {
+			UserDataHandler.getInstance().updateUser(updateuser);
+			System.out.println("====database Update user====");
+		}
 
 	}
 
@@ -448,10 +471,16 @@ public class UpdateAddressDialog extends JDialog {
 		} else if (txtGroupFiled.contains(",")) {
 
 			String[] groupList = txtGroupFiled.split(",");
-			List<GroupVO> filegroupList = FileHandler.getInstance().getGroupList();
+			List<GroupVO> filegroupList = null;
+			if (pickData.equals("file")) {
+
+				filegroupList = FileHandler.getInstance().getGroupList();
+			} else {
+
+				filegroupList = GroupDataHandler.getInstance().selectGroupList();
+			}
 
 			for (int i = 0; i < filegroupList.size(); i++) {
-
 				for (int j = 0; j < groupList.length; j++) {
 
 					System.out.println("filegroupList.get(i).getGroup_name()=" + filegroupList.get(i).getGroup_name() + " / groupList[j]) = " + groupList[j]);

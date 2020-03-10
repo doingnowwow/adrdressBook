@@ -8,6 +8,8 @@ import org.h2.engine.Session;
 
 import com.ibatis.sqlmap.client.SqlMapClient;
 
+import hs.addressbook.data.GroupVO;
+import hs.addressbook.data.MappingVO;
 import hs.addressbook.data.UserVO;
 import hs.addressbook.ibatis.config.SqlMapClientFactory;
 
@@ -50,6 +52,23 @@ public class UserDataHandler {
 		return selectAllUser;
 	}
 
+	/**
+	 * 방금 추가한 사용자 번호 알기
+	 * @return
+	 */
+	public int selectUserNum() {
+
+		int ad_no = 0;
+		try {
+			ad_no = (int) client.queryForObject("user.selectUserNum");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return ad_no;
+
+	}
+
 	// 사용자 정보조회
 	public UserVO userInfo(int ad_no) {
 		UserVO userInfo = null;
@@ -64,13 +83,22 @@ public class UserDataHandler {
 
 	// 사용자추가
 	public void insertUser(UserVO userInfo) {
-		try {
-			client.insert("user.insertUser", userInfo);
+		try { 
+			client.insert("user.insertUser", userInfo); 
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
+	public void insertMappingUser(MappingVO mappingInfo) {
+		try {
+			client.insert("mapping.insertMapping", mappingInfo);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	// 수정
 	public void updateUser(UserVO userInfo) {
 		try {
 			client.update("user.updateUser", userInfo);
@@ -79,9 +107,15 @@ public class UserDataHandler {
 		}
 	}
 
-	public void deleteUser(UserVO userInfo) {
+	// 삭제
+	public void deleteUser(int ad_no) {
 		try {
-			client.delete("user.deleteUser", userInfo);
+			// mapping테이블에 사용자 삭제
+			client.delete("mapping.deleteMappingUser", ad_no);
+			System.out.println("---mapping테이블에서삭제됨--");
+			// 사용자삭제
+			client.delete("user.deleteUser", ad_no);
+			System.out.println("---user테이블에서삭제됨--");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -89,7 +123,7 @@ public class UserDataHandler {
 	}
 
 	public List<UserVO> selectUserListByGroup(int group_no) {
-		
+
 		List<UserVO> selectUserListByGroup = null;
 
 		try {

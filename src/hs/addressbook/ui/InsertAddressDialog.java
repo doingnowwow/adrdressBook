@@ -69,8 +69,7 @@ public class InsertAddressDialog extends JDialog {
 	private IAddUser listner = null;
 	private AddressBookMainUI addressBookMainUI = null;
 
-	private String pickData="";
-
+	private String pickData = "";
 
 	// case 1 : 인터페이스를 넘겨 받음
 //	public InsertAddressDialog(IAddUser listner, String title) {
@@ -89,7 +88,7 @@ public class InsertAddressDialog extends JDialog {
 		this.setResizable(false);
 		this.pickData = data;
 		this.initUI(pickData);
-		System.out.println("data???"+data + "packData==" + pickData);
+		System.out.println("data???" + data + "packData==" + pickData);
 	}
 
 	public void initUI(String pickData) {
@@ -212,25 +211,22 @@ public class InsertAddressDialog extends JDialog {
 
 		groupCombo = new JComboBox<GroupVO>();
 		groupCombo.addItem(new GroupVO(0, "그룹 선택"));
-		
-		
+
 		if (pickData.equals("file")) {
 			System.out.println("파일부분");
 			groupList = FileHandler.getInstance().getGroupList();
-		}else if(pickData.equals("database")) {
-			
+		} else if (pickData.equals("database")) {
+
 			System.out.println("===database=====");
-			
+
 			groupList = (ArrayList<GroupVO>) GroupDataHandler.getInstance().selectGroupList();
-			
+
 			System.out.println(groupList);
 		}
-		
+
 		for (GroupVO group : groupList) {
 			this.groupCombo.addItem(group);
 		}
-		
-		
 
 		groupCombo.setBounds(310, 400, 100, 25);
 		centerPane.add(groupCombo);
@@ -358,12 +354,16 @@ public class InsertAddressDialog extends JDialog {
 		user.setAd_name(txtName.getText());
 
 		String userPhone = txtPhone.getText();
-		if (this.checkPhoneByUser(userPhone) == false) {
-			JOptionPane.showMessageDialog(mainContentPane, "핸드폰번호가 중복이여서 사용할 수 없습니다..", "취소", JOptionPane.OK_OPTION);
 
-			return;
-		} else {
-			user.setAd_hp(userPhone);
+		if (userPhone != null || userPhone.isEmpty() == false) {
+
+			if (this.checkPhoneByUser(userPhone) == false) {
+				JOptionPane.showMessageDialog(mainContentPane, "핸드폰번호가 중복이여서 사용할 수 없습니다..", "취소", JOptionPane.OK_OPTION);
+
+				return;
+			} else {
+				user.setAd_hp(userPhone + "");
+			}
 		}
 
 		String userMail = txtEmail.getText() + "@" + txtEmail2.getText();
@@ -583,7 +583,7 @@ public class InsertAddressDialog extends JDialog {
 
 		for (int i = 0; i < userList.size(); i++) {
 
-			if (userPhone != null || userPhone.equals("")) {
+			if (userList.get(i).getAd_hp().equals("") == false) {
 
 				if (userPhone.equals(userList.get(i).getAd_hp())) {
 					return false;
@@ -614,8 +614,14 @@ public class InsertAddressDialog extends JDialog {
 
 		for (int i = 0; i < userList.size(); i++) {
 
-			if (userMail.equals(userList.get(i).getAd_mail())) {
-				return false;
+			if (userList.get(i).getAd_mail() != null) {
+
+				if (userList.get(i).getAd_mail().equals("") == false) {
+
+					if (userMail.equals(userList.get(i).getAd_mail())) {
+						return false;
+					}
+				}
 			}
 
 		}

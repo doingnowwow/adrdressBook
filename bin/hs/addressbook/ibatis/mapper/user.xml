@@ -21,50 +21,58 @@
 
 	<sql id="searchList">
 		<dynamic prepend="WHERE">
-			<isNotEmpty property="ad_name" prepend="AND">
-			AD_NAME LIKE '%' || #ad_name# || '%'
+			<isNotEmpty  prepend="OR">
+				AD_NAME LIKE '%' || #data# || '%'
 			</isNotEmpty>
-		
-			<isNotEmpty property="ad_hp" prepend="AND">
-			AD_HP LIKE '%' || #ad_hp# || '%'
+
+			<isNotEmpty prepend="OR">
+				AD_HP LIKE '%' || #data# || '%'
 			</isNotEmpty>
-		
-			<isNotEmpty property="ad_mail" prepend="AND">
-			AD_MAIL LIKE '%' || #ad_mail# || '%'
+
+			<isNotEmpty  prepend="OR">
+				AD_MAIL LIKE '%' || #data# || '%'
 			</isNotEmpty>
-		
-			<isNotEmpty property="ad_com" prepend="AND">
-			AD_COM LIKE '%' || #ad_com# || '%'
+
+			<isNotEmpty prepend="OR">
+				AD_COM LIKE '%' || #data# || '%'
 			</isNotEmpty>
-		
-			<isNotEmpty property="ad_department" prepend="AND">
-			AD_DEPARTMENT LIKE '%' || #ad_department# || '%'
+
+			<isNotEmpty  prepend="OR">
+				AD_DEPARTMENT LIKE '%' || #data# || '%'
 			</isNotEmpty>
-		
-			<isNotEmpty property="ad_position" prepend="AND">
-			AD_POSITION LIKE '%' || #ad_position# || '%'
+
+			<isNotEmpty  prepend="OR">
+				AD_POSITION LIKE '%' || #data# || '%'
 			</isNotEmpty>
-			
-			<isNotEmpty property="ad_memo" prepend="AND">
-			AD_MEMO LIKE '%' || #ad_memo# || '%'
+
+			<isNotEmpty prepend="OR">
+				AD_MEMO LIKE '%' || #data# || '%'
 			</isNotEmpty>
-		
+
 		</dynamic>
 
 	</sql>
 
 	<!--전체 주소록 목록 조회 -->
-	<select id="selectAllUser" resultMap="userResultMap"	resultClass="UserVO" parameterClass="String">
+	<select id="selectAllUser" resultMap="userResultMap"		resultClass="UserVO" parameterClass="String" >
 		SELECT * FROM TB_USER
-		<include refid="searchList"/>
+		<include refid="searchList" />
 	</select>
 
-	<!--사용자 정보 조회 -->
+	<!--방금 추가한 사용자 번호 조회하기 -->
+	<select id="selectUserNum" resultClass="int">
+		SELECT MAX(AD_NO)
+		FROM TB_USER
+	</select>
 
-	<select id="userInfo" parameterClass="UserVO" resultMap="userResultMap" resultClass="UserVO">
+
+	<!--사용자 정보 조회 -->
+	<select id="userInfo" parameterClass="UserVO"
+		resultMap="userResultMap" resultClass="UserVO">
 		SELECT *
 		FROM TB_USER
-		WHERE AD_NO=#ad_no#
+		WHERE
+		AD_NO=#ad_no#
 	</select>
 
 	<!--주소록에 사용자 추가하기 -->
@@ -75,7 +83,7 @@
 	</insert>
 
 	<!--주소록 사용자 삭제하기 -->
-	<delete id="deleteUser" parameterClass="UserVO">
+	<delete id="deleteUser" parameterClass="Integer">
 		DELETE FROM TB_USER
 		WHERE
 		AD_NO = #ad_no#
@@ -85,7 +93,8 @@
 	<update id="updateUser" parameterClass="UserVO">
 		UPDATE TB_USER
 		SET
-		AD_NAME =#ad_name#
+		AD_NAME
+		=#ad_name#
 		,AD_HP=#ad_hp#
 		,AD_MAIL=#ad_mail#
 		,AD_COM=#ad_com#
@@ -94,15 +103,18 @@
 		,AD_MEMO=#ad_memo#
 		WHERE AD_NO = #ad_no#
 	</update>
-	
-	<select id="selectUserListByGroup" resultMap="userResultMap" parameterClass="Integer">
-	SELECT  G.GROUP_NO ,G.GROUP_NAME,U.AD_NO,U.AD_NAME,U.AD_HP,U.AD_MAIL,U.AD_COM,U.AD_DEPARTMENT,U.AD_POSITION,U.AD_MEMO  
-	FROM TB_GROUP G
-	INNER JOIN TB_MATCH_GROUP M ON G.GROUP_NO = M.GROUP_NO
-	LEFT JOIN TB_USER U ON M.AD_NO = U.AD_NO
-	WHERE G.GROUP_NO = #group_no#
+
+	<!--그룹 선택시 나오는 유저 리스트 -->
+	<select id="selectUserListByGroup" resultMap="userResultMap"
+		parameterClass="Integer">
+		SELECT G.GROUP_NO
+		,G.GROUP_NAME,U.AD_NO,U.AD_NAME,U.AD_HP,U.AD_MAIL,U.AD_COM,U.AD_DEPARTMENT,U.AD_POSITION,U.AD_MEMO
+		FROM TB_GROUP G
+		INNER JOIN TB_MATCH_GROUP M ON G.GROUP_NO = M.GROUP_NO
+		LEFT JOIN TB_USER U ON M.AD_NO = U.AD_NO
+		WHERE G.GROUP_NO = #group_no#
 	</select>
-	
+
 
 </sqlMap>
 

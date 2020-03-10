@@ -3,7 +3,6 @@
 			PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
 			"http://ibatis.apache.org/dtd/sql-map-2.dtd">
 			
-<!-- namespace속성 : 아래에서 작성한 SQL을 호출할 때 같이 사용된다. -->
 <sqlMap namespace="group">
 
 	<resultMap class="GroupVO" id="groupResultMap">
@@ -17,11 +16,17 @@
 	</select>
 
 	<!--그룹 추가하기 -->
-	<insert id="insertGroup" parameterClass="String">
+	<insert id="insertGroup" parameterClass="GroupVO">
 		INSERT INTO TB_GROUP
 		(GROUP_NO, GROUP_NAME)
-		VALUES(GROUP_SEQ.NEXTVAL,#group_name#)
+		VALUES(#group_no#,#group_name#)
 	</insert>
+	
+		<!--방금 추가한 그룹번호 조회하기 -->
+	<select id="selectNextGroupNum" resultClass="int">
+		SELECT GROUP_SEQ.NEXTVAL
+	</select>
+	
 
 	<!--그룹 삭제하기 -->
 	<delete id="deleteGroup" parameterClass="int">

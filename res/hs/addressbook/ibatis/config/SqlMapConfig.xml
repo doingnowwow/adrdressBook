@@ -11,9 +11,8 @@
 	<properties resource="hs/addressbook/ibatis/config/SqlMapConfig.properties" />
 	
 	<!-- ibatis를 처리하기 위한 환경설정 부분 -->
-	<settings cacheModelsEnabled="true" enhancementEnabled="true"
-		lazyLoadingEnabled="true" maxRequests="32" maxSessions="10"
-		maxTransactions="5" useStatementNamespaces="true" />
+	<settings cacheModelsEnabled="true" 		enhancementEnabled="true"		lazyLoadingEnabled="true"
+				 maxRequests="32"				  maxSessions="10"				maxTransactions="5" 		useStatementNamespaces="true" />
 
 	<!-- 
 	VO클래스등의 이름이 패키지명까지 기술하면 길어지는데 이것을 간단히
@@ -22,6 +21,7 @@
 	 -->
 	<typeAlias alias="GroupVO" type="hs.addressbook.data.GroupVO"/>
 	<typeAlias alias="UserVO" type="hs.addressbook.data.UserVO"/>
+	<typeAlias alias="MappingVO" type="hs.addressbook.data.MappingVO"/>
 
 	<!-- 
 	DB와의 연결을 처리하는 부분
@@ -46,6 +46,7 @@
 	
 	<sqlMap resource="hs/addressbook/ibatis/mapper/group.xml"/>
 	<sqlMap resource="hs/addressbook/ibatis/mapper/user.xml"/>
+	<sqlMap resource="hs/addressbook/ibatis/mapper/mapping.xml"/>
 	
 </sqlMapConfig>
 

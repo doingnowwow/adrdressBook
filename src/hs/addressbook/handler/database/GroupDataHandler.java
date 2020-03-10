@@ -33,16 +33,27 @@ public class GroupDataHandler {
 		return selectGroupList;
 	}
 
-	public void insertGroup(String group_name) {
+	public GroupVO insertGroup(String group_name) {
+		
+		GroupVO group = new GroupVO();
+		
 		try {
-			client.insert("group.insertGroup",group_name);
+			group.setGroup_no((int) client.queryForObject("group.selectNextGroupNum"));
+			group.setGroup_name(group_name);
+			client.insert("group.insertGroup",group);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		
+		return group;
 	}
 
 	public void deleteGroup(int group_no) {
 		try {
+			//그룹삭제시 mapping테이블 삭제
+			client.delete("mapping.deleteMappingGroup",group_no);
+			
+			//그룹삭제
 			client.delete("group.deleteGroup",group_no);
 		} catch (SQLException e) {
 			e.printStackTrace();

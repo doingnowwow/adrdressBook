@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+			PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+			"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+			
+			
+			
+			
+<sqlMap namespace="mapping">
+
+	
+	<!--사용자 추가시 그룹선택...-->
+	<insert id="insertMapping" parameterClass="MappingVO">
+		INSERT INTO TB_MATCH_GROUP (GROUP_NO,AD_NO)
+		VALUES(#group_no#,#ad_no#)
+	</insert>
+	
+	
+	<!--그룹삭제 시 mapping에서 삭제 -->
+	<delete id="deleteMappingGroup" parameterClass="Integer">
+		DELETE FROM TB_MATCH_GROUP
+		WHERE GROUP_NO = #group_no#
+	</delete>
+	
+	<!--사용자 삭제 시 mapping에서 삭제 -->
+	<delete id="deleteMappingUser" parameterClass="Integer">
+		DELETE FROM TB_MATCH_GROUP
+		WHERE AD_NO = #ad_no#
+	</delete>
+
+	
+	
+	
+	
+	
+	
+</sqlMap>
+
+
+
+
+
